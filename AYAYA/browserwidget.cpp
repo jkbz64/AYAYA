@@ -1,8 +1,8 @@
 #include "browserwidget.hpp"
 #include "ui_browserwidget.h"
 
-#include "gamewidget.hpp"
-#include "streamwidget.hpp"
+#include "browser/gamewidget.hpp"
+#include "browser/streamwidget.hpp"
 
 BrowserWidget::BrowserWidget(QWidget* parent)
     : QWidget(parent)

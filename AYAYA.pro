@@ -13,8 +13,9 @@ include(lib/TwitchQt/TwitchQt.pri)
 # libcommuni
 include(lib/libcommuni/src/src.pri)
 
-RESOURCES += qdarkstyle/style.qrc \
-    res.qrc
+RESOURCES += lib/QDarkStyleSheet/qdarkstyle/style.qrc \
+
+INCLUDEPATH += AYAYA/ \
 
 SOURCES += \
 		AYAYA/main.cpp \
@@ -57,5 +58,3 @@ FORMS += \
 	AYAYA/player/controlswidget.ui
 
 LIBS += -lmpv
-
-SUBDIRS = AYAYA

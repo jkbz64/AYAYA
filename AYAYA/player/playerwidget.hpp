@@ -1,7 +1,7 @@
 #ifndef PLAYERWIDGET_HPP
 #define PLAYERWIDGET_HPP
 
-#include "player/player.hpp"
+#include "player.hpp"
 #include <QDockWidget>
 
 class MpvPlayer;

@@ -1,6 +1,7 @@
 #include "playerwidget.hpp"
 #include "controlswidget.hpp"
-#include "player/mpvplayer.hpp"
+#include "mpvplayer.hpp"
+#include "player.hpp"
 
 #include <QGridLayout>
 #include <QSpacerItem>
@@ -24,13 +25,11 @@ PlayerWidget::PlayerWidget(QWidget* parent)
 
     });
 
-    controlsWidget->disconnect()
-
-        playerWidget->setLayout(new QGridLayout());
+    playerWidget->setLayout(new QGridLayout());
 
     auto lay = qobject_cast<QGridLayout*>(playerWidget->layout());
     lay->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 0, 12, 1);
-    lay->addWidget(new ControlsWidget(playerWidget), 12, 0, 2, 1);
+    lay->addWidget(controlsWidget, 12, 0, 2, 1);
 }
 
 PlayerWidget::~PlayerWidget()
