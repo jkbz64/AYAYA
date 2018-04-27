@@ -1,0 +1,9 @@
+[submodule "lib/QDarkStyleSheet"]
+	path = lib/QDarkStyleSheet
+	url = https://github.com/ColinDuquesnoy/QDarkStyleSheet.git
+[submodule "lib/TwitchQt"]
+	path = lib/TwitchQt
+	url = https://github.com/jkbz64/TwitchQt.git
+[submodule "lib/libcommuni"]
+	path = lib/libcommuni
+	url = https://github.com/communi/libcommuni.git
