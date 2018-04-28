@@ -1,5 +1,5 @@
 QT       += core gui widgets network
-CONFIG   += c++14 communi
+CONFIG   += c++11 communi
 
 COMMUNI  += core model util
 
@@ -16,6 +16,7 @@ include(lib/libcommuni/src/src.pri)
 RESOURCES += lib/QDarkStyleSheet/qdarkstyle/style.qrc \
 
 INCLUDEPATH += AYAYA/ \
+			   lib/libcommuni/include/ \
 
 SOURCES += \
 		AYAYA/main.cpp \
@@ -32,7 +33,10 @@ SOURCES += \
 		AYAYA/player/mpvcontroller.cpp \
 		AYAYA/player/mpvplayer.cpp \
 		AYAYA/player/player.cpp \
-		AYAYA/player/controlswidget.cpp
+		AYAYA/player/controlswidget.cpp \
+    AYAYA/browser/browser.cpp \
+    AYAYA/browser/browseritemwidget.cpp \
+    AYAYA/chat/chatserver.cpp
 
 HEADERS += \
 	AYAYA/mainwindow.hpp \
@@ -49,7 +53,10 @@ HEADERS += \
 	AYAYA/player/mpvplayer.hpp \
 	AYAYA/player/player.hpp \
 	AYAYA/player/playercontroller.hpp \
-	AYAYA/player/controlswidget.hpp
+	AYAYA/player/controlswidget.hpp \
+    AYAYA/browser/browser.hpp \
+    AYAYA/browser/browseritemwidget.hpp \
+    AYAYA/chat/chatserver.hpp
 
 FORMS += \
 	AYAYA/mainwindow.ui \

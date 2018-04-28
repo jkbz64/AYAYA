@@ -2,16 +2,24 @@
 #include <QPaintEvent>
 #include <QPainter>
 
-GameWidget::GameWidget(const Twitch::Game& game, QWidget* parent = nullptr)
-    : QFrame(parent)
-    , m_data(game)
+GameWidget::GameWidget(const Twitch::Game& game)
+    : BrowserItemWidget(nullptr)
     , m_boxArt()
     , m_viewerCount(0)
 {
+    m_data.setValue(game);
     setFrameStyle(QFrame::StyledPanel);
     setFrameShadow(QFrame::Sunken);
     setLineWidth(10);
     setMouseTracking(true);
+}
+
+GameWidget::GameWidget(const Twitch::Game& game, QWidget* parent)
+    : BrowserItemWidget(parent)
+    , m_boxArt()
+    , m_viewerCount(0)
+{
+    m_data.setValue(game);
 }
 
 void GameWidget::setBoxArt(const QPixmap& boxArt)
@@ -31,15 +39,11 @@ const QPixmap& GameWidget::boxArt() const
     return m_boxArt;
 }
 
-const Twitch::Game& GameWidget::data() const
-{
-    return m_data;
-}
-
 void GameWidget::paintEvent(QPaintEvent* event)
 {
     QFrame::paintEvent(event);
     QPainter painter(this);
+    auto game = m_data.value<Twitch::Game>();
     auto r = rect();
     if (!m_boxArt.isNull()) {
         r.adjust(5, 5, -5, -5);
@@ -47,7 +51,7 @@ void GameWidget::paintEvent(QPaintEvent* event)
     } else {
         painter.setPen(Qt::black);
         painter.setFont(QFont("DIMITRI", 15));
-        painter.drawText(rect(), Qt::AlignCenter, m_data.m_name);
+        painter.drawText(rect(), Qt::AlignCenter, game.m_name);
     }
 
     // TODO
@@ -57,14 +61,4 @@ void GameWidget::paintEvent(QPaintEvent* event)
     r.setHeight(50);
     painter.drawText(r, Qt::AlignRight, QString::number(m_viewerCount) + "+");
     */
-}
-
-void GameWidget::mouseMoveEvent(QMouseEvent* event)
-{
-    emit hovered();
-}
-
-void GameWidget::mousePressEvent(QMouseEvent* event)
-{
-    emit pressed();
 }

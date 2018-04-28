@@ -16,6 +16,21 @@ ChatWidget::ChatWidget(QWidget* parent = nullptr)
     connect(m_connection, &IrcConnection::disconnected, []() {
 
     });
+
+    connect(m_connection, &IrcConnection::messageReceived, [](IrcMessage* message) {
+        qDebug() << message->toData();
+    });
+
+    connect(m_connection, &IrcConnection::privateMessageReceived, [](IrcPrivateMessage* message) {
+        qDebug() << message->toData();
+    });
+
+    m_connection->setHost(QString("irc.chat.twitch.tv"));
+    m_connection->setUserName(QString("justinfan12345"));
+    m_connection->setNickName(QString("justinfan12345"));
+    m_connection->setRealName(QString("justinfan12345"));
+    m_connection->sendCommand(IrcCommand::createJoin("#sodapoppin"));
+    m_connection->open();
 }
 
 ChatWidget::~ChatWidget()
@@ -24,10 +39,4 @@ ChatWidget::~ChatWidget()
 
 void ChatWidget::openChat(const Twitch::User& user)
 {
-    m_connection->setHost(QString("irc.chat.twitch.tv"));
-    m_connection->setUserName(QString("justinfan12345"));
-    m_connection->setNickName(QString("justinfan12345"));
-    m_connection->setRealName(QString("justinfan12345"));
-    m_connection->sendCommand(IrcCommand::createJoin(user.m_login));
-    m_connection->open();
 }

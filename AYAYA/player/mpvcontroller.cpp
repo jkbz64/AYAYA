@@ -26,14 +26,13 @@ bool MpvController::init()
 {
     connect(this, &MpvController::mpvEvent, this, &MpvController::processEvents, Qt::QueuedConnection);
 
-    std::setlocale(LC_NUMERIC, "C");
-
     if (!m_mpv)
         throw std::runtime_error("could not create mpv context");
 
-    // mpv_set_option_string(m_mpv, "terminal", "yes");
-    // mpv_set_option_string(m_mpv, "msg-level", "all=v");
+    //mpv_set_option_string(m_mpv, "terminal", "yes");
+    //mpv_set_option_string(m_mpv, "msg-level", "all=v");
     mpv_set_option_string(m_mpv, "keepaspect", "no");
+    mpv_set_option_string(m_mpv, "ytdl", "yes");
 
     mpv_observe_property(m_mpv, 0, "playback-time", MPV_FORMAT_DOUBLE);
     mpv_observe_property(m_mpv, 0, "volume", MPV_FORMAT_DOUBLE);

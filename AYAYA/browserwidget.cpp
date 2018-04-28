@@ -29,11 +29,9 @@ void BrowserWidget::showTopGames()
     connect(reply, &Twitch::Reply::finished, [this, reply]() {
         if (reply->currentState() == Twitch::ReplyState::Success) {
             auto games = reply->data().value<Twitch::Games>();
-            QVector<GameWidget*> gameWidgets;
             for (const Twitch::Game& game : games) {
-                gameWidgets.push_back(m_ui->m_gameBrowser->addGame(game));
+                m_ui->m_gameBrowser->addItem(new GameWidget(game));
             }
-            performUpdate(gameWidgets);
         }
     });
 }
@@ -46,11 +44,9 @@ void BrowserWidget::searchStreamsByGame(const Twitch::Game& game)
     auto channelsReply = m_api->getStreamsByGameId(game.m_id);
     connect(channelsReply, &Twitch::Reply::finished, [this, channelsReply]() {
         auto streams = channelsReply->data().value<Twitch::Streams>();
-        QVector<StreamWidget*> streamWidgets;
         for (const Twitch::Stream& stream : streams) {
-            streamWidgets.push_back(m_ui->m_streamBrowser->addStream(stream));
+            m_ui->m_streamBrowser->addItem(new StreamWidget(stream));
         }
-        performUpdate(streamWidgets);
     });
 }
 
@@ -68,7 +64,7 @@ void BrowserWidget::performUpdate(QVector<GameWidget*> widgets)
 {
     for (QPointer<GameWidget> widget : widgets) {
         if (widget->boxArt().isNull()) {
-            auto boxArtReply = m_api->getBoxArtByUrl(widget->data().m_boxArtUrl, widget->width(), widget->height());
+            auto boxArtReply = m_api->getBoxArtByUrl(widget->data().value<Twitch::Game>().m_boxArtUrl, widget->width(), widget->height());
             connect(boxArtReply, &Twitch::Reply::finished, [boxArtReply, widget]() {
                 if (widget) {
                     widget->setBoxArt(QPixmap::fromImage(boxArtReply->data().value<QImage>()));
@@ -81,7 +77,7 @@ void BrowserWidget::performUpdate(QVector<GameWidget*> widgets)
 
 void BrowserWidget::performUpdate(QVector<StreamWidget*> widgets)
 {
-    QStringList ids;
+    /*QStringList ids;
     QHash<qulonglong, QPointer<StreamWidget>> streamWidgets;
     for (StreamWidget* widget : widgets) {
         ids << QString::number(widget->data().m_userId);
@@ -108,5 +104,5 @@ void BrowserWidget::performUpdate(QVector<StreamWidget*> widgets)
                 }
             }
         }
-    });
+    });*/
 }

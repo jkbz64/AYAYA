@@ -5,7 +5,6 @@
 #include <QWidget>
 
 #include <TwitchQt/Twitch>
-#include <variant>
 
 class Channel;
 class GameWidget;

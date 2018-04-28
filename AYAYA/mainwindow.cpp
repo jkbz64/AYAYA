@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget* parent)
     // TODO
 
     //Settings
-    connect(m_ui->m_settingsButton, QPushButton::released, this, [this]() {
+    connect(m_ui->m_settingsButton, &QPushButton::released, this, [this]() {
         // m_ui->m_centralStack->setCurrentWidget(m_ui->m_settingsWidget);
     });
 

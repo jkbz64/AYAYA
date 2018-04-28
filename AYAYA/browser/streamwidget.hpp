@@ -1,29 +1,24 @@
 #ifndef STREAMWIDGET_HPP
 #define STREAMWIDGET_HPP
 
-#include <QFrame>
+#include "browseritemwidget.hpp"
 #include <TwitchQt/twitchstream.hpp>
 
-class StreamWidget : public QFrame {
+class StreamWidget : public BrowserItemWidget {
     Q_OBJECT
 public:
-    explicit StreamWidget(const Twitch::Stream&, QWidget* = nullptr);
+    explicit StreamWidget(const Twitch::Stream&);
+    StreamWidget(const Twitch::Stream&, QWidget*);
 
     void setPreview(const QPixmap&);
-
-    const Twitch::Stream& data() const;
 signals:
     void hovered();
     void pressed();
 
 protected:
     virtual void paintEvent(QPaintEvent*) override;
-    virtual void mousePressEvent(QMouseEvent* event) override;
-    virtual void mouseMoveEvent(QMouseEvent* event) override;
 
 private:
-    Twitch::Stream m_data;
-    friend class BrowserWidget;
     QPixmap m_preview;
 };
 
