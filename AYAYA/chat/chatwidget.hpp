@@ -15,9 +15,6 @@ public:
     explicit ChatWidget(QWidget*);
     ~ChatWidget();
     void openChat(const Twitch::User&);
-
-private:
-    IrcConnection* m_connection;
 };
 
 #endif // CHATWIDGET_HPP

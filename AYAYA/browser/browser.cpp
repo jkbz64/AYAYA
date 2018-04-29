@@ -20,7 +20,7 @@ void Browser::addItem(BrowserItemWidget* item)
     item->setParent(this);
 
     item->setFixedSize(m_itemSize);
-    item->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    item->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     widget()->layout()->addWidget(item);
 
     connect(item, &BrowserItemWidget::hovered, [this, item]() { emit itemHovered(item); });

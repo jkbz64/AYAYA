@@ -1,5 +1,6 @@
 #include "streamwidget.hpp"
 #include <QPainter>
+#include <TwitchQt/twitchstream.hpp>
 
 StreamWidget::StreamWidget(const Twitch::Stream& stream)
     : BrowserItemWidget(nullptr)

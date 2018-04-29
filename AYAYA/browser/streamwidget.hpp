@@ -2,7 +2,10 @@
 #define STREAMWIDGET_HPP
 
 #include "browseritemwidget.hpp"
-#include <TwitchQt/twitchstream.hpp>
+
+namespace Twitch {
+class Stream;
+}
 
 class StreamWidget : public BrowserItemWidget {
     Q_OBJECT

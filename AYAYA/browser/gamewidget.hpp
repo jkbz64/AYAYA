@@ -2,7 +2,10 @@
 #define GAMEWIDGET_HPP
 
 #include "browseritemwidget.hpp"
-#include <TwitchQt/twitchgame.hpp>
+
+namespace Twitch {
+class Game;
+}
 
 class GameWidget : public BrowserItemWidget {
     Q_OBJECT

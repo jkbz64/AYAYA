@@ -2,6 +2,8 @@
 #include <QPaintEvent>
 #include <QPainter>
 
+#include <TwitchQt/twitchgame.hpp>
+
 GameWidget::GameWidget(const Twitch::Game& game)
     : BrowserItemWidget(nullptr)
     , m_boxArt()

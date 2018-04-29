@@ -1,6 +1,8 @@
 #include "browserwidget.hpp"
 #include "ui_browserwidget.h"
 
+#include <TwitchQt/Twitch>
+
 #include "browser/gamewidget.hpp"
 #include "browser/streamwidget.hpp"
 

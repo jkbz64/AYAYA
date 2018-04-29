@@ -1,8 +1,8 @@
 #ifndef BROWSERWIDGET_H
 #define BROWSERWIDGET_H
 
-#include <QSettings>
 #include <QWidget>
+#include <QSettings>
 
 #include <TwitchQt/Twitch>
 

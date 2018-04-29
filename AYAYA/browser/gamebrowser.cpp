@@ -2,12 +2,12 @@
 #include "flowlayout.hpp"
 
 #include "gamewidget.hpp"
+#include <TwitchQt/twitchgame.hpp>
 
 GameBrowser::GameBrowser(QWidget* parent)
     : Browser(parent)
 {
-    connect(this, &Browser::itemPressed, [this](BrowserItemWidget* item)
-    {
+    connect(this, &Browser::itemPressed, [this](BrowserItemWidget* item) {
         emit gameSelected(item->data().value<Twitch::Game>());
     });
 }

@@ -17,12 +17,6 @@ MainWindow::MainWindow(QWidget* parent)
     });
     connect(m_ui->m_browseButton, &QPushButton::released, m_ui->m_browserWidget, &BrowserWidget::showTopGames);
 
-    // Following
-    connect(m_ui->m_followedButton, &QPushButton::released, this, [this]() {
-        m_ui->m_mainStack->setCurrentWidget(m_ui->m_browserWidget);
-    });
-    // TODO
-
     //Settings
     connect(m_ui->m_settingsButton, &QPushButton::released, this, [this]() {
         // m_ui->m_centralStack->setCurrentWidget(m_ui->m_settingsWidget);
