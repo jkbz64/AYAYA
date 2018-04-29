@@ -128,7 +128,7 @@
        <enum>Qt::PlainText</enum>
       </property>
       <property name="pixmap">
-       <pixmap>:/fx/fx/Twitch.png</pixmap>
+       <pixmap resource="images/ayaya.qrc">:/images/twitch.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -244,7 +244,7 @@
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="styleSheet">
-    <string notr="true">background-color: #6441A4 </string>
+    <string notr="true">background-color: #4C159E;</string>
    </property>
    <property name="sizeGripEnabled">
     <bool>true</bool>
@@ -271,7 +271,9 @@
   <tabstop>m_settingsButton</tabstop>
   <tabstop>m_exitButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="images/ayaya.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>m_exitButton</sender>

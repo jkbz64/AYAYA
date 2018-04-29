@@ -13,7 +13,9 @@ include(lib/TwitchQt/TwitchQt.pri)
 # libcommuni
 include(lib/libcommuni/src/src.pri)
 
-RESOURCES += lib/QDarkStyleSheet/qdarkstyle/style.qrc \
+RESOURCES += AYAYA/images/ayaya.qrc \
+	lib/QDarkStyleSheet/qdarkstyle/style.qrc \
+
 
 INCLUDEPATH += AYAYA/ \
 			   lib/libcommuni/include/ \

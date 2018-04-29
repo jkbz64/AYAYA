@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>twitch.png</file>
+    </qresource>
+</RCC>
