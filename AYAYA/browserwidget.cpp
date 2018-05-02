@@ -34,6 +34,13 @@ void BrowserWidget::showTopGames()
             for (const Twitch::Game& game : games) {
                 m_ui->m_gameBrowser->addItem(new GameWidget(game));
             }
+
+            // Temp workaround
+            auto widgets = m_ui->m_gameBrowser->browserItems();
+            QVector<GameWidget*> gameWidgets;
+            for (auto widget : widgets)
+                gameWidgets.push_back(qobject_cast<GameWidget*>(widget));
+            performUpdate(gameWidgets);
         }
     });
 }

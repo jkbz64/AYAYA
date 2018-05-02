@@ -1,5 +1,5 @@
 QT       += core gui widgets network
-CONFIG   += c++11 communi
+CONFIG   += c++17 communi
 
 COMMUNI  += core model util
 
@@ -38,7 +38,8 @@ SOURCES += \
 		AYAYA/player/controlswidget.cpp \
     AYAYA/browser/browser.cpp \
     AYAYA/browser/browseritemwidget.cpp \
-    AYAYA/chat/chatserver.cpp
+    AYAYA/chat/chatview.cpp \
+    AYAYA/chat/chatclient.cpp
 
 HEADERS += \
 	AYAYA/mainwindow.hpp \
@@ -58,12 +59,14 @@ HEADERS += \
 	AYAYA/player/controlswidget.hpp \
     AYAYA/browser/browser.hpp \
     AYAYA/browser/browseritemwidget.hpp \
-    AYAYA/chat/chatserver.hpp
+    AYAYA/chat/chatview.hpp \
+    AYAYA/chat/chatclient.hpp
 
 FORMS += \
 	AYAYA/mainwindow.ui \
 	AYAYA/livestreamwidget.ui \
 	AYAYA/browserwidget.ui \
-	AYAYA/player/controlswidget.ui
+	AYAYA/player/controlswidget.ui \
+        AYAYA/chat/chatwidget.ui
 
 LIBS += -lmpv

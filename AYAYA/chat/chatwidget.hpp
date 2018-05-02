@@ -1,28 +1,37 @@
 #ifndef CHATWIDGET_HPP
 #define CHATWIDGET_HPP
 
-#include <QScrollArea>
+#include <QGraphicsView>
 
 namespace Twitch {
 class User;
 };
 
-class ChatServer;
+class ChatClient;
+class ChatView;
 
-class ChatWidget : public QScrollArea {
+namespace Ui {
+class ChatWidget;
+}
+
+class ChatWidget : public QWidget {
     Q_OBJECT
 public:
     explicit ChatWidget(QWidget*);
     virtual ~ChatWidget();
+
     void openChat(const Twitch::User&);
 
 protected:
     virtual void onJoined();
+    virtual void onMessageReceived(const QString&, const QString&);
     virtual void onDisconnected();
 
-private:
-    ChatServer* m_chatServer;
+    virtual void resizeEvent(QResizeEvent*) override;
 
+private:
+    Ui::ChatWidget* m_ui;
+    ChatClient* m_chatClient;
     void rejoin();
 };
 

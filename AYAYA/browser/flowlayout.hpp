@@ -2,8 +2,9 @@
 #define FLOWLAYOUT_HPP
 
 #include <QLayout>
-#include <QRect>
 #include <QStyle>
+
+class QRect;
 
 class FlowLayout : public QLayout {
 public:
