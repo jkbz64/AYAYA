@@ -29,6 +29,8 @@ public:
     void setVolume(int);
     int volume() const;
 
+    void setFullscreen(bool);
+
     ControlsWidget* controlsWidget();
 
 signals:
@@ -41,6 +43,10 @@ signals:
     void volumeChanged(double);
 
 protected:
+    virtual void leaveEvent(QEvent*) override;
+    virtual void mouseMoveEvent(QMouseEvent*) override;
+    virtual void mouseDoubleClickEvent(QMouseEvent*) override;
+
     virtual void initializeGL() override;
     virtual void paintGL() override;
     virtual void resizeGL(int, int) override;

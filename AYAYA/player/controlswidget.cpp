@@ -6,6 +6,8 @@
 #include <QMovie>
 #include <QTimer>
 
+#include <QPropertyAnimation>
+
 ControlsWidget::ControlsWidget(PlayerWidget* player)
     : QWidget(player)
     , m_ui(new Ui::ControlsWidget)
@@ -14,11 +16,10 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
     , m_loadingGif(new QMovie(QString(":/gifs/clap.gif"), QByteArray(), this))
 {
     m_ui->setupUi(this);
-    setMouseTracking(true);
     m_ui->m_bufferingBar->hide();
 
     m_fadeOutTimer->setSingleShot(true);
-    connect(m_fadeOutTimer, &QTimer::timeout, this, [this]() { hide(); });
+    connect(m_fadeOutTimer, &QTimer::timeout, this, &ControlsWidget::hide);
 
     connect(player, &PlayerWidget::positionChanged, this, &ControlsWidget::onPositionChanged);
     connect(player, &PlayerWidget::volumeChanged, this, &ControlsWidget::onVolumeChanged);
@@ -45,7 +46,12 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
     });
     connect(m_ui->m_volumeSlider, &QSlider::valueChanged, player, &PlayerWidget::setVolume);
     // TODO fullscreen
-    // connect(m_ui->m_fullscreenButton, &QPushButton::released, player->setFullscreen);
+    connect(m_ui->m_fullscreenButton, &QPushButton::released, [this, player]() {
+        if (player->isFullScreen())
+            player->setFullscreen(false);
+        else
+            player->setFullscreen(true);
+    });
 }
 
 ControlsWidget::~ControlsWidget()
@@ -53,17 +59,15 @@ ControlsWidget::~ControlsWidget()
     delete m_ui;
 }
 
-void ControlsWidget::mouseMoveEvent(QMouseEvent* event)
+void ControlsWidget::startFadeTimer()
 {
-    QWidget::mouseMoveEvent(event);
-    m_fadeOutTimer->stop();
+    m_fadeOutTimer->start();
     m_fadeOutTimer->setInterval(500);
-    show();
 }
 
-void ControlsWidget::leaveEvent(QEvent* event)
+void ControlsWidget::resetFadeTimer()
 {
-    QWidget::leaveEvent(event);
+    m_fadeOutTimer->setInterval(500);
     m_fadeOutTimer->start();
 }
 

@@ -9,6 +9,8 @@ class ControlsWidget;
 
 class PlayerWidget;
 
+class QPropertyAnimation;
+
 class ControlsWidget : public QWidget {
     Q_OBJECT
 
@@ -16,9 +18,8 @@ public:
     explicit ControlsWidget(PlayerWidget*);
     ~ControlsWidget();
 
-protected:
-    virtual void mouseMoveEvent(QMouseEvent*) override;
-    virtual void leaveEvent(QEvent*) override;
+    void startFadeTimer();
+    void resetFadeTimer();
 
 private:
     Ui::ControlsWidget* m_ui;

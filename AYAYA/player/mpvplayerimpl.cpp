@@ -131,9 +131,15 @@ bool MpvPlayerImpl::paintGL()
 
 bool MpvPlayerImpl::initializeGL()
 {
+    if (m_initedGL) {
+        player()->makeCurrent();
+        mpv_opengl_cb_uninit_gl(m_mpv_gl);
+    }
+
     int r = mpv_opengl_cb_init_gl(m_mpv_gl, NULL, get_proc_address, NULL);
     if (r < 0)
         throw std::runtime_error("could not initialize OpenGL");
+
     m_initedGL = true;
     return true;
 }

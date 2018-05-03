@@ -14,6 +14,7 @@ PlayerWidget::PlayerWidget(QWidget* parent)
     , m_controlsWidget(nullptr)
 {
     setBaseSize(1, 1);
+    setMouseTracking(true);
     // Backend defaults to MPV
     setBackend(Backend::MPV);
 }
@@ -60,21 +61,57 @@ int PlayerWidget::volume() const
     return 0;
 }
 
+void PlayerWidget::setFullscreen(bool fullscreen)
+{
+    if (fullscreen) {
+        setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+        showFullScreen();
+        resetStream();
+    } else {
+        setWindowFlags(Qt::Widget);
+        showNormal();
+        resetStream();
+    }
+}
+
 ControlsWidget* PlayerWidget::controlsWidget()
 {
     return m_controlsWidget;
 }
 
+void PlayerWidget::leaveEvent(QEvent* event)
+{
+    QOpenGLWidget::leaveEvent(event);
+}
+
+void PlayerWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    QOpenGLWidget::mouseMoveEvent(event);
+    m_controlsWidget->show();
+    m_controlsWidget->resetFadeTimer();
+}
+
+void PlayerWidget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    QOpenGLWidget::mouseDoubleClickEvent(event);
+    if (isFullScreen())
+        setFullscreen(false);
+    else
+        setFullscreen(true);
+}
+
 void PlayerWidget::initializeGL()
 {
-    if (m_impl && !m_impl->initializeGL())
-        QOpenGLWidget::initializeGL();
+    QOpenGLWidget::initializeGL();
+    if (m_impl)
+        m_impl->initializeGL();
 }
 
 void PlayerWidget::paintGL()
 {
-    if (m_impl && !m_impl->paintGL())
-        QOpenGLWidget::paintGL();
+    QOpenGLWidget::paintGL();
+    if (m_impl)
+        m_impl->paintGL();
 }
 
 void PlayerWidget::resizeGL(int w, int h)
@@ -87,6 +124,7 @@ void PlayerWidget::setupOverlay()
 {
     auto overlayLayout = new QGridLayout();
     m_controlsWidget = new ControlsWidget(this);
+    m_controlsWidget->startFadeTimer();
 
     overlayLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 0, 12, 1);
     overlayLayout->addWidget(m_controlsWidget, 12, 0, 2, 1);
