@@ -15,6 +15,7 @@ ChatView::ChatView(QWidget* parent)
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
     setScene(new QGraphicsScene());
     scene()->setSceneRect(0, 0, size().width(), size().height());
 
@@ -49,7 +50,12 @@ void ChatView::flush()
         auto&& message = m_messagesQueue.dequeue();
 
         QGraphicsTextItem* item = scene()->addText(message);
+        item->setTextWidth(width());
         item->setPos(QPointF(0, m_currentHeight));
+        m_lastMessages.append(item);
+
+        if (m_lastMessages.size() > 15)
+            m_lastMessages.pop_front();
 
         const auto itemSize = item->boundingRect().height() + m_spacing;
         m_currentHeight += itemSize;
@@ -86,6 +92,14 @@ int ChatView::spacing() const
 void ChatView::resizeEvent(QResizeEvent* event)
 {
     QGraphicsView::resizeEvent(event);
+
+    // FIXME fix size when down-resizing, not only when upscaling
+    // PS. It does not even work correctly when upscaling, LUL
+    if (event->size().width() > event->oldSize().width()) {
+        for (auto& message : m_lastMessages) {
+            message->setTextWidth(event->size().width());
+        }
+    }
 
     updateView();
 

@@ -63,14 +63,15 @@ int PlayerWidget::volume() const
 
 void PlayerWidget::setFullscreen(bool fullscreen)
 {
+    // FIXME Well, setting window flags causes GL context reinitialization, so we have to reset stream
     if (fullscreen) {
         setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-        showFullScreen();
         resetStream();
+        showFullScreen();
     } else {
         setWindowFlags(Qt::Widget);
-        showNormal();
         resetStream();
+        showNormal();
     }
 }
 

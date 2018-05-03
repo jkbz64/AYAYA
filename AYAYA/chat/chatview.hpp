@@ -25,6 +25,7 @@ private:
 
     QTimer* m_flushTimer;
     QQueue<QString> m_messagesQueue;
+    QVector<QGraphicsTextItem*> m_lastMessages;
     void flush();
 };
 

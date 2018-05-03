@@ -29,8 +29,8 @@ signals:
 
 private:
     mutable mpv::qt::Handle m_mpv;
-    bool m_initedGL;
     mpv_opengl_cb_context* m_mpv_gl;
+    bool m_initedGL;
 
 private slots:
     static void onUpdate(void*);
