@@ -2,4 +2,7 @@
     <qresource prefix="/images">
         <file>twitch.png</file>
     </qresource>
+    <qresource prefix="/gifs">
+        <file>clap.gif</file>
+    </qresource>
 </RCC>

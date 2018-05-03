@@ -1,5 +1,6 @@
 #include "mpvplayerimpl.hpp"
 #include "playerwidget.hpp"
+#include <QDebug>
 #include <QOpenGLContext>
 #include <QOpenGLWidget>
 #include <mpv/opengl_cb.h>
@@ -16,6 +17,7 @@ namespace {
             return NULL;
         return (void*)glctx->getProcAddress(QByteArray(name));
     }
+
     static void wakeup(void* ctx)
     {
         // This callback is invoked from any mpv thread (but possibly also
@@ -50,6 +52,7 @@ namespace {
 
 MpvPlayerImpl::MpvPlayerImpl(PlayerWidget* player)
     : PlayerImpl(player)
+    , m_initedGL(false)
 {
 }
 
@@ -57,7 +60,8 @@ MpvPlayerImpl::~MpvPlayerImpl()
 {
     player()->makeCurrent();
     mpv_opengl_cb_set_update_callback(m_mpv_gl, NULL, NULL);
-    mpv_opengl_cb_uninit_gl(m_mpv_gl);
+    if (m_initedGL)
+        mpv_opengl_cb_uninit_gl(m_mpv_gl);
 }
 
 mpv::qt::Handle& MpvPlayerImpl::handle()
@@ -67,33 +71,34 @@ mpv::qt::Handle& MpvPlayerImpl::handle()
 
 bool MpvPlayerImpl::init()
 {
+    std::setlocale(LC_NUMERIC, "C");
+    connect(this, &MpvPlayerImpl::mpvEvent, this, &MpvPlayerImpl::processEvents, Qt::QueuedConnection);
+
     m_mpv = mpv::qt::Handle::FromRawHandle(mpv_create());
     if (!m_mpv)
         throw std::runtime_error("could not create mpv context");
 
     mpv_set_option_string(m_mpv, "keepaspect", "no");
     mpv_set_option_string(m_mpv, "ytdl", "yes");
+    mpv_set_option_string(m_mpv, "vo", "opengl-cb");
 
     mpv_observe_property(m_mpv, 0, "playback-time", MPV_FORMAT_DOUBLE);
     mpv_observe_property(m_mpv, 0, "volume", MPV_FORMAT_DOUBLE);
     mpv_observe_property(m_mpv, 0, "cache-buffering-state", MPV_FORMAT_INT64);
+    mpv_observe_property(m_mpv, 0, "paused-for-cache", MPV_FORMAT_FLAG);
+    mpv_observe_property(m_mpv, 0, "core-idle", MPV_FORMAT_FLAG);
 
     mpv_set_wakeup_callback(m_mpv, wakeup, this);
 
     if (mpv_initialize(m_mpv) < 0)
         throw std::runtime_error("could not initialize mpv context");
 
-    // Prevent 0-size bug
-    player()->setBaseSize(1, 1);
-
-    mpv_set_option_string(m_mpv, "vo", "opengl-cb");
     m_mpv_gl = (mpv_opengl_cb_context*)mpv_get_sub_api(m_mpv, MPV_SUB_API_OPENGL_CB);
 
     if (!m_mpv_gl)
         throw std::runtime_error("OpenGL not compiled in");
-    mpv_opengl_cb_set_update_callback(m_mpv_gl, MpvPlayerImpl::onUpdate, (void*)this);
 
-    connect(this, &MpvPlayerImpl::mpvEvent, this, &MpvPlayerImpl::processEvents, Qt::QueuedConnection);
+    mpv_opengl_cb_set_update_callback(m_mpv_gl, MpvPlayerImpl::onUpdate, (void*)this);
 
     return true;
 }
@@ -113,12 +118,6 @@ void MpvPlayerImpl::setVolume(int value)
     setOption(m_mpv, "volume", value);
 }
 
-void MpvPlayerImpl::mute(bool mute)
-{
-    const QString shouldMute = mute ? "yes" : "no";
-    setOption(m_mpv, "mute", shouldMute);
-}
-
 int MpvPlayerImpl::volume() const
 {
     return getProperty(m_mpv, "volume").toInt();
@@ -135,6 +134,7 @@ bool MpvPlayerImpl::initializeGL()
     int r = mpv_opengl_cb_init_gl(m_mpv_gl, NULL, get_proc_address, NULL);
     if (r < 0)
         throw std::runtime_error("could not initialize OpenGL");
+    m_initedGL = true;
     return true;
 }
 

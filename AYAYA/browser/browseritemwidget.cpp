@@ -6,6 +6,10 @@ BrowserItemWidget::BrowserItemWidget(QWidget* parent)
 {
 }
 
+BrowserItemWidget::~BrowserItemWidget()
+{
+}
+
 void BrowserItemWidget::updateData(const QVariant& data)
 {
     m_data.setValue(data);

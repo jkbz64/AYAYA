@@ -20,7 +20,6 @@ public:
     virtual void load(const QString&) override;
     virtual QString currentPath() override;
     virtual void setVolume(int) override;
-    virtual void mute(bool) override;
     virtual int volume() const override;
     virtual bool paintGL() override;
     virtual bool initializeGL() override;
@@ -30,6 +29,7 @@ signals:
 
 private:
     mutable mpv::qt::Handle m_mpv;
+    bool m_initedGL;
     mpv_opengl_cb_context* m_mpv_gl;
 
 private slots:

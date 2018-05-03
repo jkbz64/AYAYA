@@ -8,7 +8,7 @@ class BrowserItemWidget : public QFrame {
     Q_OBJECT
 public:
     explicit BrowserItemWidget(QWidget* parent = nullptr);
-    virtual ~BrowserItemWidget() = default;
+    virtual ~BrowserItemWidget();
 
     void updateData(const QVariant&);
     const QVariant& data() const;
