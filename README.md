@@ -10,6 +10,7 @@ Qt Desktop Twitch.tv client written in Qt5.
 **Dependencies:**
 * [TwitchQt](https://github.com/jkbz64/TwitchQt) as Gitmodule
 * [libcommuni](https://github.com/communi/libcommuni) as Gitmodule
+* [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet) as Gitmodule
 * [mpv](https://github.com/mpv-player/mpv)
 
 
