@@ -1,16 +1,27 @@
 #ifndef PLAYERWIDGET_HPP
 #define PLAYERWIDGET_HPP
 
-#include "player.hpp"
-#include <QDockWidget>
+#include <QOpenGLWidget>
 
-class MpvPlayer;
+namespace detail {
+class PlayerImpl;
+}
 
-class PlayerWidget : public QDockWidget {
+class ControlsWidget;
+
+class PlayerWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
+    enum class Backend {
+        MPV,
+        // TODO QtAV
+        // TODO ??
+    };
+
     explicit PlayerWidget(QWidget* parent = nullptr);
     ~PlayerWidget();
+
+    void setBackend(Backend);
 
     void openStream(const QString&);
     void resetStream();
@@ -18,16 +29,29 @@ public:
     void setVolume(int);
     int volume() const;
 
-    Player* player();
+    ControlsWidget* controlsWidget();
+
+signals:
+    void startedLoading();
+    void loaded();
+    void ended();
+    void buffering(int);
+    void resized();
+    void positionChanged(double);
+    void volumeChanged(double);
 
 protected:
-    void mousePressEvent(QMouseEvent* event) override;
+    friend class PlayerImpl;
+    virtual void initializeGL() override;
+    virtual void paintGL() override;
+    virtual void resizeGL(int, int) override;
 
 private:
-    Player* m_player;
-private slots:
-    void onStartedLoading();
-    void onStreamLoaded();
+    detail::PlayerImpl* m_impl;
+    Backend m_backend;
+
+    ControlsWidget* m_controlsWidget;
+    void setupOverlay();
 };
 
 #endif // PLAYERWIDGET_HPP

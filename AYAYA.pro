@@ -32,14 +32,13 @@ SOURCES += \
 		AYAYA/browser/streambrowser.cpp \
 		AYAYA/chat/chatwidget.cpp \
 		AYAYA/player/playerwidget.cpp \
-		AYAYA/player/mpvcontroller.cpp \
-		AYAYA/player/mpvplayer.cpp \
-		AYAYA/player/player.cpp \
 		AYAYA/player/controlswidget.cpp \
     AYAYA/browser/browser.cpp \
     AYAYA/browser/browseritemwidget.cpp \
     AYAYA/chat/chatview.cpp \
-    AYAYA/chat/chatclient.cpp
+    AYAYA/chat/chatclient.cpp \
+    AYAYA/player/mpvplayerimpl.cpp \
+    AYAYA/player/playerimpl.cpp
 
 HEADERS += \
 	AYAYA/mainwindow.hpp \
@@ -52,15 +51,13 @@ HEADERS += \
 	AYAYA/browser/streambrowser.hpp \
 	AYAYA/chat/chatwidget.hpp \
 	AYAYA/player/playerwidget.hpp \
-	AYAYA/player/mpvcontroller.hpp \
-	AYAYA/player/mpvplayer.hpp \
-	AYAYA/player/player.hpp \
-	AYAYA/player/playercontroller.hpp \
 	AYAYA/player/controlswidget.hpp \
     AYAYA/browser/browser.hpp \
     AYAYA/browser/browseritemwidget.hpp \
     AYAYA/chat/chatview.hpp \
-    AYAYA/chat/chatclient.hpp
+    AYAYA/chat/chatclient.hpp \
+    AYAYA/player/mpvplayerimpl.hpp \
+    AYAYA/player/playerimpl.hpp
 
 FORMS += \
 	AYAYA/mainwindow.ui \

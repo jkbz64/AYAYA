@@ -1,12 +1,12 @@
 #include "controlswidget.hpp"
+#include "playerwidget.hpp"
 #include "ui_controlswidget.h"
 
-ControlsWidget::ControlsWidget(QWidget* parent)
-    : QWidget(parent)
+ControlsWidget::ControlsWidget(PlayerWidget* player)
+    : QWidget(player)
     , m_ui(new Ui::ControlsWidget)
 {
     m_ui->setupUi(this);
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
 ControlsWidget::~ControlsWidget()

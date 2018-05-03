@@ -7,11 +7,13 @@ namespace Ui {
 class ControlsWidget;
 }
 
+class PlayerWidget;
+
 class ControlsWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit ControlsWidget(QWidget* parent = 0);
+    explicit ControlsWidget(PlayerWidget*);
     ~ControlsWidget();
 
 private:
