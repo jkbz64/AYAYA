@@ -41,7 +41,6 @@ signals:
     void volumeChanged(double);
 
 protected:
-    friend class PlayerImpl;
     virtual void initializeGL() override;
     virtual void paintGL() override;
     virtual void resizeGL(int, int) override;

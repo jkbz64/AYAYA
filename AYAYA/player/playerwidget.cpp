@@ -34,27 +34,33 @@ void PlayerWidget::setBackend(PlayerWidget::Backend backend)
 
 void PlayerWidget::openStream(const QString& streamName)
 {
-    m_impl->load(QString("https://www.twitch.tv/" + streamName));
+    if (m_impl)
+        m_impl->load(QString("https://www.twitch.tv/" + streamName));
 }
 
 void PlayerWidget::resetStream()
 {
-    m_impl->load(m_impl->currentPath());
+    if (m_impl)
+        m_impl->load(m_impl->currentPath());
 }
 
 void PlayerWidget::mute(bool mute)
 {
-    m_impl->mute(mute);
+    if (m_impl)
+        m_impl->mute(mute);
 }
 
 void PlayerWidget::setVolume(int value)
 {
-    m_impl->setVolume(value);
+    if (m_impl)
+        m_impl->setVolume(value);
 }
 
 int PlayerWidget::volume() const
 {
-    return m_impl->volume();
+    if (m_impl)
+        return m_impl->volume();
+    return 0;
 }
 
 ControlsWidget* PlayerWidget::controlsWidget()
