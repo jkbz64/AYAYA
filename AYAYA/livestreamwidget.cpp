@@ -18,6 +18,6 @@ LivestreamWidget::~LivestreamWidget()
 
 void LivestreamWidget::initialize(const Twitch::User& user, const Twitch::Stream& stream)
 {
-    //m_ui->m_player->openStream(user.m_login);
+    m_ui->m_player->openStream(user.m_login);
     m_ui->m_chat->openChat(user);
 }

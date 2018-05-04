@@ -81,7 +81,8 @@ bool MpvPlayerImpl::init()
     mpv_set_option_string(m_mpv, "keepaspect", "no");
     mpv_set_option_string(m_mpv, "ytdl", "yes");
     mpv_set_option_string(m_mpv, "vo", "opengl-cb");
-    mpv_set_option_string(m_mpv, "cache", "no");
+    mpv_set_option_string(m_mpv, "demuxer-seekable-cache", "no");
+    mpv_set_option_string(m_mpv, "cache-secs", "8");
 
     mpv_observe_property(m_mpv, 0, "playback-time", MPV_FORMAT_DOUBLE);
     mpv_observe_property(m_mpv, 0, "volume", MPV_FORMAT_DOUBLE);

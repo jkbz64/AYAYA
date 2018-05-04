@@ -68,8 +68,10 @@ void ChatView::flush()
         shouldUpdate = true;
     }
 
-    if (shouldUpdate)
+    if (shouldUpdate) {
+        updateLastMessages(size().width());
         updateView();
+    }
 
     if (isMaxBefore || m_shouldFollow) {
         verticalScrollBar()->setValue(verticalScrollBar()->maximum());
@@ -96,11 +98,8 @@ void ChatView::resizeEvent(QResizeEvent* event)
 
     // FIXME fix size when down-resizing, not only when upscaling
     // PS. It does not even work correctly when upscaling, LUL
-    if (event->size().width() > event->oldSize().width()) {
-        for (auto& message : m_lastMessages) {
-            message->setTextWidth(event->size().width());
-        }
-    }
+    if (event->size().width() > event->oldSize().width())
+        updateLastMessages(event->size().width());
 
     updateView();
 
@@ -108,6 +107,16 @@ void ChatView::resizeEvent(QResizeEvent* event)
         scene()->setSceneRect(0, 0, size().width(), event->size().height());
     }
     m_shouldFollow = true;
+}
+
+void ChatView::updateLastMessages(int width)
+{
+    for (auto it = m_lastMessages.begin(); it != m_lastMessages.end(); it++) {
+        auto message = *it;
+        message->setTextWidth(width);
+        if ((it + 1) != m_lastMessages.end())
+            (*(it + 1))->setPos(0, message->pos().y() + message->sceneBoundingRect().height() + m_spacing);
+    }
 }
 
 void ChatView::updateView()
