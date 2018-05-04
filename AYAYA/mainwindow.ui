@@ -115,7 +115,7 @@
        <enum>Qt::PlainText</enum>
       </property>
       <property name="pixmap">
-       <pixmap resource="images/ayaya.qrc">:/images/twitch.png</pixmap>
+       <pixmap resource="fx/ayaya.qrc">:/images/twitch.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -261,7 +261,7 @@
   <tabstop>m_exitButton</tabstop>
  </tabstops>
  <resources>
-  <include location="images/ayaya.qrc"/>
+  <include location="fx/ayaya.qrc"/>
  </resources>
  <connections>
   <connection>
