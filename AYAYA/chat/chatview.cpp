@@ -32,6 +32,7 @@ void ChatView::reset()
 {
     m_currentHeight = 0;
     m_messagesQueue.clear();
+    m_lastMessages.clear();
     scene()->clear();
     scene()->setSceneRect(0, 0, size().width(), size().height());
 }
