@@ -1,8 +1,8 @@
 #ifndef BROWSERWIDGET_H
 #define BROWSERWIDGET_H
 
-#include <QWidget>
 #include <QSettings>
+#include <QWidget>
 
 #include <TwitchQt/Twitch>
 
@@ -18,6 +18,7 @@ class BrowserWidget : public QWidget {
     Q_OBJECT
 public:
     explicit BrowserWidget(QWidget* parent = nullptr);
+    ~BrowserWidget();
     void showTopGames();
     void searchStreamsByName(const QString&);
 signals:

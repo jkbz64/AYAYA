@@ -45,7 +45,7 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
         }
     });
     connect(m_ui->m_volumeSlider, &QSlider::valueChanged, player, &PlayerWidget::setVolume);
-    connect(m_ui->m_fullscreenButton, &QPushButton::released, [this, player]() {
+    connect(m_ui->m_fullscreenButton, &QPushButton::released, [player]() {
         if (player->isFullScreen())
             player->setFullscreen(false);
         else

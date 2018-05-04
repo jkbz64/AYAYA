@@ -18,6 +18,7 @@ ChatWidget::ChatWidget(QWidget* parent)
 
 ChatWidget::~ChatWidget()
 {
+    delete m_ui;
 }
 
 void ChatWidget::openChat(const Twitch::User& user)

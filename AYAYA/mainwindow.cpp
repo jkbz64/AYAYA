@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget* parent)
 
 MainWindow::~MainWindow()
 {
+    delete m_ui;
 }
 
 void MainWindow::onStreamEntered(const Twitch::User& user, const Twitch::Stream& stream)

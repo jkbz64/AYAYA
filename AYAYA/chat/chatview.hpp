@@ -19,6 +19,7 @@ protected:
     virtual void resizeEvent(QResizeEvent*);
 
 private:
+    QGraphicsScene m_scene;
     int m_currentHeight;
     int m_spacing;
     bool m_shouldFollow;

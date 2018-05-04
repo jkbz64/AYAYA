@@ -12,11 +12,12 @@ ChatView::ChatView(QWidget* parent)
     , m_spacing(5)
     , m_shouldFollow(false)
     , m_flushTimer(new QTimer(this))
+    , m_scene()
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
-    setScene(new QGraphicsScene());
+    setScene(&m_scene);
     scene()->setSceneRect(0, 0, size().width(), size().height());
 
     connect(m_flushTimer, &QTimer::timeout, this, &ChatView::flush, Qt::DirectConnection);

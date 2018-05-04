@@ -93,6 +93,7 @@ void ChatClient::onMessageReceived(IrcMessage* message)
 
     const QString& command = message->command();
     // TODO handle commands
+    message->deleteLater();
 }
 
 void ChatClient::onConnected()

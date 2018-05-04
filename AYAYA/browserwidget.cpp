@@ -22,6 +22,11 @@ BrowserWidget::BrowserWidget(QWidget* parent)
         this, static_cast<void (BrowserWidget::*)(StreamWidget*)>(&BrowserWidget::updateWidget), Qt::DirectConnection);*/
 }
 
+BrowserWidget::~BrowserWidget()
+{
+    delete m_ui;
+}
+
 void BrowserWidget::showTopGames()
 {
     m_ui->m_gameBrowser->clear();
