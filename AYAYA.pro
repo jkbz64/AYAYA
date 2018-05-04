@@ -1,5 +1,5 @@
 QT       += core gui widgets network
-CONFIG   += c++17 communi
+CONFIG   += c++14 communi
 
 COMMUNI  += core model util
 
