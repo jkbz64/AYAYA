@@ -43,9 +43,9 @@ void ChatWidget::onDisconnected()
     // TODO retry until connected every x msec?
 }
 
-void ChatWidget::resizeEvent(QResizeEvent*)
+void ChatWidget::resizeEvent(QResizeEvent* event)
 {
-    m_ui->m_chatView->updateView();
+    QWidget::resizeEvent(event);
 }
 
 void ChatWidget::rejoin()
