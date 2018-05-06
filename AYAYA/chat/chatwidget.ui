@@ -33,7 +33,7 @@
   <customwidget>
    <class>ChatView</class>
    <extends>QGraphicsView</extends>
-   <header>chat/chatview.hpp</header>
+   <header>AYAYA/chat/chatview.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -79,7 +79,7 @@
    <item row="2" column="0" colspan="4">
     <widget class="QStackedWidget" name="m_browserStack">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="GameBrowser" name="m_gameBrowser"/>
      <widget class="StreamBrowser" name="m_streamBrowser"/>
@@ -91,13 +91,13 @@
   <customwidget>
    <class>GameBrowser</class>
    <extends>QWidget</extends>
-   <header>browser/gamebrowser.hpp</header>
+   <header>AYAYA/browser/gamebrowser.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>StreamBrowser</class>
    <extends>QWidget</extends>
-   <header>browser/streambrowser.hpp</header>
+   <header>AYAYA/browser/streambrowser.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
