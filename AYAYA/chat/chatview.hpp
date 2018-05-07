@@ -15,7 +15,7 @@ public:
     void setSpacing(int);
     int spacing() const;
 
-protected:
+private:
     int m_spacing;
 };
 

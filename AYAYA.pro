@@ -14,7 +14,7 @@ include(lib/TwitchQt/TwitchQt.pri)
 include(lib/libcommuni/src/src.pri)
 
 RESOURCES += \
-    AYAYA/fx/ayaya.qrc
+    AYAYA/fx/ayaya.qrc \
     lib/QDarkStyleSheet/qdarkstyle/style.qrc \
 
 INCLUDEPATH += \
@@ -23,11 +23,8 @@ INCLUDEPATH += \
 SOURCES += \
     AYAYA/main.cpp \
     AYAYA/mainwindow.cpp \
-    AYAYA/livestreamwidget.cpp \
     AYAYA/browserwidget.cpp \
     AYAYA/browser/flowlayout.cpp \
-    AYAYA/browser/gamewidget.cpp \
-    AYAYA/browser/streamwidget.cpp \
     AYAYA/browser/gamebrowser.cpp \
     AYAYA/browser/streambrowser.cpp \
     AYAYA/chat/chatwidget.cpp \
@@ -38,15 +35,15 @@ SOURCES += \
     AYAYA/chat/chatview.cpp \
     AYAYA/chat/chatclient.cpp \
     AYAYA/player/mpvplayerimpl.cpp \
-    AYAYA/player/playerimpl.cpp
+    AYAYA/player/playerimpl.cpp \
+    AYAYA/browser/streamitemwidget.cpp \
+    AYAYA/browser/gameitemwidget.cpp \
+    AYAYA/streamwidget.cpp
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
-    AYAYA/livestreamwidget.hpp \
     AYAYA/browserwidget.hpp \
     AYAYA/browser/flowlayout.hpp \
-    AYAYA/browser/gamewidget.hpp \
-    AYAYA/browser/streamwidget.hpp \
     AYAYA/browser/gamebrowser.hpp \
     AYAYA/browser/streambrowser.hpp \
     AYAYA/chat/chatwidget.hpp \
@@ -57,13 +54,16 @@ HEADERS += \
     AYAYA/chat/chatview.hpp \
     AYAYA/chat/chatclient.hpp \
     AYAYA/player/mpvplayerimpl.hpp \
-    AYAYA/player/playerimpl.hpp
+    AYAYA/player/playerimpl.hpp \
+    AYAYA/browser/streamitemwidget.hpp \
+    AYAYA/browser/gameitemwidget.hpp \
+    AYAYA/streamwidget.hpp
 
 FORMS += \
     AYAYA/mainwindow.ui \
-    AYAYA/livestreamwidget.ui \
     AYAYA/browserwidget.ui \
     AYAYA/player/controlswidget.ui \
-    AYAYA/chat/chatwidget.ui
+    AYAYA/chat/chatwidget.ui \
+    AYAYA/streamwidget.ui
 
 LIBS += -lmpv

@@ -7,8 +7,8 @@
 #include <TwitchQt/Twitch>
 
 class Channel;
-class GameWidget;
-class StreamWidget;
+class GameItemWidget;
+class StreamItemWidget;
 
 namespace Ui {
 class BrowserWidget;
@@ -38,8 +38,8 @@ private:
     QSettings m_settings;
     Twitch::Api* m_api;
 
-    void performUpdate(QVector<GameWidget*>);
-    void performUpdate(QVector<StreamWidget*>);
+    void performUpdate(QVector<GameItemWidget*>);
+    void performUpdate(QVector<StreamItemWidget*>);
 };
 
 #endif // BROWSERWIDGET_H

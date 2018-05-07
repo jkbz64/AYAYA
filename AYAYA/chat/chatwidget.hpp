@@ -22,6 +22,9 @@ public:
 
     void openChat(const Twitch::User&);
 
+    bool isFollowingChat();
+    void followChat();
+
 protected:
     virtual void onJoined();
     virtual void onMessageReceived(const QString&, const QString&);

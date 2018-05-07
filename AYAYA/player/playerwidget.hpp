@@ -40,7 +40,7 @@ signals:
     void buffering(int);
     void resized();
     void positionChanged(double);
-    void volumeChanged(double);
+    void volumeChanged(int);
 
 protected:
     virtual void leaveEvent(QEvent*) override;
@@ -55,8 +55,14 @@ private:
     detail::PlayerImpl* m_impl;
     Backend m_backend;
 
-    ControlsWidget* m_controlsWidget;
+    // ControlsWidget
     void setupOverlay();
+    ControlsWidget* m_controlsWidget;
+    int m_beforeMuteVolume;
+    // Controls slots
+    void onPressedResetButton();
+    void onPressedMuteButton();
+    void onVolumeChanged(int);
 };
 
 #endif // PLAYERWIDGET_HPP

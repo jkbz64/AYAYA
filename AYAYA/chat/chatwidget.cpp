@@ -3,6 +3,7 @@
 #include "chatview.hpp"
 #include "ui_chatwidget.h"
 
+#include <QScrollBar>
 #include <TwitchQt/twitchuser.hpp>
 
 ChatWidget::ChatWidget(QWidget* parent)
@@ -24,6 +25,18 @@ ChatWidget::~ChatWidget()
 void ChatWidget::openChat(const Twitch::User& user)
 {
     m_chatClient->joinChannel(user.m_login);
+}
+
+bool ChatWidget::isFollowingChat()
+{
+    auto scrollBar = m_ui->m_chatView->verticalScrollBar();
+    return scrollBar->value() == scrollBar->maximum();
+}
+
+void ChatWidget::followChat()
+{
+    auto scrollBar = m_ui->m_chatView->verticalScrollBar();
+    scrollBar->setValue(scrollBar->maximum());
 }
 
 void ChatWidget::onMessageReceived(const QString& author, const QString& message)

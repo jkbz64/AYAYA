@@ -1,5 +1,5 @@
-#ifndef STREAMWIDGET_HPP
-#define STREAMWIDGET_HPP
+#ifndef STREAMITEMWIDGET_HPP
+#define STREAMITEMWIDGET_HPP
 
 #include "browseritemwidget.hpp"
 
@@ -7,11 +7,11 @@ namespace Twitch {
 class Stream;
 }
 
-class StreamWidget : public BrowserItemWidget {
+class StreamItemWidget : public BrowserItemWidget {
     Q_OBJECT
 public:
-    explicit StreamWidget(const Twitch::Stream&);
-    StreamWidget(const Twitch::Stream&, QWidget*);
+    explicit StreamItemWidget(const Twitch::Stream&);
+    StreamItemWidget(const Twitch::Stream&, QWidget*);
 
     void setPreview(const QPixmap&);
 signals:

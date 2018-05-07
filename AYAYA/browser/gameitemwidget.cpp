@@ -1,10 +1,10 @@
-#include "gamewidget.hpp"
+#include "gameitemwidget.hpp"
 #include <QPaintEvent>
 #include <QPainter>
 
 #include <TwitchQt/twitchgame.hpp>
 
-GameWidget::GameWidget(const Twitch::Game& game)
+GameItemWidget::GameItemWidget(const Twitch::Game& game)
     : BrowserItemWidget(nullptr)
     , m_boxArt()
     , m_viewerCount(0)
@@ -16,7 +16,7 @@ GameWidget::GameWidget(const Twitch::Game& game)
     setMouseTracking(true);
 }
 
-GameWidget::GameWidget(const Twitch::Game& game, QWidget* parent)
+GameItemWidget::GameItemWidget(const Twitch::Game& game, QWidget* parent)
     : BrowserItemWidget(parent)
     , m_boxArt()
     , m_viewerCount(0)
@@ -24,24 +24,24 @@ GameWidget::GameWidget(const Twitch::Game& game, QWidget* parent)
     m_data.setValue(game);
 }
 
-void GameWidget::setBoxArt(const QPixmap& boxArt)
+void GameItemWidget::setBoxArt(const QPixmap& boxArt)
 {
     m_boxArt = boxArt;
     update();
 }
 
-void GameWidget::setViewerCount(int viewerCount)
+void GameItemWidget::setViewerCount(int viewerCount)
 {
     m_viewerCount = viewerCount;
     update();
 }
 
-const QPixmap& GameWidget::boxArt() const
+const QPixmap& GameItemWidget::boxArt() const
 {
     return m_boxArt;
 }
 
-void GameWidget::paintEvent(QPaintEvent* event)
+void GameItemWidget::paintEvent(QPaintEvent* event)
 {
     QFrame::paintEvent(event);
     QPainter painter(this);

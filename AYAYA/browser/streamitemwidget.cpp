@@ -1,8 +1,8 @@
-#include "streamwidget.hpp"
+#include "streamitemwidget.hpp"
 #include <QPainter>
 #include <TwitchQt/twitchstream.hpp>
 
-StreamWidget::StreamWidget(const Twitch::Stream& stream)
+StreamItemWidget::StreamItemWidget(const Twitch::Stream& stream)
     : BrowserItemWidget(nullptr)
 {
     m_data.setValue(stream);
@@ -12,18 +12,18 @@ StreamWidget::StreamWidget(const Twitch::Stream& stream)
     setLineWidth(10);
 }
 
-StreamWidget::StreamWidget(const Twitch::Stream& stream, QWidget* parent)
+StreamItemWidget::StreamItemWidget(const Twitch::Stream& stream, QWidget* parent)
     : BrowserItemWidget(parent)
 {
     m_data.setValue(stream);
 }
 
-void StreamWidget::setPreview(const QPixmap& preview)
+void StreamItemWidget::setPreview(const QPixmap& preview)
 {
     m_preview = preview;
 }
 
-void StreamWidget::paintEvent(QPaintEvent* event)
+void StreamItemWidget::paintEvent(QPaintEvent* event)
 {
     QFrame::paintEvent(event);
     QPainter painter(this);

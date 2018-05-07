@@ -198,10 +198,10 @@
            <string notr="true"/>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="BrowserWidget" name="m_browserWidget"/>
-          <widget class="LivestreamWidget" name="m_livestreamWidget"/>
+          <widget class="StreamWidget" name="m_streamWidget"/>
          </widget>
         </item>
        </layout>
@@ -249,9 +249,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LivestreamWidget</class>
+   <class>StreamWidget</class>
    <extends>QWidget</extends>
-   <header>AYAYA/livestreamwidget.hpp</header>
+   <header>AYAYA/streamwidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

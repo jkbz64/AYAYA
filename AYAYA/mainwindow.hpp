@@ -23,6 +23,11 @@ private:
     Ui::MainWindow* m_ui;
 private slots:
     void onStreamEntered(const Twitch::User&, const Twitch::Stream&);
+
+    void onEnteredTheaterMode();
+    void onEnteredFullscreenMode();
+    void onLeftTheaterMode();
+    void onLeftFullscreenMode();
 };
 
 #endif // MAINWINDOW_H

@@ -1,5 +1,5 @@
-#ifndef GAMEWIDGET_HPP
-#define GAMEWIDGET_HPP
+#ifndef GAMEITEMWIDGET_HPP
+#define GAMEITEMWIDGET_HPP
 
 #include "browseritemwidget.hpp"
 
@@ -7,11 +7,11 @@ namespace Twitch {
 class Game;
 }
 
-class GameWidget : public BrowserItemWidget {
+class GameItemWidget : public BrowserItemWidget {
     Q_OBJECT
 public:
-    explicit GameWidget(const Twitch::Game&);
-    GameWidget(const Twitch::Game&, QWidget*);
+    explicit GameItemWidget(const Twitch::Game&);
+    GameItemWidget(const Twitch::Game&, QWidget*);
 
     void setBoxArt(const QPixmap&);
     void setViewerCount(int);
@@ -29,4 +29,4 @@ private:
     int m_viewerCount;
 };
 
-#endif // GAMEWIDGET_HPP
+#endif // GAMEITEMWIDGET_HPP

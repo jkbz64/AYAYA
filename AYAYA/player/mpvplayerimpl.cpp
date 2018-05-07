@@ -189,7 +189,7 @@ void MpvPlayerImpl::handleMpvEvent(mpv_event* event)
         }
         if (strcmp(prop->name, "volume") == 0) {
             if (prop->format == MPV_FORMAT_DOUBLE)
-                emit player()->volumeChanged(*(double*)prop->data);
+                emit player()->volumeChanged((int)(*(double*)prop->data));
         }
         if (strcmp(prop->name, "cache-buffering-state") == 0) {
             if (prop->format == MPV_FORMAT_INT64) {

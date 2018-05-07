@@ -24,6 +24,11 @@ MainWindow::MainWindow(QWidget* parent)
 
     connect(m_ui->m_browserWidget, &BrowserWidget::streamEntered, this, &MainWindow::onStreamEntered);
 
+    connect(m_ui->m_streamWidget, &StreamWidget::enteredTheaterMode, this, &MainWindow::onEnteredTheaterMode);
+    connect(m_ui->m_streamWidget, &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
+    connect(m_ui->m_streamWidget, &StreamWidget::leftTheaterMode, this, &MainWindow::onLeftTheaterMode);
+    connect(m_ui->m_streamWidget, &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
+
     m_ui->m_browserWidget->showTopGames();
 }
 
@@ -34,6 +39,32 @@ MainWindow::~MainWindow()
 
 void MainWindow::onStreamEntered(const Twitch::User& user, const Twitch::Stream& stream)
 {
-    m_ui->m_mainStack->setCurrentWidget(m_ui->m_livestreamWidget);
-    m_ui->m_livestreamWidget->initialize(user, stream);
+    m_ui->m_mainStack->setCurrentWidget(m_ui->m_streamWidget);
+    m_ui->m_streamWidget->initialize(user, stream);
+}
+
+void MainWindow::onEnteredTheaterMode()
+{
+    hide();
+}
+
+void MainWindow::onEnteredFullscreenMode()
+{
+    hide();
+}
+
+void MainWindow::onLeftTheaterMode()
+{
+    show();
+    m_ui->m_streamWidget->setParent(this);
+    m_ui->m_centralStack->addWidget(m_ui->m_streamWidget);
+    m_ui->m_centralStack->setCurrentWidget(m_ui->m_streamWidget);
+}
+
+void MainWindow::onLeftFullscreenMode()
+{
+    show();
+    m_ui->m_streamWidget->setParent(this);
+    m_ui->m_centralStack->addWidget(m_ui->m_streamWidget);
+    m_ui->m_centralStack->setCurrentWidget(m_ui->m_streamWidget);
 }

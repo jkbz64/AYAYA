@@ -3,8 +3,8 @@
 
 #include <TwitchQt/Twitch>
 
-#include "browser/gamewidget.hpp"
-#include "browser/streamwidget.hpp"
+#include "browser/gameitemwidget.hpp"
+#include "browser/streamitemwidget.hpp"
 
 BrowserWidget::BrowserWidget(QWidget* parent)
     : QWidget(parent)
@@ -37,14 +37,14 @@ void BrowserWidget::showTopGames()
         if (reply->currentState() == Twitch::ReplyState::Success) {
             auto games = reply->data().value<Twitch::Games>();
             for (const Twitch::Game& game : games) {
-                m_ui->m_gameBrowser->addItem(new GameWidget(game));
+                m_ui->m_gameBrowser->addItem(new GameItemWidget(game));
             }
 
             // Temp workaround
             auto widgets = m_ui->m_gameBrowser->browserItems();
-            QVector<GameWidget*> gameWidgets;
+            QVector<GameItemWidget*> gameWidgets;
             for (auto widget : widgets)
-                gameWidgets.push_back(qobject_cast<GameWidget*>(widget));
+                gameWidgets.push_back(qobject_cast<GameItemWidget*>(widget));
             performUpdate(gameWidgets);
         }
     });
@@ -59,7 +59,7 @@ void BrowserWidget::searchStreamsByGame(const Twitch::Game& game)
     connect(channelsReply, &Twitch::Reply::finished, [this, channelsReply]() {
         auto streams = channelsReply->data().value<Twitch::Streams>();
         for (const Twitch::Stream& stream : streams) {
-            m_ui->m_streamBrowser->addItem(new StreamWidget(stream));
+            m_ui->m_streamBrowser->addItem(new StreamItemWidget(stream));
         }
     });
 }
@@ -74,9 +74,9 @@ void BrowserWidget::onStreamSelected(const Twitch::Stream& stream)
     });
 }
 
-void BrowserWidget::performUpdate(QVector<GameWidget*> widgets)
+void BrowserWidget::performUpdate(QVector<GameItemWidget*> widgets)
 {
-    for (QPointer<GameWidget> widget : widgets) {
+    for (QPointer<GameItemWidget> widget : widgets) {
         if (widget->boxArt().isNull()) {
             auto boxArtReply = m_api->getBoxArtByUrl(widget->data().value<Twitch::Game>().m_boxArtUrl, widget->width(), widget->height());
             connect(boxArtReply, &Twitch::Reply::finished, [boxArtReply, widget]() {
@@ -89,7 +89,7 @@ void BrowserWidget::performUpdate(QVector<GameWidget*> widgets)
     }
 }
 
-void BrowserWidget::performUpdate(QVector<StreamWidget*> widgets)
+void BrowserWidget::performUpdate(QVector<StreamItemWidget*> widgets)
 {
     /*QStringList ids;
     QHash<qulonglong, QPointer<StreamWidget>> streamWidgets;

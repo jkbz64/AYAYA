@@ -6,8 +6,6 @@
 
 #include "mpvplayerimpl.hpp"
 
-#include <QDebug>
-
 PlayerWidget::PlayerWidget(QWidget* parent)
     : QOpenGLWidget(parent)
     , m_impl(nullptr)
@@ -125,10 +123,36 @@ void PlayerWidget::setupOverlay()
 {
     auto overlayLayout = new QGridLayout();
     m_controlsWidget = new ControlsWidget(this);
+
+    connect(m_controlsWidget, &ControlsWidget::pressedRestartButton, this, &PlayerWidget::onPressedResetButton);
+    connect(m_controlsWidget, &ControlsWidget::pressedMuteButton, this, &PlayerWidget::onPressedMuteButton);
+    connect(m_controlsWidget, &ControlsWidget::changedVolume, this, &PlayerWidget::onVolumeChanged);
+
     m_controlsWidget->startFadeTimer();
 
     overlayLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 0, 12, 1);
     overlayLayout->addWidget(m_controlsWidget, 12, 0, 2, 1);
 
     setLayout(overlayLayout);
+}
+
+void PlayerWidget::onPressedResetButton()
+{
+    resetStream();
+}
+
+void PlayerWidget::onPressedMuteButton()
+{
+    if (m_beforeMuteVolume != -1) {
+        setVolume(m_beforeMuteVolume);
+        m_beforeMuteVolume = -1;
+    } else {
+        m_beforeMuteVolume = controlsWidget()->currentVolume();
+        setVolume(0);
+    }
+}
+
+void PlayerWidget::onVolumeChanged(int value)
+{
+    setVolume(value);
 }

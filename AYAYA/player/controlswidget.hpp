@@ -21,10 +21,18 @@ public:
     void startFadeTimer();
     void resetFadeTimer();
 
+    int currentVolume();
+signals:
+    void pressedTheaterButton();
+    void pressedFullscreenButton();
+    void pressedRestartButton();
+    void pressedMuteButton();
+    void changedVolume(int);
+
 private:
     Ui::ControlsWidget* m_ui;
-    QTimer* m_fadeOutTimer;
     int m_beforeMuteVolume;
+    QTimer* m_fadeOutTimer;
     QMovie* m_loadingGif;
 
 private slots:
