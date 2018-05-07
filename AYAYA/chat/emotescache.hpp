@@ -12,6 +12,7 @@ public:
     explicit EmotesCache(QObject* parent = nullptr);
     ~EmotesCache();
 
+    void initCache();
     void clearCache();
 
 signals:
@@ -19,9 +20,8 @@ signals:
 
 private:
     Twitch::Api* m_api;
-    bool cacheDirectoryExists();
+    bool validateCacheDirectory();
     QHash<QString, QImage> m_cachedEmotes;
-    void initCache();
     // Processing
     QVector<Twitch::Emote> m_emotesQueue;
     int m_processInterval;

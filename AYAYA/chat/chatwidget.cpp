@@ -16,6 +16,7 @@ ChatWidget::ChatWidget(QWidget* parent)
     m_ui->setupUi(this);
 
     connect(m_emotesCache, &EmotesCache::addedEmote, this, &ChatWidget::onEmoteAdded);
+    m_emotesCache->initCache();
 
     connect(m_chatClient, &ChatClient::joined, this, &ChatWidget::onJoined);
     connect(m_chatClient, &ChatClient::disconnected, this, &ChatWidget::onDisconnected);
@@ -81,6 +82,7 @@ void ChatWidget::rejoin()
 
 void ChatWidget::onEmoteAdded(QPair<QString, QImage> emote)
 {
+    qDebug() << "Added" << emote.first;
     m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first), QVariant(emote.second));
     m_emotes.insert(emote.first, true);
 }
