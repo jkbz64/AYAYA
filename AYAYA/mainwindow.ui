@@ -198,7 +198,7 @@
            <string notr="true"/>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="BrowserWidget" name="m_browserWidget"/>
           <widget class="StreamWidget" name="m_streamWidget"/>
