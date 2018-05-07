@@ -15,11 +15,6 @@ BrowserWidget::BrowserWidget(QWidget* parent)
     m_ui->setupUi(this);
     connect(m_ui->m_streamBrowser, &StreamBrowser::streamSelected, this, &BrowserWidget::onStreamSelected);
     connect(m_ui->m_gameBrowser, &GameBrowser::gameSelected, this, &BrowserWidget::searchStreamsByGame);
-
-    /*  connect(m_ui->m_gameBrowser, &GameBrowser::updateRequested,
-        this, static_cast<void (BrowserWidget::*)(GameWidget*)>(&BrowserWidget::updateWidget), Qt::DirectConnection);
-    connect(m_ui->m_streamBrowser, &StreamBrowser::updateRequested,
-        this, static_cast<void (BrowserWidget::*)(StreamWidget*)>(&BrowserWidget::updateWidget), Qt::DirectConnection);*/
 }
 
 BrowserWidget::~BrowserWidget()
@@ -40,7 +35,7 @@ void BrowserWidget::showTopGames()
                 m_ui->m_gameBrowser->addItem(new GameItemWidget(game));
             }
 
-            // Temp workaround
+            // FIXME Temp workaround
             auto widgets = m_ui->m_gameBrowser->browserItems();
             QVector<GameItemWidget*> gameWidgets;
             for (auto widget : widgets)
@@ -91,7 +86,9 @@ void BrowserWidget::performUpdate(QVector<GameItemWidget*> widgets)
 
 void BrowserWidget::performUpdate(QVector<StreamItemWidget*> widgets)
 {
-    /*QStringList ids;
+    /* TODO
+     *
+     * QStringList ids;
     QHash<qulonglong, QPointer<StreamWidget>> streamWidgets;
     for (StreamWidget* widget : widgets) {
         ids << QString::number(widget->data().m_userId);

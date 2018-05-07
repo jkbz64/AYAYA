@@ -25,5 +25,5 @@ void ChatView::addMessage(const QString& message)
 
 void ChatView::reset()
 {
-    document()->clear();
+    document()->setHtml("");
 }

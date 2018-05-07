@@ -1,6 +1,7 @@
 #include "chatwidget.hpp"
 #include "chatclient.hpp"
 #include "chatview.hpp"
+#include "emotescache.hpp"
 #include "ui_chatwidget.h"
 
 #include <QScrollBar>
@@ -9,9 +10,13 @@
 ChatWidget::ChatWidget(QWidget* parent)
     : QWidget(parent)
     , m_ui(new Ui::ChatWidget)
+    , m_emotesCache(new EmotesCache(this))
     , m_chatClient(new ChatClient(this))
 {
     m_ui->setupUi(this);
+
+    connect(m_emotesCache, &EmotesCache::addedEmote, this, &ChatWidget::onEmoteAdded);
+
     connect(m_chatClient, &ChatClient::joined, this, &ChatWidget::onJoined);
     connect(m_chatClient, &ChatClient::disconnected, this, &ChatWidget::onDisconnected);
     connect(m_chatClient, &ChatClient::messageReceived, this, &ChatWidget::onMessageReceived);
@@ -41,7 +46,13 @@ void ChatWidget::followChat()
 
 void ChatWidget::onMessageReceived(const QString& author, const QString& message)
 {
-    m_ui->m_chatView->addMessage(author + ": " + message);
+    auto editedMessage = message;
+    QStringList words = message.split("\\s+", QString::SkipEmptyParts);
+    for (const auto& word : words) {
+        if (m_emotes.find(word) != m_emotes.end())
+            editedMessage.replace(word, "<img src=\"" + word + "\" />");
+    }
+    m_ui->m_chatView->addMessage(author + ": " + editedMessage);
 }
 
 void ChatWidget::onJoined()
@@ -66,4 +77,10 @@ void ChatWidget::rejoin()
     /*if (m_chatClient->depart()) {
         m_chatClient->joinChannel(m_chatClient->currentChannel());
     }*/
+}
+
+void ChatWidget::onEmoteAdded(QPair<QString, QImage> emote)
+{
+    m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first), QVariant(emote.second));
+    m_emotes.insert(emote.first, true);
 }

@@ -17,18 +17,21 @@ MainWindow::MainWindow(QWidget* parent)
     });
     connect(m_ui->m_browseButton, &QPushButton::released, m_ui->m_browserWidget, &BrowserWidget::showTopGames);
 
-    //Settings
-    connect(m_ui->m_settingsButton, &QPushButton::released, this, [this]() {
+    // TODO Settings
+    /*connect(m_ui->m_settingsButton, &QPushButton::released, this, [this]() {
         // m_ui->m_centralStack->setCurrentWidget(m_ui->m_settingsWidget);
-    });
+    });*/
 
+    // Browser
     connect(m_ui->m_browserWidget, &BrowserWidget::streamEntered, this, &MainWindow::onStreamEntered);
 
+    // Stream
     connect(m_ui->m_streamWidget, &StreamWidget::enteredTheaterMode, this, &MainWindow::onEnteredTheaterMode);
     connect(m_ui->m_streamWidget, &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
     connect(m_ui->m_streamWidget, &StreamWidget::leftTheaterMode, this, &MainWindow::onLeftTheaterMode);
     connect(m_ui->m_streamWidget, &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
 
+    // Start by showing top games
     m_ui->m_browserWidget->showTopGames();
 }
 

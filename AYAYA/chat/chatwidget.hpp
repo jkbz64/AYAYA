@@ -7,6 +7,7 @@ namespace Twitch {
 class User;
 };
 
+class EmotesCache;
 class ChatClient;
 class ChatView;
 
@@ -26,16 +27,20 @@ public:
     void followChat();
 
 protected:
-    virtual void onJoined();
-    virtual void onMessageReceived(const QString&, const QString&);
-    virtual void onDisconnected();
-
     virtual void resizeEvent(QResizeEvent*) override;
 
 private:
     Ui::ChatWidget* m_ui;
+    EmotesCache* m_emotesCache;
+    QHash<QString, bool> m_emotes;
     ChatClient* m_chatClient;
     void rejoin();
+
+    void onEmoteAdded(QPair<QString, QImage>);
+
+    void onJoined();
+    void onMessageReceived(const QString&, const QString&);
+    void onDisconnected();
 };
 
 #endif // CHATWIDGET_HPP
