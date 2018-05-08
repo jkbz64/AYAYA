@@ -3,9 +3,7 @@
 
 #include <QGraphicsView>
 
-namespace Twitch {
-class User;
-};
+#include <TwitchQt/twitchuser.hpp>
 
 class EmotesCache;
 class ChatClient;

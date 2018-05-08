@@ -30,7 +30,8 @@ ChatWidget::~ChatWidget()
 
 void ChatWidget::openChat(const Twitch::User& user)
 {
-    m_chatClient->joinChannel(user.m_login);
+    m_chatClient->joinChannel("smietnik_dzielnicowy");
+    m_emotesCache->fetchChannelEmotes(user.m_login);
 }
 
 bool ChatWidget::isFollowingChat()
@@ -48,9 +49,10 @@ void ChatWidget::followChat()
 void ChatWidget::onMessageReceived(const QString& author, const QString& message)
 {
     auto editedMessage = message;
-    QStringList words = message.split("\\s+", QString::SkipEmptyParts);
+    QStringList words = message.split(QRegExp("[\r\n\t ]+"), QString::SkipEmptyParts);
     for (const auto& word : words) {
-        if (m_emotes.find(word) != m_emotes.end())
+        qDebug() << word;
+        if (m_emotes.find(word.simplified()) != m_emotes.end())
             editedMessage.replace(word, "<img src=\"" + word + "\" />");
     }
     m_ui->m_chatView->addMessage(author + ": " + editedMessage);
@@ -82,7 +84,7 @@ void ChatWidget::rejoin()
 
 void ChatWidget::onEmoteAdded(QPair<QString, QImage> emote)
 {
-    qDebug() << "Added" << emote.first;
+    qDebug() << emote.first;
     m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first), QVariant(emote.second));
-    m_emotes.insert(emote.first, true);
+    m_emotes.insert(emote.first.simplified(), true);
 }

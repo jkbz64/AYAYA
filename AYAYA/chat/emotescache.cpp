@@ -98,17 +98,35 @@ void EmotesCache::initCache()
     });
 }
 
-void EmotesCache::scheduleProcessing()
+void EmotesCache::fetchChannelEmotes(const QString& channel)
 {
-    if (!m_processTimer->isActive()) {
-        m_processTimer->setSingleShot(true);
-        m_processTimer->setInterval(m_processInterval);
-        m_processTimer->start();
-    }
+    // FIXME fill it when we know the endpoint
+    //auto twitchEmotesReply = m_api->getTwitchSubscriberEmotesByChannel(channel);
+    auto bttvEmotesReply = m_api->getBTTVSubscriberEmotesByChannel(channel);
+    auto ffzEmotesReply = m_api->getFFZSubscriberEmotesByChannel(channel);
+
+    /*connect(twitchEmotesReply, &Twitch::Reply::finished, [this, twitchEmotesReply]() {
+        auto emotes = twitchEmotesReply->toEmotes();
+        //m_emotesQueue << emotes;
+        scheduleProcessing();
+    });*/
+
+    connect(bttvEmotesReply, &Twitch::Reply::finished, [this, bttvEmotesReply]() {
+        auto emotes = bttvEmotesReply->toEmotes();
+        m_emotesQueue << emotes;
+        scheduleProcessing();
+    });
+
+    connect(ffzEmotesReply, &Twitch::Reply::finished, [this, ffzEmotesReply]() {
+        auto emotes = ffzEmotesReply->toEmotes();
+        m_emotesQueue << emotes;
+        scheduleProcessing();
+    });
 }
 
 void EmotesCache::processQueuedEmotes()
 {
+    qDebug() << "processing";
     QDir cacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
     QFile cachedEmotesFile(cacheDirectory.absoluteFilePath("cachedEmotes.csv"));
     if (cachedEmotesFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
@@ -130,4 +148,12 @@ void EmotesCache::processQueuedEmotes()
         }
     }
     m_emotesQueue.clear();
+}
+
+void EmotesCache::scheduleProcessing()
+{
+    m_processTimer->setSingleShot(true);
+    m_processTimer->setInterval(m_processInterval);
+    if (!m_processTimer->isActive())
+        m_processTimer->start();
 }

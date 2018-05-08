@@ -13,6 +13,7 @@ public:
     ~EmotesCache();
 
     void initCache();
+    void fetchChannelEmotes(const QString&);
     void clearCache();
 
 signals:
