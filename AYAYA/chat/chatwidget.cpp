@@ -84,7 +84,6 @@ void ChatWidget::rejoin()
 
 void ChatWidget::onEmoteAdded(QPair<QString, QImage> emote)
 {
-    qDebug() << emote.first;
     m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first), QVariant(emote.second));
     m_emotes.insert(emote.first.simplified(), true);
 }
