@@ -30,7 +30,7 @@ ChatWidget::~ChatWidget()
 
 void ChatWidget::openChat(const Twitch::User& user)
 {
-    m_chatClient->joinChannel("smietnik_dzielnicowy");
+    m_chatClient->joinChannel(user.m_login);
     m_emotesCache->fetchChannelEmotes(user.m_login);
 }
 
