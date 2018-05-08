@@ -3,6 +3,6 @@
         <file>twitch.png</file>
     </qresource>
     <qresource prefix="/gifs">
-        <file>clap.gif</file>
+        <file>sunwithfaceclap.gif</file>
     </qresource>
 </RCC>

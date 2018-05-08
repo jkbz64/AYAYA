@@ -10,6 +10,7 @@ PlayerWidget::PlayerWidget(QWidget* parent)
     : QOpenGLWidget(parent)
     , m_impl(nullptr)
     , m_controlsWidget(nullptr)
+    , m_beforeMuteVolume(65)
 {
     setBaseSize(1, 1);
     setMouseTracking(true);
@@ -123,6 +124,7 @@ void PlayerWidget::setupOverlay()
 {
     auto overlayLayout = new QGridLayout();
     m_controlsWidget = new ControlsWidget(this);
+    m_beforeMuteVolume = m_controlsWidget->currentVolume();
 
     connect(m_controlsWidget, &ControlsWidget::pressedRestartButton, this, &PlayerWidget::onPressedResetButton);
     connect(m_controlsWidget, &ControlsWidget::pressedMuteButton, this, &PlayerWidget::onPressedMuteButton);
