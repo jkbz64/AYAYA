@@ -16,7 +16,6 @@ ChatWidget::ChatWidget(QWidget* parent)
     m_ui->setupUi(this);
 
     connect(m_emotesCache, &EmotesCache::emoteCached, this, &ChatWidget::onEmoteCached);
-    m_emotesCache->initCache();
 
     connect(m_chatClient, &ChatClient::joined, this, &ChatWidget::onJoined);
     connect(m_chatClient, &ChatClient::disconnected, this, &ChatWidget::onDisconnected);
@@ -46,6 +45,16 @@ void ChatWidget::followChat()
     scrollBar->setValue(scrollBar->maximum());
 }
 
+EmotesCache* ChatWidget::cache() const
+{
+    return m_emotesCache;
+}
+
+ChatClient* ChatWidget::client() const
+{
+    return m_chatClient;
+}
+
 void ChatWidget::onMessageReceived(const QString& author, const QString& message)
 {
     auto editedMessage = message;
@@ -59,26 +68,20 @@ void ChatWidget::onMessageReceived(const QString& author, const QString& message
 
 void ChatWidget::onJoined()
 {
-    // TODO clear chat or do some shit
+    m_ui->m_chatView->setEnabled(true);
     m_ui->m_chatView->reset();
     m_ui->m_chatView->addMessage("You have joined #" + m_chatClient->currentChannel() + ".");
 }
 
 void ChatWidget::onDisconnected()
 {
+    m_ui->m_chatView->setEnabled(false);
     // TODO retry until connected every x msec?
-}
-
-void ChatWidget::resizeEvent(QResizeEvent* event)
-{
-    QWidget::resizeEvent(event);
 }
 
 void ChatWidget::rejoin()
 {
-    /*if (m_chatClient->depart()) {
-        m_chatClient->joinChannel(m_chatClient->currentChannel());
-    }*/
+    // TODO rejoining strategy
 }
 
 void ChatWidget::onEmoteCached(QPair<Twitch::Emote, QImage> emote)

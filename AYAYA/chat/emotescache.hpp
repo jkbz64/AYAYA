@@ -17,9 +17,15 @@ public:
     void clearCache();
     bool hasEmote(const QString&);
 
+    void fetchGlobalEmotes();
     void fetchChannelEmotes(const QString&);
 
+    void forceProcessing();
+
 signals:
+    void startedProcessing();
+    void processProgress(int, int);
+    void endedProcessing();
     void emoteCached(QPair<Twitch::Emote, QImage>);
 
 private:

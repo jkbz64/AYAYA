@@ -88,6 +88,7 @@ void EmotesCache::initCache()
 {
     auto cacheDirectory = ensureCache();
 
+    // We're using new QFile because m_cacheFile's buffor might be at the end of the file
     QFile cachedEmotesFile(cacheDirectory.absoluteFilePath("cachedEmotes.csv"));
     if (cachedEmotesFile.open(QIODevice::ReadOnly)) {
         while (!cachedEmotesFile.atEnd()) {
@@ -104,10 +105,27 @@ void EmotesCache::initCache()
                 Twitch::Emote::ImageType::PNG,
                 emoteTypeToUrl(emoteType).replace("{{id}}", id)
             };
-            scheduleProcessing();
         }
     }
+    scheduleProcessing();
+}
 
+void EmotesCache::clearCache()
+{
+    m_cachedEmotes.clear();
+    if (m_cacheFile.isOpen())
+        m_cacheFile.close();
+    m_cacheFile.open(QFile::WriteOnly, QFile::Truncate);
+    m_cacheFile.close();
+}
+
+bool EmotesCache::hasEmote(const QString& emoteCode)
+{
+    return m_cachedEmotes.find(emoteCode) != m_cachedEmotes.end();
+}
+
+void EmotesCache::fetchGlobalEmotes()
+{
     auto globalEmotesReply = m_api->getGlobalEmotes();
     auto bttvEmotesReply = m_api->getBTTVGlobalEmotes();
     auto ffzEmotesReply = m_api->getFFZGlobalEmotes();
@@ -129,15 +147,6 @@ void EmotesCache::initCache()
         m_emotesQueue << emotes;
         scheduleProcessing();
     });
-}
-
-void EmotesCache::clearCache()
-{
-}
-
-bool EmotesCache::hasEmote(const QString& emoteCode)
-{
-    return m_cachedEmotes.find(emoteCode) != m_cachedEmotes.end();
 }
 
 void EmotesCache::fetchChannelEmotes(const QString& channel)
@@ -166,6 +175,11 @@ void EmotesCache::fetchChannelEmotes(const QString& channel)
     });
 }
 
+void EmotesCache::forceProcessing()
+{
+    processQueuedEmotes();
+}
+
 void EmotesCache::scheduleProcessing()
 {
     m_processTimer->setSingleShot(true);
@@ -176,9 +190,12 @@ void EmotesCache::scheduleProcessing()
 
 void EmotesCache::processQueuedEmotes()
 {
+    emit startedProcessing();
     // TODO I need to do some research on concurrent use of this (fetching emotes adds it to the same queue, might do some double-buffering)
-    m_processTimer->stop();
     QDir cacheDirectory = ensureCache();
+    m_processTimer->stop();
+
+    int currentEmote = 1;
     for (const auto& emote : m_emotesQueue) {
         if (!isCached(emote)) {
             const QString url = QString(emote.m_url).replace("{{size}}", "1");
@@ -194,10 +211,13 @@ void EmotesCache::processQueuedEmotes()
                 cacheEmote(emote, image);
             }
         }
+        emit processProgress(currentEmote, m_emotesQueue.size() - 1);
+        currentEmote += 1;
     }
     m_emotesQueue.clear();
     // Set interval just in case timer was started before processing all elements
     m_processTimer->setInterval(m_processInterval);
+    emit endedProcessing();
 }
 
 QDir EmotesCache::ensureCache()

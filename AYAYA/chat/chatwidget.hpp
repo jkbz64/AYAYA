@@ -25,14 +25,13 @@ public:
     bool isFollowingChat();
     void followChat();
 
-protected:
-    virtual void resizeEvent(QResizeEvent*) override;
+    EmotesCache* cache() const;
+    ChatClient* client() const;
 
 private:
     Ui::ChatWidget* m_ui;
     EmotesCache* m_emotesCache;
     ChatClient* m_chatClient;
-    void rejoin();
 
     // Emote Cache slots
     void onEmoteCached(QPair<Twitch::Emote, QImage>);
@@ -41,6 +40,8 @@ private:
     void onJoined();
     void onMessageReceived(const QString&, const QString&);
     void onDisconnected();
+
+    void rejoin();
 };
 
 #endif // CHATWIDGET_HPP
