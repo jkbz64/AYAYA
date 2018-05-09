@@ -59,7 +59,7 @@ void MainWindow::setupInitWidget(MainWidget* widget)
         if (!m_initQueue.empty()) {
             initNextWidget();
         } else {
-            QTimer::singleShot(500, this, [this]() {
+            QTimer::singleShot(1000, this, [this]() {
                 m_ui->m_centralStack->setCurrentWidget(m_ui->m_mainWidget);
             });
         }
