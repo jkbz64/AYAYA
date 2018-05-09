@@ -18,7 +18,7 @@ class ChatWidget : public QWidget {
     Q_OBJECT
 public:
     explicit ChatWidget(QWidget*);
-    virtual ~ChatWidget();
+    ~ChatWidget();
 
     void openChat(const Twitch::User&);
 

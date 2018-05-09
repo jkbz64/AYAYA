@@ -7,7 +7,7 @@
 #include "player/controlswidget.hpp"
 
 StreamWidget::StreamWidget(QWidget* parent)
-    : QWidget(parent)
+    : MainWidget(parent)
     , m_ui(new Ui::StreamWidget)
     , m_currentMode(WatchMode::Normal)
 {
@@ -27,6 +27,12 @@ StreamWidget::StreamWidget(QWidget* parent)
 StreamWidget::~StreamWidget()
 {
     delete m_ui;
+}
+
+void StreamWidget::init()
+{
+    emit initProgress("Initing mpv");
+    emit endedIniting();
 }
 
 void StreamWidget::initialize(const Twitch::User& user, const Twitch::Stream& stream)

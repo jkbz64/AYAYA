@@ -1,9 +1,8 @@
 #ifndef BROWSERWIDGET_H
 #define BROWSERWIDGET_H
 
+#include "mainwidget.hpp"
 #include <QSettings>
-#include <QWidget>
-
 #include <TwitchQt/Twitch>
 
 class Channel;
@@ -14,13 +13,17 @@ namespace Ui {
 class BrowserWidget;
 }
 
-class BrowserWidget : public QWidget {
+class BrowserWidget : public MainWidget {
     Q_OBJECT
 public:
     explicit BrowserWidget(QWidget* parent = nullptr);
     ~BrowserWidget();
+
+    virtual void init() override;
+
     void showTopGames();
     void searchStreamsByName(const QString&);
+
 signals:
     void streamEntered(const Twitch::User&, const Twitch::Stream&);
 

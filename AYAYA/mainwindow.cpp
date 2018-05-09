@@ -4,12 +4,16 @@
 
 #include <QMovie>
 #include <QPropertyAnimation>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , m_ui(new Ui::MainWindow)
 {
     m_ui->setupUi(this);
+    auto clapFace = new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this);
+    clapFace->start();
+    m_ui->m_clapFace->setMovie(clapFace);
 
     // Browse
     connect(m_ui->m_browseButton, &QPushButton::released, this, [this]() {
@@ -30,14 +34,51 @@ MainWindow::MainWindow(QWidget* parent)
     connect(m_ui->m_streamWidget, &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
     connect(m_ui->m_streamWidget, &StreamWidget::leftTheaterMode, this, &MainWindow::onLeftTheaterMode);
     connect(m_ui->m_streamWidget, &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
-
-    // Start by showing top games
-    m_ui->m_browserWidget->showTopGames();
 }
 
 MainWindow::~MainWindow()
 {
     delete m_ui;
+}
+
+void MainWindow::init()
+{
+    m_initQueue << m_ui->m_browserWidget << m_ui->m_streamWidget;
+    initNextWidget();
+}
+
+void MainWindow::setupInitWidget(MainWidget* widget)
+{
+    connect(widget, &MainWidget::startedIniting, [this]() {
+        m_ui->m_statusLabel->setText("Initing...");
+    });
+
+    connect(widget, &MainWidget::initProgress, this, &MainWindow::onInitProgress, Qt::QueuedConnection);
+
+    connect(widget, &MainWidget::endedIniting, [this]() {
+        if (!m_initQueue.empty()) {
+            initNextWidget();
+        } else {
+            QTimer::singleShot(500, this, [this]() {
+                m_ui->m_centralStack->setCurrentWidget(m_ui->m_mainWidget);
+            });
+        }
+    });
+    emit widget->startedIniting();
+}
+
+void MainWindow::initNextWidget()
+{
+    if (!m_initQueue.empty()) {
+        auto currentInitWidget = m_initQueue.front();
+        m_initQueue.pop_front();
+        setupInitWidget(currentInitWidget);
+    }
+}
+
+void MainWindow::onInitProgress(const QString& progressText)
+{
+    m_ui->m_statusLabel->setText(m_ui->m_statusLabel->text() + progressText);
 }
 
 void MainWindow::onStreamEntered(const Twitch::User& user, const Twitch::Stream& stream)

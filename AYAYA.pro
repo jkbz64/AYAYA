@@ -39,7 +39,8 @@ SOURCES += \
     AYAYA/browser/streamitemwidget.cpp \
     AYAYA/browser/gameitemwidget.cpp \
     AYAYA/streamwidget.cpp \
-    AYAYA/chat/emotescache.cpp
+    AYAYA/chat/emotescache.cpp \
+    AYAYA/mainwidget.cpp
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
@@ -59,7 +60,8 @@ HEADERS += \
     AYAYA/browser/streamitemwidget.hpp \
     AYAYA/browser/gameitemwidget.hpp \
     AYAYA/streamwidget.hpp \
-    AYAYA/chat/emotescache.hpp
+    AYAYA/chat/emotescache.hpp \
+    AYAYA/mainwidget.hpp
 
 FORMS += \
     AYAYA/mainwindow.ui \

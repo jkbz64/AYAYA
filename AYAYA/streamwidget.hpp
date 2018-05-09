@@ -1,6 +1,7 @@
 #ifndef STREAMWIDGET_HPP
 #define STREAMWIDGET_HPP
 
+#include "mainwidget.hpp"
 #include <QWidget>
 
 namespace Twitch {
@@ -14,12 +15,13 @@ namespace Ui {
 class StreamWidget;
 }
 
-class StreamWidget : public QWidget {
+class StreamWidget : public MainWidget {
     Q_OBJECT
 
 public:
     explicit StreamWidget(QWidget* parent = 0);
     ~StreamWidget();
+    virtual void init() override;
 
     void initialize(const Twitch::User&, const Twitch::Stream&);
 
