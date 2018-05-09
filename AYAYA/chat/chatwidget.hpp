@@ -3,6 +3,7 @@
 
 #include <QGraphicsView>
 
+#include <TwitchQt/twitchemote.hpp>
 #include <TwitchQt/twitchuser.hpp>
 
 class EmotesCache;
@@ -30,12 +31,13 @@ protected:
 private:
     Ui::ChatWidget* m_ui;
     EmotesCache* m_emotesCache;
-    QHash<QString, bool> m_emotes;
     ChatClient* m_chatClient;
     void rejoin();
 
-    void onEmoteAdded(QPair<QString, QImage>);
+    // Emote Cache slots
+    void onEmoteCached(QPair<Twitch::Emote, QImage>);
 
+    // Chat Client slots
     void onJoined();
     void onMessageReceived(const QString&, const QString&);
     void onDisconnected();

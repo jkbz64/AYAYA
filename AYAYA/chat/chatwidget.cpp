@@ -15,7 +15,7 @@ ChatWidget::ChatWidget(QWidget* parent)
 {
     m_ui->setupUi(this);
 
-    connect(m_emotesCache, &EmotesCache::addedEmote, this, &ChatWidget::onEmoteAdded);
+    connect(m_emotesCache, &EmotesCache::emoteCached, this, &ChatWidget::onEmoteCached);
     m_emotesCache->initCache();
 
     connect(m_chatClient, &ChatClient::joined, this, &ChatWidget::onJoined);
@@ -51,7 +51,7 @@ void ChatWidget::onMessageReceived(const QString& author, const QString& message
     auto editedMessage = message;
     QStringList words = message.split(QRegExp("[\r\n\t ]+"), QString::SkipEmptyParts);
     for (const auto& word : words) {
-        if (m_emotes.find(word.simplified()) != m_emotes.end())
+        if (m_emotesCache->hasEmote(word.simplified()))
             editedMessage.replace(word, "<img src=\"" + word + "\" />");
     }
     m_ui->m_chatView->addMessage(author + ": " + editedMessage);
@@ -81,8 +81,7 @@ void ChatWidget::rejoin()
     }*/
 }
 
-void ChatWidget::onEmoteAdded(QPair<QString, QImage> emote)
+void ChatWidget::onEmoteCached(QPair<Twitch::Emote, QImage> emote)
 {
-    m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first), QVariant(emote.second));
-    m_emotes.insert(emote.first.simplified(), true);
+    m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first.m_code), QVariant(emote.second));
 }

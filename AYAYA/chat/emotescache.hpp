@@ -1,6 +1,7 @@
 #ifndef EMOTESCACHE_HPP
 #define EMOTESCACHE_HPP
 
+#include <QFile>
 #include <QObject>
 #include <TwitchQt/Twitch>
 
@@ -13,22 +14,29 @@ public:
     ~EmotesCache();
 
     void initCache();
-    void fetchChannelEmotes(const QString&);
     void clearCache();
+    bool hasEmote(const QString&);
+
+    void fetchChannelEmotes(const QString&);
 
 signals:
-    void addedEmote(QPair<QString, QImage>);
+    void emoteCached(QPair<Twitch::Emote, QImage>);
 
 private:
     Twitch::Api* m_api;
-    bool validateCacheDirectory();
-    QHash<QString, QImage> m_cachedEmotes;
-    // Processing
+
     QVector<Twitch::Emote> m_emotesQueue;
     int m_processInterval;
     QTimer* m_processTimer;
     void scheduleProcessing();
     void processQueuedEmotes();
+
+    QHash<QString, QImage> m_cachedEmotes;
+    QDir ensureCache();
+    bool isCached(const Twitch::Emote&);
+    QFile m_cacheFile;
+    void cacheEmote(const Twitch::Emote&, const QImage&);
+    void appendEmoteToCacheFile(const Twitch::Emote&);
 };
 
 #endif // EMOTESCACHE_HPP

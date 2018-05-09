@@ -6,9 +6,9 @@
 #include <QTimer>
 
 namespace {
-QString emoteTypeToString(Twitch::Emote::EmoteType type)
+QString emotePrefix(const Twitch::Emote& emote)
 {
-    switch (type) {
+    switch (emote.m_type) {
     case Twitch::Emote::EmoteType::TwitchEmotes:
         return QString("TwitchEmotes/");
         break;
@@ -21,9 +21,33 @@ QString emoteTypeToString(Twitch::Emote::EmoteType type)
     }
     return QString("");
 }
-QString imageTypeToString(Twitch::Emote::ImageType type)
+Twitch::Emote::EmoteType prefixToEmoteType(const QString& prefix)
+{
+    if (prefix == "TwitchEmotes/")
+        return Twitch::Emote::EmoteType::TwitchEmotes;
+    else if (prefix == "FFZ/")
+        return Twitch::Emote::EmoteType::FFZ;
+    else if (prefix == "BTTV/")
+        return Twitch::Emote::EmoteType::BTTV;
+    throw std::runtime_error("Invalid prefix");
+}
+QString emoteTypeToUrl(Twitch::Emote::EmoteType type)
 {
     switch (type) {
+    case Twitch::Emote::EmoteType::TwitchEmotes:
+        return QString(Twitch::TwitchEmotes::Emote::urlTemplate());
+        break;
+    case Twitch::Emote::EmoteType::BTTV:
+        return QString(Twitch::BTTV::Emote::urlTemplate());
+        break;
+    case Twitch::Emote::EmoteType::FFZ:
+        return QString(Twitch::FFZ::Emote::urlTemplate());
+        break;
+    }
+}
+QString emoteExtension(const Twitch::Emote& emote)
+{
+    switch (emote.m_imageType) {
     case Twitch::Emote::ImageType::PNG:
         return QString(".png");
         break;
@@ -33,14 +57,14 @@ QString imageTypeToString(Twitch::Emote::ImageType type)
     }
     return QString("");
 }
-void writeEmoteImage(const QImage& image, QFile& imageFile, const Twitch::Emote& emote)
+void saveEmoteImage(const QImage& image, QFile& imageFile, const Twitch::Emote& emote)
 {
     switch (emote.m_imageType) {
     case Twitch::Emote::ImageType::PNG:
         image.save(&imageFile, "PNG");
         break;
     case Twitch::Emote::ImageType::GIF:
-        image.save(&imageFile, "GIF");
+        // image.save(&imageFile, "GIF"); It seems Qt does not support saving gif so we will be loading them
         break;
     }
 }
@@ -53,48 +77,34 @@ EmotesCache::EmotesCache(QObject* parent)
     , m_processTimer(new QTimer(this))
 {
     connect(m_processTimer, &QTimer::timeout, this, &EmotesCache::processQueuedEmotes);
-    validateCacheDirectory();
+    ensureCache();
 }
 
 EmotesCache::~EmotesCache()
 {
 }
 
-bool EmotesCache::validateCacheDirectory()
-{
-    QDir cacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
-    bool exists = cacheDirectory.exists();
-    if (!exists) {
-        cacheDirectory.mkpath(".");
-        cacheDirectory.mkdir("TwitchEmotes");
-        cacheDirectory.mkdir("BTTV");
-        cacheDirectory.mkdir("FFZ");
-    }
-    QFile cachedEmotesFile(cacheDirectory.absoluteFilePath("cachedEmotes.csv"));
-    if (!cachedEmotesFile.exists()) {
-        cachedEmotesFile.open(QIODevice::WriteOnly);
-        cachedEmotesFile.close();
-    }
-
-    if (!cachedEmotesFile.open(QIODevice::ReadOnly)) {
-        QMessageBox::warning(0, "Warning", R"(Failed to write cache file.
-              AYAYA might not have permissions to write on path, emotes won't probably work. )"
-                + QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
-    }
-
-    return exists;
-}
-
 void EmotesCache::initCache()
 {
-    QDir cacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+    auto cacheDirectory = ensureCache();
+
     QFile cachedEmotesFile(cacheDirectory.absoluteFilePath("cachedEmotes.csv"));
     if (cachedEmotesFile.open(QIODevice::ReadOnly)) {
         while (!cachedEmotesFile.atEnd()) {
             auto emotePair = cachedEmotesFile.readLine().split(',');
-            auto emotePath = emotePair.first();
-            auto code = emotePair.last().simplified();
-            emit addedEmote(qMakePair(code, QImage(cacheDirectory.absoluteFilePath(emotePath) + ".png")));
+            QString emotePath = emotePair.first();
+            QString prefix = emotePath.split('/').at(0) + "/";
+            QString id = emotePath.split('/').at(1);
+            QString code = emotePair.last().simplified();
+            const auto emoteType = prefixToEmoteType(prefix);
+            m_emotesQueue << Twitch::Emote{
+                emoteType,
+                id,
+                code,
+                Twitch::Emote::ImageType::PNG,
+                emoteTypeToUrl(emoteType).replace("{{id}}", id)
+            };
+            scheduleProcessing();
         }
     }
 
@@ -119,6 +129,15 @@ void EmotesCache::initCache()
         m_emotesQueue << emotes;
         scheduleProcessing();
     });
+}
+
+void EmotesCache::clearCache()
+{
+}
+
+bool EmotesCache::hasEmote(const QString& emoteCode)
+{
+    return m_cachedEmotes.find(emoteCode) != m_cachedEmotes.end();
 }
 
 void EmotesCache::fetchChannelEmotes(const QString& channel)
@@ -147,37 +166,90 @@ void EmotesCache::fetchChannelEmotes(const QString& channel)
     });
 }
 
-void EmotesCache::processQueuedEmotes()
-{
-    QDir cacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
-    QFile cachedEmotesFile(cacheDirectory.absoluteFilePath("cachedEmotes.csv"));
-    if (cachedEmotesFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
-        for (const auto& emote : m_emotesQueue) {
-            QString prefix = emoteTypeToString(emote.m_type);
-            QString extension = imageTypeToString(emote.m_imageType);
-            if (!cacheDirectory.exists(prefix + emote.m_id + extension)) {
-                QString url = emote.m_url;
-                url = url.replace("{{size}}", "1");
-                auto imageReply = m_api->getImage(url);
-                connect(imageReply, &Twitch::Reply::finished, [this, imageReply, extension, prefix, emote, cacheDirectory]() {
-                    QFile imageFile(cacheDirectory.absolutePath() + "/" + prefix + emote.m_id + extension);
-                    QImage emoteImage = imageReply->data().value<QImage>();
-                    if (imageFile.open(QIODevice::WriteOnly))
-                        writeEmoteImage(emoteImage, imageFile, emote);
-                    emit addedEmote(qMakePair(emote.m_code, emoteImage));
-                });
-                cachedEmotesFile.write(QString(prefix + emote.m_id + "," + emote.m_code + "\n").toUtf8());
-            }
-        }
-    }
-    m_emotesQueue.clear();
-    m_processTimer->stop();
-}
-
 void EmotesCache::scheduleProcessing()
 {
     m_processTimer->setSingleShot(true);
     m_processTimer->setInterval(m_processInterval);
     if (!m_processTimer->isActive())
         m_processTimer->start();
+}
+
+void EmotesCache::processQueuedEmotes()
+{
+    // TODO I need to do some research on concurrent use of this (fetching emotes adds it to the same queue, might do some double-buffering)
+    m_processTimer->stop();
+    QDir cacheDirectory = ensureCache();
+    for (const auto& emote : m_emotesQueue) {
+        if (!isCached(emote)) {
+            const QString url = QString(emote.m_url).replace("{{size}}", "1");
+            auto imageReply = m_api->getImage(url);
+            connect(imageReply, &Twitch::Reply::finished, [this, imageReply, emote]() {
+                if (imageReply->currentState() == Twitch::ReplyState::Success)
+                    cacheEmote(emote, imageReply->data().value<QImage>());
+            });
+        } else {
+            if (!hasEmote(emote.m_code)) {
+                // Load from cache
+                QImage image(cacheDirectory.absoluteFilePath(emotePrefix(emote) + emote.m_id + ".png"));
+                cacheEmote(emote, image);
+            }
+        }
+    }
+    m_emotesQueue.clear();
+    // Set interval just in case timer was started before processing all elements
+    m_processTimer->setInterval(m_processInterval);
+}
+
+QDir EmotesCache::ensureCache()
+{
+    QDir cacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+    if (!cacheDirectory.exists()) {
+        cacheDirectory.mkpath(".");
+        cacheDirectory.mkdir("TwitchEmotes");
+        cacheDirectory.mkdir("BTTV");
+        cacheDirectory.mkdir("FFZ");
+    }
+
+    if (!m_cacheFile.isOpen()) {
+        m_cacheFile.setFileName(cacheDirectory.absoluteFilePath("cachedEmotes.csv"));
+        m_cacheFile.open(QIODevice::ReadWrite | QIODevice::Append);
+    }
+
+    return cacheDirectory;
+}
+
+bool EmotesCache::isCached(const Twitch::Emote& emote)
+{
+    const auto cacheDirectory = ensureCache();
+    return cacheDirectory.exists(cacheDirectory.absoluteFilePath(emotePrefix(emote) + emote.m_id + emoteExtension(emote)));
+}
+
+void EmotesCache::cacheEmote(const Twitch::Emote& emote, const QImage& image)
+{
+    const bool isAlreadyCached = m_cachedEmotes.insert(emote.m_code, image) == m_cachedEmotes.end();
+    if (!isAlreadyCached)
+        emit emoteCached(qMakePair(emote, image));
+    // Cache image if it's not gif
+    if (emote.m_imageType != Twitch::Emote::ImageType::GIF && !isCached(emote)) {
+        appendEmoteToCacheFile(emote);
+        const auto cacheDirectory = ensureCache();
+        QFile imageFile(cacheDirectory.absoluteFilePath(emotePrefix(emote) + emote.m_id + emoteExtension(emote)));
+        if (imageFile.open(QIODevice::WriteOnly)) {
+            switch (emote.m_imageType) {
+            case Twitch::Emote::ImageType::PNG:
+                image.save(&imageFile, "PNG");
+                break;
+            case Twitch::Emote::ImageType::GIF:
+                // image.save(&imageFile, "GIF"); It seems Qt does not support saving gif so we will be loading them
+                break;
+            }
+        }
+    }
+}
+
+void EmotesCache::appendEmoteToCacheFile(const Twitch::Emote& emote)
+{
+    if (!m_cacheFile.isOpen())
+        ensureCache();
+    m_cacheFile.write(QString(emotePrefix(emote) + emote.m_id + "," + emote.m_code + "\n").toUtf8());
 }
