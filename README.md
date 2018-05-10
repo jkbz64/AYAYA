@@ -1,5 +1,5 @@
 # AYAYA
-*** AYAYA is under heavy development, so be careful of bugs *** 
+***AYAYA is under heavy development, so be aware of bugs.*** 
 
 Qt Desktop Twitch.tv client written in Qt5.
 
