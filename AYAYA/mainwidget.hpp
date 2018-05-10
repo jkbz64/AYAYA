@@ -14,6 +14,10 @@ signals:
     void startedIniting();
     void initProgress(const QString&);
     void endedIniting();
+
+private:
+    void onStartedIniting();
+    void onEndedIniting();
 };
 
 #endif // MAINWIDGET_HPP

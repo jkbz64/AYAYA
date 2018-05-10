@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget* parent)
     , m_ui(new Ui::MainWindow)
 {
     m_ui->setupUi(this);
+    // Splash screen clap face
     auto clapFace = new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this);
     clapFace->start();
     m_ui->m_clapFace->setMovie(clapFace);
@@ -21,19 +22,13 @@ MainWindow::MainWindow(QWidget* parent)
     });
     connect(m_ui->m_browseButton, &QPushButton::released, m_ui->m_browserWidget, &BrowserWidget::showTopGames);
 
-    // TODO Settings
-    /*connect(m_ui->m_settingsButton, &QPushButton::released, this, [this]() {
-        // m_ui->m_centralStack->setCurrentWidget(m_ui->m_settingsWidget);
-    });*/
-
     // Browser
     connect(m_ui->m_browserWidget, &BrowserWidget::streamEntered, this, &MainWindow::onStreamEntered);
 
     // Stream
     connect(m_ui->m_streamWidget, &StreamWidget::enteredTheaterMode, this, &MainWindow::onEnteredTheaterMode);
     connect(m_ui->m_streamWidget, &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
-    connect(m_ui->m_streamWidget, &StreamWidget::leftTheaterMode, this, &MainWindow::onLeftTheaterMode);
-    connect(m_ui->m_streamWidget, &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
+    connect(m_ui->m_streamWidget, &StreamWidget::leftWindowMode, this, &MainWindow::onLeftWindowMode);
 }
 
 MainWindow::~MainWindow()
@@ -49,21 +44,10 @@ void MainWindow::init()
 
 void MainWindow::setupInitWidget(MainWidget* widget)
 {
-    connect(widget, &MainWidget::startedIniting, [this]() {
-        m_ui->m_statusLabel->setText("Initing...");
-    });
-
+    connect(widget, &MainWidget::startedIniting, this, &MainWindow::onInitStarted);
+    // I guess queued conection works better in this case... but I may be mistaken?
     connect(widget, &MainWidget::initProgress, this, &MainWindow::onInitProgress, Qt::QueuedConnection);
-
-    connect(widget, &MainWidget::endedIniting, [this]() {
-        if (!m_initQueue.empty()) {
-            initNextWidget();
-        } else {
-            QTimer::singleShot(1000, this, [this]() {
-                m_ui->m_centralStack->setCurrentWidget(m_ui->m_mainWidget);
-            });
-        }
-    });
+    connect(widget, &MainWidget::endedIniting, this, &MainWindow::onEndedIniting, Qt::DirectConnection);
     emit widget->startedIniting();
 }
 
@@ -76,9 +60,27 @@ void MainWindow::initNextWidget()
     }
 }
 
+void MainWindow::onInitStarted()
+{
+    m_ui->m_statusLabel->setText("Initing...");
+}
+
 void MainWindow::onInitProgress(const QString& progressText)
 {
-    m_ui->m_statusLabel->setText(m_ui->m_statusLabel->text() + progressText);
+    m_ui->m_statusLabel->setText(progressText);
+}
+
+void MainWindow::onEndedIniting()
+{
+    if (!m_initQueue.empty()) {
+        initNextWidget();
+    } else {
+        m_ui->m_clapFace->movie()->stop();
+        // Let the user see the pretty sun... even if it's for a second :)
+        QTimer::singleShot(1000, this, [this]() {
+            m_ui->m_centralStack->setCurrentWidget(m_ui->m_mainWidget);
+        });
+    }
 }
 
 void MainWindow::onStreamEntered(const Twitch::User& user, const Twitch::Stream& stream)
@@ -97,15 +99,7 @@ void MainWindow::onEnteredFullscreenMode()
     hide();
 }
 
-void MainWindow::onLeftTheaterMode()
-{
-    show();
-    m_ui->m_streamWidget->setParent(this);
-    m_ui->m_centralStack->addWidget(m_ui->m_streamWidget);
-    m_ui->m_centralStack->setCurrentWidget(m_ui->m_streamWidget);
-}
-
-void MainWindow::onLeftFullscreenMode()
+void MainWindow::onLeftWindowMode()
 {
     show();
     m_ui->m_streamWidget->setParent(this);

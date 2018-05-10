@@ -26,7 +26,6 @@ void BrowserWidget::init()
 {
     emit initProgress("Fetching Top Twitch Games");
     showTopGames();
-
     emit endedIniting();
 }
 

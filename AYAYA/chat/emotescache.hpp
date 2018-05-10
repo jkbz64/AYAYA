@@ -23,6 +23,10 @@ public:
     void forceProcessing();
 
 signals:
+    void startedInitingCache();
+    void initProgress(int);
+    void endedInitingCache();
+
     void startedProcessing();
     void processProgress(int, int);
     void endedProcessing();

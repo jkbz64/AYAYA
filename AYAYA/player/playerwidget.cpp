@@ -9,30 +9,32 @@
 PlayerWidget::PlayerWidget(QWidget* parent)
     : QOpenGLWidget(parent)
     , m_impl(nullptr)
+    , m_playerStyle(PlayerStyle::Normal)
     , m_controlsWidget(nullptr)
     , m_beforeMuteVolume(65)
 {
     setBaseSize(1, 1);
     setMouseTracking(true);
-    // Backend defaults to MPV
-    setBackend(Backend::MPV);
 }
 
 PlayerWidget::~PlayerWidget()
 {
+    delete m_impl;
 }
 
-void PlayerWidget::setBackend(PlayerWidget::Backend backend)
+void PlayerWidget::setBackend(PlayerBackend backend)
 {
     m_backend = backend;
 
     if (m_impl)
         delete m_impl;
     m_impl = new detail::MpvPlayerImpl(this);
+    emit startedBackendInit();
     m_impl->init();
 
     if (!layout())
         setupOverlay();
+    emit backendChanged(backend);
 }
 
 void PlayerWidget::openStream(const QString& streamName)
@@ -49,6 +51,8 @@ void PlayerWidget::resetStream()
 
 void PlayerWidget::setVolume(int value)
 {
+    if (value > 0)
+        m_beforeMuteVolume = value;
     if (m_impl)
         m_impl->setVolume(value);
 }
@@ -60,18 +64,18 @@ int PlayerWidget::volume() const
     return 0;
 }
 
-void PlayerWidget::setFullscreen(bool fullscreen)
+void PlayerWidget::setPlayerStyle(PlayerStyle style)
 {
-    // FIXME Well, setting window flags causes GL context reinitialization, so we have to reset stream
-    if (fullscreen) {
-        setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-        resetStream();
-        showFullScreen();
-    } else {
-        setWindowFlags(Qt::Widget);
-        resetStream();
-        showNormal();
+    if (m_playerStyle != style) {
+        const auto oldStyle = m_playerStyle;
+        m_playerStyle = style;
+        emit playerStyleChanged(oldStyle, m_playerStyle);
     }
+}
+
+const PlayerStyle& PlayerWidget::playerStyle() const
+{
+    return m_playerStyle;
 }
 
 ControlsWidget* PlayerWidget::controlsWidget()
@@ -94,10 +98,10 @@ void PlayerWidget::mouseMoveEvent(QMouseEvent* event)
 void PlayerWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QOpenGLWidget::mouseDoubleClickEvent(event);
-    if (isFullScreen())
-        setFullscreen(false);
+    if (playerStyle() == PlayerStyle::Fullscreen)
+        setPlayerStyle(PlayerStyle::Normal);
     else
-        setFullscreen(true);
+        setPlayerStyle(PlayerStyle::Fullscreen);
 }
 
 void PlayerWidget::initializeGL()
@@ -129,6 +133,8 @@ void PlayerWidget::setupOverlay()
     connect(m_controlsWidget, &ControlsWidget::pressedRestartButton, this, &PlayerWidget::onPressedResetButton);
     connect(m_controlsWidget, &ControlsWidget::pressedMuteButton, this, &PlayerWidget::onPressedMuteButton);
     connect(m_controlsWidget, &ControlsWidget::changedVolume, this, &PlayerWidget::onVolumeChanged);
+    connect(m_controlsWidget, &ControlsWidget::pressedTheaterButton, this, &PlayerWidget::onPressedTheaterButton);
+    connect(m_controlsWidget, &ControlsWidget::pressedFullscreenButton, this, &PlayerWidget::onPressedFullscreenButton);
 
     m_controlsWidget->startFadeTimer();
 
@@ -157,4 +163,20 @@ void PlayerWidget::onPressedMuteButton()
 void PlayerWidget::onVolumeChanged(int value)
 {
     setVolume(value);
+}
+
+void PlayerWidget::onPressedTheaterButton()
+{
+    if (m_playerStyle != PlayerStyle::Theater)
+        setPlayerStyle(PlayerStyle::Theater);
+    else
+        setPlayerStyle(PlayerStyle::Normal);
+}
+
+void PlayerWidget::onPressedFullscreenButton()
+{
+    if (m_playerStyle != PlayerStyle::Fullscreen)
+        setPlayerStyle(PlayerStyle::Fullscreen);
+    else
+        setPlayerStyle(PlayerStyle::Normal);
 }

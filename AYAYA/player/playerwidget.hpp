@@ -9,19 +9,25 @@ class PlayerImpl;
 
 class ControlsWidget;
 
+enum class PlayerBackend {
+    MPV,
+    // TODO QtAV
+    // TODO ??
+};
+
+enum class PlayerStyle {
+    Normal,
+    Theater,
+    Fullscreen
+};
+
 class PlayerWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
-    enum class Backend {
-        MPV,
-        // TODO QtAV
-        // TODO ??
-    };
-
     explicit PlayerWidget(QWidget* parent = nullptr);
     ~PlayerWidget();
 
-    void setBackend(Backend);
+    void setBackend(PlayerBackend);
 
     void openStream(const QString&);
     void resetStream();
@@ -29,11 +35,15 @@ public:
     void setVolume(int);
     int volume() const;
 
-    void setFullscreen(bool);
+    void setPlayerStyle(PlayerStyle style);
+    const PlayerStyle& playerStyle() const;
 
     ControlsWidget* controlsWidget();
 
 signals:
+    void startedBackendInit();
+    void backendChanged(PlayerBackend);
+
     void startedLoading();
     void loaded();
     void ended();
@@ -41,6 +51,8 @@ signals:
     void resized();
     void positionChanged(double);
     void volumeChanged(int);
+
+    void playerStyleChanged(PlayerStyle, PlayerStyle);
 
 protected:
     virtual void leaveEvent(QEvent*) override;
@@ -53,7 +65,8 @@ protected:
 
 private:
     detail::PlayerImpl* m_impl;
-    Backend m_backend;
+    PlayerBackend m_backend;
+    PlayerStyle m_playerStyle;
 
     // ControlsWidget
     void setupOverlay();
@@ -63,6 +76,8 @@ private:
     void onPressedResetButton();
     void onPressedMuteButton();
     void onVolumeChanged(int);
+    void onPressedTheaterButton();
+    void onPressedFullscreenButton();
 };
 
 #endif // PLAYERWIDGET_HPP

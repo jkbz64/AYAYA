@@ -2,14 +2,14 @@
 #define STREAMWIDGET_HPP
 
 #include "mainwidget.hpp"
-#include <QWidget>
+#include "player/playerwidget.hpp"
 
 namespace Twitch {
 class Stream;
 class User;
 }
 
-class PlayerWidget;
+class ChatWidget;
 
 namespace Ui {
 class StreamWidget;
@@ -25,24 +25,20 @@ public:
 
     void initialize(const Twitch::User&, const Twitch::Stream&);
 
+    PlayerWidget* player() const;
+    ChatWidget* chat() const;
+
 signals:
     void enteredTheaterMode();
-    void leftTheaterMode();
     void enteredFullscreenMode();
-    void leftFullscreenMode();
+    void leftWindowMode();
 
 private:
     Ui::StreamWidget* m_ui;
 
-    enum class WatchMode {
-        Normal,
-        Theater,
-        Fullscreen
-    } m_currentMode;
-
     void onSplitterMoved();
-    void onPressedTheaterButton();
-    void onPressedFullscreenButton();
+    void onPlayerStyleChanged(PlayerStyle, PlayerStyle);
+    void onChatProgress();
 };
 
 #endif // LIVESTREAMWIDGET_HPP

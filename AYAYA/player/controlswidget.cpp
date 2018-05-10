@@ -70,7 +70,6 @@ int ControlsWidget::currentVolume()
 void ControlsWidget::onStartedLoading()
 {
     m_ui->m_restartButton->blockSignals(true);
-    m_ui->m_restartButton->setText("");
     m_loadingGif->start();
 }
 

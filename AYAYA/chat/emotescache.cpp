@@ -86,11 +86,13 @@ EmotesCache::~EmotesCache()
 
 void EmotesCache::initCache()
 {
+    emit startedInitingCache();
     auto cacheDirectory = ensureCache();
 
     // We're using new QFile because m_cacheFile's buffor might be at the end of the file
     QFile cachedEmotesFile(cacheDirectory.absoluteFilePath("cachedEmotes.csv"));
     if (cachedEmotesFile.open(QIODevice::ReadOnly)) {
+        int emoteCount = 1;
         while (!cachedEmotesFile.atEnd()) {
             auto emotePair = cachedEmotesFile.readLine().split(',');
             QString emotePath = emotePair.first();
@@ -105,9 +107,11 @@ void EmotesCache::initCache()
                 Twitch::Emote::ImageType::PNG,
                 emoteTypeToUrl(emoteType).replace("{{id}}", id)
             };
+            emit initProgress(emoteCount++);
         }
     }
     scheduleProcessing();
+    emit endedInitingCache();
 }
 
 void EmotesCache::clearCache()
@@ -211,8 +215,7 @@ void EmotesCache::processQueuedEmotes()
                 cacheEmote(emote, image);
             }
         }
-        emit processProgress(currentEmote, m_emotesQueue.size() - 1);
-        currentEmote += 1;
+        emit processProgress(currentEmote++, m_emotesQueue.size() - 1);
     }
     m_emotesQueue.clear();
     // Set interval just in case timer was started before processing all elements

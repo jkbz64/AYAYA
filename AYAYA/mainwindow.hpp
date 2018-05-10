@@ -27,16 +27,18 @@ private:
     QVector<MainWidget*> m_initQueue;
     void setupInitWidget(MainWidget*);
     void initNextWidget();
+
 private slots:
 
+    void onInitStarted();
     void onInitProgress(const QString&);
+    void onEndedIniting();
 
     void onStreamEntered(const Twitch::User&, const Twitch::Stream&);
 
     void onEnteredTheaterMode();
     void onEnteredFullscreenMode();
-    void onLeftTheaterMode();
-    void onLeftFullscreenMode();
+    void onLeftWindowMode();
 };
 
 #endif // MAINWINDOW_H
