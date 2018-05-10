@@ -37,6 +37,11 @@ void PlayerWidget::setBackend(PlayerBackend backend)
     emit backendChanged(backend);
 }
 
+const PlayerBackend& PlayerWidget::backend() const
+{
+    return m_backend;
+}
+
 void PlayerWidget::openStream(const QString& streamName)
 {
     if (m_impl)
@@ -83,15 +88,11 @@ ControlsWidget* PlayerWidget::controlsWidget()
     return m_controlsWidget;
 }
 
-void PlayerWidget::leaveEvent(QEvent* event)
-{
-    QOpenGLWidget::leaveEvent(event);
-}
-
 void PlayerWidget::mouseMoveEvent(QMouseEvent* event)
 {
     QOpenGLWidget::mouseMoveEvent(event);
-    m_controlsWidget->show();
+    if (m_controlsWidget->isHidden())
+        m_controlsWidget->show();
     m_controlsWidget->resetFadeTimer();
 }
 

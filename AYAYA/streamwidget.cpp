@@ -1,17 +1,38 @@
 #include "streamwidget.hpp"
 #include "ui_streamwidget.h"
 
+#include <QSettings>
+
 #include <TwitchQt/twitchstream.hpp>
 #include <TwitchQt/twitchuser.hpp>
 
 #include "chat/emotescache.hpp"
 #include "player/controlswidget.hpp"
+#include "player/playerwidget.hpp"
+
+namespace {
+QString backendName(const PlayerBackend backend)
+{
+    switch (backend) {
+    case PlayerBackend::MPV:
+        return QString("MPV");
+        break;
+    }
+}
+}
 
 StreamWidget::StreamWidget(QWidget* parent)
-    : MainWidget(parent)
+    : InitWidget(parent)
     , m_ui(new Ui::StreamWidget)
 {
     m_ui->setupUi(this);
+
+    // Init signals
+    connect(player(), &PlayerWidget::startedBackendInit, this, &StreamWidget::onStartedBackendInit);
+    connect(player(), &PlayerWidget::backendChanged, this, &StreamWidget::onBackendChanged);
+    connect(chat()->cache(), &EmotesCache::startedInitingCache, this, &StreamWidget::onStartedInitingCache);
+    connect(chat()->cache(), &EmotesCache::initProgress, this, &StreamWidget::onCacheInitProgress);
+    connect(chat()->cache(), &EmotesCache::endedInitingCache, this, &StreamWidget::onEndedInitingCache);
 
     connect(player(), &PlayerWidget::playerStyleChanged, this, &StreamWidget::onPlayerStyleChanged);
     connect(this, &StreamWidget::enteredTheaterMode, player(), &PlayerWidget::resetStream);
@@ -28,18 +49,6 @@ StreamWidget::~StreamWidget()
 
 void StreamWidget::init()
 {
-    connect(m_ui->m_chat->cache(), &EmotesCache::startedInitingCache, [this]() {
-        emit initProgress("Initing Stream Widget");
-    });
-
-    connect(chat()->cache(), &EmotesCache::initProgress, [this](int count) {
-        emit initProgress("Loading cached emotes: " + QString::number(count));
-    });
-
-    connect(chat()->cache(), &EmotesCache::endedInitingCache, [this]() {
-        emit endedIniting();
-    });
-
     chat()->cache()->initCache();
     player()->setBackend(PlayerBackend::MPV);
 }
@@ -58,6 +67,13 @@ PlayerWidget* StreamWidget::player() const
 ChatWidget* StreamWidget::chat() const
 {
     return m_ui->m_chat;
+}
+
+bool StreamWidget::checkInitStatus()
+{
+    const auto cacheInited = isFulfilled("emoteCache");
+    const auto backendInited = isFulfilled("backend");
+    return cacheInited && backendInited;
 }
 
 void StreamWidget::onSplitterMoved()
@@ -91,4 +107,36 @@ void StreamWidget::onPlayerStyleChanged(PlayerStyle oldStyle, PlayerStyle newSty
             emit leftWindowMode();
         }
     }
+}
+
+void StreamWidget::onStartedBackendInit()
+{
+    emit initProgress("Initing video backend");
+}
+
+void StreamWidget::onBackendChanged(PlayerBackend backend)
+{
+    emit initProgress("Inited " + backendName(backend) + " backend");
+    setRequirementFulfilled("backend");
+    // TODO Backend specific actions
+
+    tryToEndInit();
+}
+
+void StreamWidget::onStartedInitingCache()
+{
+    emit initProgress("Initing emotes cache...");
+}
+
+void StreamWidget::onCacheInitProgress(int count)
+{
+    emit initProgress("Loaded " + QString::number(count) + "emotes");
+}
+
+void StreamWidget::onEndedInitingCache()
+{
+    emit initProgress("Initialized emotes cache!");
+    setRequirementFulfilled("emoteCache");
+
+    tryToEndInit();
 }

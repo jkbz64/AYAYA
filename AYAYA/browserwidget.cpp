@@ -7,7 +7,7 @@
 #include "browser/streamitemwidget.hpp"
 
 BrowserWidget::BrowserWidget(QWidget* parent)
-    : MainWidget(parent)
+    : InitWidget(parent)
     , m_ui(new Ui::BrowserWidget)
     , m_settings()
     , m_api(new Twitch::Api("hqq61vsp32mvxsfhy6a9o7eemxdv5e", this))
@@ -24,13 +24,13 @@ BrowserWidget::~BrowserWidget()
 
 void BrowserWidget::init()
 {
-    emit initProgress("Fetching Top Twitch Games");
     showTopGames();
-    emit endedIniting();
 }
 
 void BrowserWidget::showTopGames()
 {
+    emit initProgress("Fetching Top Twitch Games");
+
     m_ui->m_gameBrowser->clear();
     m_ui->m_browserStack->setCurrentWidget(m_ui->m_gameBrowser);
 
@@ -48,6 +48,7 @@ void BrowserWidget::showTopGames()
             for (auto widget : widgets)
                 gameWidgets.push_back(qobject_cast<GameItemWidget*>(widget));
             performUpdate(gameWidgets);
+            tryToEndInit();
         }
     });
 }

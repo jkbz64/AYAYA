@@ -4,6 +4,7 @@
 
 #include <QMovie>
 #include <QPropertyAnimation>
+#include <QStandardPaths>
 #include <QTimer>
 
 MainWindow::MainWindow(QWidget* parent)
@@ -13,7 +14,6 @@ MainWindow::MainWindow(QWidget* parent)
     m_ui->setupUi(this);
     // Splash screen clap face
     auto clapFace = new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this);
-    clapFace->start();
     m_ui->m_clapFace->setMovie(clapFace);
 
     // Browse
@@ -42,12 +42,12 @@ void MainWindow::init()
     initNextWidget();
 }
 
-void MainWindow::setupInitWidget(MainWidget* widget)
+void MainWindow::setupInitWidget(InitWidget* widget)
 {
-    connect(widget, &MainWidget::startedIniting, this, &MainWindow::onInitStarted);
-    // I guess queued conection works better in this case... but I may be mistaken?
-    connect(widget, &MainWidget::initProgress, this, &MainWindow::onInitProgress, Qt::QueuedConnection);
-    connect(widget, &MainWidget::endedIniting, this, &MainWindow::onEndedIniting, Qt::DirectConnection);
+    connect(widget, &InitWidget::startedIniting, this, &MainWindow::onInitStarted);
+    // Queued Connection lets us see some init progress logs ;)
+    connect(widget, &InitWidget::initProgress, this, &MainWindow::onInitProgress, Qt::QueuedConnection);
+    connect(widget, &InitWidget::endedIniting, this, &MainWindow::onEndedIniting);
     emit widget->startedIniting();
 }
 
@@ -62,6 +62,8 @@ void MainWindow::initNextWidget()
 
 void MainWindow::onInitStarted()
 {
+    m_ui->m_centralStack->setCurrentWidget(m_ui->m_splashWidget);
+    m_ui->m_clapFace->movie()->start();
     m_ui->m_statusLabel->setText("Initing...");
 }
 
@@ -72,12 +74,20 @@ void MainWindow::onInitProgress(const QString& progressText)
 
 void MainWindow::onEndedIniting()
 {
+    auto initedWidget = qobject_cast<InitWidget*>(sender());
+    disconnect(initedWidget, &InitWidget::startedIniting, 0, 0);
+    disconnect(initedWidget, &InitWidget::initProgress, 0, 0);
+    disconnect(initedWidget, &InitWidget::endedIniting, 0, 0);
+
     if (!m_initQueue.empty()) {
         initNextWidget();
     } else {
-        m_ui->m_clapFace->movie()->stop();
+        QTimer::singleShot(250, this, [this]() {
+            m_ui->m_statusLabel->setText("AYAYA is now starting");
+        });
         // Let the user see the pretty sun... even if it's for a second :)
         QTimer::singleShot(1000, this, [this]() {
+            m_ui->m_clapFace->movie()->stop();
             m_ui->m_centralStack->setCurrentWidget(m_ui->m_mainWidget);
         });
     }

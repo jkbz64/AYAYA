@@ -1,7 +1,7 @@
 #ifndef BROWSERWIDGET_H
 #define BROWSERWIDGET_H
 
-#include "mainwidget.hpp"
+#include "initwidget.hpp"
 #include <QSettings>
 #include <TwitchQt/Twitch>
 
@@ -13,7 +13,7 @@ namespace Ui {
 class BrowserWidget;
 }
 
-class BrowserWidget : public MainWidget {
+class BrowserWidget : public InitWidget {
     Q_OBJECT
 public:
     explicit BrowserWidget(QWidget* parent = nullptr);

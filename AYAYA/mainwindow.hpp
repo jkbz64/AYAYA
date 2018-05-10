@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QDir>
 #include <QMainWindow>
 
 namespace Twitch {
@@ -11,7 +12,7 @@ class Stream;
 namespace Ui {
 class MainWindow;
 }
-class MainWidget;
+class InitWidget;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -24,8 +25,8 @@ public:
 
 private:
     Ui::MainWindow* m_ui;
-    QVector<MainWidget*> m_initQueue;
-    void setupInitWidget(MainWidget*);
+    QVector<InitWidget*> m_initQueue;
+    void setupInitWidget(InitWidget*);
     void initNextWidget();
 
 private slots:

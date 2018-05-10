@@ -28,6 +28,7 @@ public:
     ~PlayerWidget();
 
     void setBackend(PlayerBackend);
+    const PlayerBackend& backend() const;
 
     void openStream(const QString&);
     void resetStream();
@@ -41,9 +42,11 @@ public:
     ControlsWidget* controlsWidget();
 
 signals:
+    // Backend
     void startedBackendInit();
     void backendChanged(PlayerBackend);
 
+    // Stream
     void startedLoading();
     void loaded();
     void ended();
@@ -52,10 +55,10 @@ signals:
     void positionChanged(double);
     void volumeChanged(int);
 
+    // Player-specific
     void playerStyleChanged(PlayerStyle, PlayerStyle);
 
 protected:
-    virtual void leaveEvent(QEvent*) override;
     virtual void mouseMoveEvent(QMouseEvent*) override;
     virtual void mouseDoubleClickEvent(QMouseEvent*) override;
 

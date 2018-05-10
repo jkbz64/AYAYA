@@ -1,7 +1,7 @@
 #ifndef STREAMWIDGET_HPP
 #define STREAMWIDGET_HPP
 
-#include "mainwidget.hpp"
+#include "initwidget.hpp"
 #include "player/playerwidget.hpp"
 
 namespace Twitch {
@@ -15,7 +15,7 @@ namespace Ui {
 class StreamWidget;
 }
 
-class StreamWidget : public MainWidget {
+class StreamWidget : public InitWidget {
     Q_OBJECT
 
 public:
@@ -33,8 +33,18 @@ signals:
     void enteredFullscreenMode();
     void leftWindowMode();
 
+protected:
+    virtual bool checkInitStatus() override;
+
 private:
     Ui::StreamWidget* m_ui;
+
+    // Init slots
+    void onStartedBackendInit();
+    void onBackendChanged(PlayerBackend);
+    void onStartedInitingCache();
+    void onCacheInitProgress(int);
+    void onEndedInitingCache();
 
     void onSplitterMoved();
     void onPlayerStyleChanged(PlayerStyle, PlayerStyle);
