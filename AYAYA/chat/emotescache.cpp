@@ -142,7 +142,7 @@ void EmotesCache::fetchGlobalEmotes()
         auto emotes = globalEmotesReply->toEmotes();
         m_emotesQueue << emotes;
 
-        { // Subscribers emotes fetching
+        /*{ // Subscribers emotes fetching
             auto subscribersEmotesReply = m_api->getTwitchSubscriberEmotes();
             connect(subscribersEmotesReply, &Twitch::Reply::finished, [this, subscribersEmotesReply]() {
                 auto emotes = subscribersEmotesReply->toEmotes();
@@ -157,7 +157,8 @@ void EmotesCache::fetchGlobalEmotes()
                 const QString totalString = total != -1 ? QString::number(bytesToMB(total)) + QString("MB") : QString("?");
                 emit globalEmotesFetchProgress(EmotesBackend::TwitchEmotes, QString::number(bytesToMB(current)) + "MB", totalString);
             });
-        }
+        }*/
+        emit fetchedGlobalEmotes();
     });
 
     connect(globalEmotesReply, &Twitch::Reply::downloadProgress, [this](qint64 current, qint64 total) {

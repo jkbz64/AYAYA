@@ -28,14 +28,21 @@ StreamWidget::StreamWidget(QWidget* parent)
     m_ui->setupUi(this);
 
     // Init signals
+    // Backend
     connect(player(), &PlayerWidget::startedBackendInit, this, &StreamWidget::onStartedBackendInit);
     connect(player(), &PlayerWidget::backendChanged, this, &StreamWidget::onBackendChanged);
+    // Init-Cache
     connect(chat()->cache(), &EmotesCache::startedInitingCache, this, &StreamWidget::onStartedInitingCache);
     connect(chat()->cache(), &EmotesCache::initProgress, this, &StreamWidget::onCacheInitProgress);
     connect(chat()->cache(), &EmotesCache::endedInitingCache, this, &StreamWidget::onEndedInitingCache);
+    // Glboal emotes
     connect(chat()->cache(), &EmotesCache::startedFetchingGlobalEmotes, this, &StreamWidget::onStartedFetchingGlobalEmotes);
     connect(chat()->cache(), &EmotesCache::globalEmotesFetchProgress, this, &StreamWidget::onGlobalEmotesFetchProgress);
     connect(chat()->cache(), &EmotesCache::fetchedGlobalEmotes, this, &StreamWidget::onFetchedGlobalEmotes);
+    // Processing
+    connect(chat()->cache(), &EmotesCache::startedProcessing, this, &StreamWidget::onStartedProcessing);
+    connect(chat()->cache(), &EmotesCache::processProgress, this, &StreamWidget::onProcessProgress);
+    connect(chat()->cache(), &EmotesCache::endedProcessing, this, &StreamWidget::onEndedProcessing);
 
     connect(player(), &PlayerWidget::playerStyleChanged, this, &StreamWidget::onPlayerStyleChanged);
     connect(this, &StreamWidget::enteredTheaterMode, player(), &PlayerWidget::resetStream);
@@ -66,6 +73,8 @@ void StreamWidget::init()
             chat()->cache()->fetchGlobalEmotes();
         } else
             QApplication::quit();
+    } else {
+        setRequirementFulfilled("agreedToDownload");
     }
 }
 
@@ -92,9 +101,10 @@ bool StreamWidget::checkInitStatus()
     auto emotesDownloaded = false;
     if (initSettings().contains("lastGlobalFetchDate")) {
         QDateTime lastGlobalFetchDate = initSettings().value("lastGlobalFetchDate").toDateTime();
-        emotesDownloaded = lastGlobalFetchDate.daysTo(QDateTime::currentDateTime()) < 1;
+        emotesDownloaded = lastGlobalFetchDate.daysTo(QDateTime::currentDateTime()) <= 1;
     }
     const auto backendInited = isFulfilled("backend");
+    const auto processedEmotes = isFulfilled("processedEmotes");
     return cacheInited && agreedToDownload && emotesDownloaded && backendInited;
 }
 
@@ -180,5 +190,22 @@ void StreamWidget::onFetchedGlobalEmotes()
 {
     emit initProgress("Fetched successfully global emotes");
     initSettings().setValue("lastGlobalFetchDate", QDateTime::currentDateTime());
+    tryToEndInit();
+}
+
+void StreamWidget::onStartedProcessing()
+{
+    emit initProgress("Processing emotes...");
+}
+
+void StreamWidget::onProcessProgress(int current, int total)
+{
+    emit initProgress("Processing emotes: " + QString::number(current) + " / " + QString::number(total));
+}
+
+void StreamWidget::onEndedProcessing()
+{
+    emit initProgress("Processed emotes");
+    setRequirementFulfilled("processedEmotes");
     tryToEndInit();
 }

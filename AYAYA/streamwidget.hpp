@@ -51,6 +51,10 @@ private:
     void onGlobalEmotesFetchProgress(EmotesBackend, const QString&, const QString&);
     void onFetchedGlobalEmotes();
 
+    void onStartedProcessing();
+    void onProcessProgress(int, int);
+    void onEndedProcessing();
+
     void onSplitterMoved();
     void onPlayerStyleChanged(PlayerStyle, PlayerStyle);
     void onChatProgress();
