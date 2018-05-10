@@ -1,6 +1,7 @@
 #ifndef INITWIDGET_HPP
 #define INITWIDGET_HPP
 
+#include <QSettings>
 #include <QWidget>
 
 class InitWidget : public QWidget {
@@ -8,6 +9,8 @@ class InitWidget : public QWidget {
 public:
     explicit InitWidget(QWidget* = nullptr);
     virtual ~InitWidget();
+
+    QSettings& initSettings();
 
     virtual void init() = 0;
 signals:

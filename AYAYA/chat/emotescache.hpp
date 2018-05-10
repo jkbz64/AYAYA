@@ -7,6 +7,12 @@
 
 class QTimer;
 
+enum class EmotesBackend {
+    TwitchEmotes,
+    BTTV,
+    FFZ
+};
+
 class EmotesCache : public QObject {
     Q_OBJECT
 public:
@@ -31,6 +37,12 @@ signals:
     void processProgress(int, int);
     void endedProcessing();
     void emoteCached(QPair<Twitch::Emote, QImage>);
+
+    void startedFetchingGlobalEmotes();
+    void globalEmotesFetchProgress(EmotesBackend, const QString&, const QString&);
+    void fetchedGlobalEmotes();
+
+    void fetchedChannelEmotes(const QString&);
 
 private:
     Twitch::Api* m_api;

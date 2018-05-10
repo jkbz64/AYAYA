@@ -68,6 +68,10 @@ void saveEmoteImage(const QImage& image, QFile& imageFile, const Twitch::Emote& 
         break;
     }
 }
+qint64 bytesToMB(qint64 bytes)
+{
+    return bytes / 1000000;
+}
 }
 
 EmotesCache::EmotesCache(QObject* parent)
@@ -137,7 +141,28 @@ void EmotesCache::fetchGlobalEmotes()
     connect(globalEmotesReply, &Twitch::Reply::finished, [this, globalEmotesReply]() {
         auto emotes = globalEmotesReply->toEmotes();
         m_emotesQueue << emotes;
-        scheduleProcessing();
+
+        { // Subscribers emotes fetching
+            auto subscribersEmotesReply = m_api->getTwitchSubscriberEmotes();
+            connect(subscribersEmotesReply, &Twitch::Reply::finished, [this, subscribersEmotesReply]() {
+                auto emotes = subscribersEmotesReply->toEmotes();
+                m_emotesQueue << emotes;
+                scheduleProcessing();
+                // I know, in real scenario we won't know which file is the biggest but in this case come on...
+                // This file has over 100MB...
+                emit fetchedGlobalEmotes();
+            });
+
+            connect(subscribersEmotesReply, &Twitch::Reply::downloadProgress, [this](qint64 current, qint64 total) {
+                const QString totalString = total != -1 ? QString::number(bytesToMB(total)) + QString("MB") : QString("?");
+                emit globalEmotesFetchProgress(EmotesBackend::TwitchEmotes, QString::number(bytesToMB(current)) + "MB", totalString);
+            });
+        }
+    });
+
+    connect(globalEmotesReply, &Twitch::Reply::downloadProgress, [this](qint64 current, qint64 total) {
+        const QString totalString = total != -1 ? QString::number(bytesToMB(total)) + QString("MB") : QString("?");
+        emit globalEmotesFetchProgress(EmotesBackend::TwitchEmotes, QString::number(bytesToMB(current)) + "MB", totalString);
     });
 
     connect(bttvEmotesReply, &Twitch::Reply::finished, [this, bttvEmotesReply]() {
@@ -146,25 +171,29 @@ void EmotesCache::fetchGlobalEmotes()
         scheduleProcessing();
     });
 
+    connect(bttvEmotesReply, &Twitch::Reply::downloadProgress, [this](qint64 current, qint64 total) {
+        const QString totalString = total != -1 ? QString::number(bytesToMB(total)) + QString("MB") : QString("?");
+        emit globalEmotesFetchProgress(EmotesBackend::BTTV, QString::number(bytesToMB(current)) + "MB", totalString);
+    });
+
     connect(ffzEmotesReply, &Twitch::Reply::finished, [this, ffzEmotesReply]() {
         auto emotes = ffzEmotesReply->toEmotes();
         m_emotesQueue << emotes;
         scheduleProcessing();
     });
+
+    connect(ffzEmotesReply, &Twitch::Reply::downloadProgress, [this](qint64 current, qint64 total) {
+        const QString totalString = total != -1 ? QString::number(bytesToMB(total)) + QString("MB") : QString("?");
+        emit globalEmotesFetchProgress(EmotesBackend::FFZ, QString::number(bytesToMB(current)) + "MB", totalString);
+    });
+
+    emit startedFetchingGlobalEmotes();
 }
 
 void EmotesCache::fetchChannelEmotes(const QString& channel)
 {
-    // FIXME fill it when we know the endpoint
-    //auto twitchEmotesReply = m_api->getTwitchSubscriberEmotesByChannel(channel);
     auto bttvEmotesReply = m_api->getBTTVSubscriberEmotesByChannel(channel);
     auto ffzEmotesReply = m_api->getFFZSubscriberEmotesByChannel(channel);
-
-    /*connect(twitchEmotesReply, &Twitch::Reply::finished, [this, twitchEmotesReply]() {
-        auto emotes = twitchEmotesReply->toEmotes();
-        //m_emotesQueue << emotes;
-        scheduleProcessing();
-    });*/
 
     connect(bttvEmotesReply, &Twitch::Reply::finished, [this, bttvEmotesReply]() {
         auto emotes = bttvEmotesReply->toEmotes();

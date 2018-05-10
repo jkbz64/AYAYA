@@ -1,6 +1,7 @@
 #ifndef STREAMWIDGET_HPP
 #define STREAMWIDGET_HPP
 
+#include "chat/emotescache.hpp"
 #include "initwidget.hpp"
 #include "player/playerwidget.hpp"
 
@@ -45,6 +46,10 @@ private:
     void onStartedInitingCache();
     void onCacheInitProgress(int);
     void onEndedInitingCache();
+
+    void onStartedFetchingGlobalEmotes();
+    void onGlobalEmotesFetchProgress(EmotesBackend, const QString&, const QString&);
+    void onFetchedGlobalEmotes();
 
     void onSplitterMoved();
     void onPlayerStyleChanged(PlayerStyle, PlayerStyle);

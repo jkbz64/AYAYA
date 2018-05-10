@@ -1,10 +1,21 @@
 #include "initwidget.hpp"
 #include <QMainWindow>
+#include <mutex>
+
+namespace {
+// I was just too lazy to check if qsettings is shared between InitWidgets, lol.
+QSettings m_initSettings("initSettings", QSettings::NativeFormat);
+}
 
 InitWidget::InitWidget(QWidget* parent)
     : QWidget(parent)
 {
     connect(this, &InitWidget::startedIniting, this, &InitWidget::onStartedIniting);
+}
+
+QSettings& InitWidget::initSettings()
+{
+    return m_initSettings;
 }
 
 bool InitWidget::isFulfilled(const QString& key)
