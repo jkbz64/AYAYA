@@ -153,11 +153,10 @@ void PlayerWidget::onPressedResetButton()
 void PlayerWidget::onPressedMuteButton()
 {
     if (m_beforeMuteVolume != -1) {
-        setVolume(m_beforeMuteVolume);
+        setVolume(0);
         m_beforeMuteVolume = -1;
     } else {
-        m_beforeMuteVolume = controlsWidget()->currentVolume();
-        setVolume(0);
+        setVolume(m_beforeMuteVolume);
     }
 }
 

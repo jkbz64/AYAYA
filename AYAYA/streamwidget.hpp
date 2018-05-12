@@ -41,6 +41,7 @@ private:
     Ui::StreamWidget* m_ui;
 
     // Init slots
+    void onPlayerStyleChanged(PlayerStyle, PlayerStyle);
     void onStartedBackendInit();
     void onBackendChanged(PlayerBackend);
     void onStartedInitingCache();
@@ -56,7 +57,6 @@ private:
     void onEndedProcessing();
 
     void onSplitterMoved();
-    void onPlayerStyleChanged(PlayerStyle, PlayerStyle);
     void onChatProgress();
 };
 

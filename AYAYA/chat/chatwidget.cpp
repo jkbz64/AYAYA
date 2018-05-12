@@ -15,8 +15,6 @@ ChatWidget::ChatWidget(QWidget* parent)
 {
     m_ui->setupUi(this);
 
-    connect(m_emotesCache, &EmotesCache::emoteCached, this, &ChatWidget::onEmoteCached);
-
     connect(m_chatClient, &ChatClient::joined, this, &ChatWidget::onJoined);
     connect(m_chatClient, &ChatClient::disconnected, this, &ChatWidget::onDisconnected);
     connect(m_chatClient, &ChatClient::messageReceived, this, &ChatWidget::onMessageReceived);
@@ -57,13 +55,13 @@ ChatClient* ChatWidget::client() const
 
 void ChatWidget::onMessageReceived(const QString& author, const QString& message)
 {
-    auto editedMessage = message;
+    /*   auto editedMessage = message;
     QStringList words = message.split(QRegExp("[\r\n\t ]+"), QString::SkipEmptyParts);
     for (const auto& word : words) {
         if (m_emotesCache->hasEmote(word.simplified()))
             editedMessage.replace(word, "<img src=\"" + word + "\" />");
     }
-    m_ui->m_chatView->addMessage(author + ": " + editedMessage);
+    m_ui->m_chatView->addMessage(author + ": " + editedMessage);*/
 }
 
 void ChatWidget::onJoined()
@@ -86,5 +84,5 @@ void ChatWidget::rejoin()
 
 void ChatWidget::onEmoteCached(QPair<Twitch::Emote, QImage> emote)
 {
-    m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first.m_code), QVariant(emote.second));
+    m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first.code()), QVariant(emote.second));
 }

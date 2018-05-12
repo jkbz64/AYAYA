@@ -22,43 +22,32 @@ public:
     void initCache();
     void clearCache();
     bool hasEmote(const QString&);
+    void processQueuedEmotes();
 
     void fetchGlobalEmotes();
     void fetchChannelEmotes(const QString&);
 
-    void forceProcessing();
-
 signals:
-    void startedInitingCache();
-    void initProgress(int);
-    void endedInitingCache();
+    void clearedCache();
 
-    void startedProcessing();
-    void processProgress(int, int);
-    void endedProcessing();
-    void emoteCached(QPair<Twitch::Emote, QImage>);
+    void startedInitingCache();
+    void endedInitingCache();
 
     void startedFetchingGlobalEmotes();
     void globalEmotesFetchProgress(EmotesBackend, const QString&, const QString&);
     void fetchedGlobalEmotes();
-
     void fetchedChannelEmotes(const QString&);
+
+    void queuedEmotes();
 
 private:
     Twitch::Api* m_api;
+    QDir ensureCacheDirectory();
 
+    bool m_inited;
     QVector<Twitch::Emote> m_emotesQueue;
-    int m_processInterval;
-    QTimer* m_processTimer;
-    void scheduleProcessing();
-    void processQueuedEmotes();
-
-    QHash<QString, QImage> m_cachedEmotes;
-    QDir ensureCache();
-    bool isCached(const Twitch::Emote&);
-    QFile m_cacheFile;
-    void cacheEmote(const Twitch::Emote&, const QImage&);
-    void appendEmoteToCacheFile(const Twitch::Emote&);
+    bool loadGlobalEmotes();
+    void loadEmotes(const Twitch::Emotes&);
 };
 
 #endif // EMOTESCACHE_HPP
