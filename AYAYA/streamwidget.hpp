@@ -32,7 +32,7 @@ public:
 signals:
     void enteredTheaterMode();
     void enteredFullscreenMode();
-    void leftWindowMode();
+    void leftFullscreenMode();
 
 protected:
     virtual bool checkInitStatus() override;

@@ -20,7 +20,10 @@ ChatClient::ChatClient(QObject* parent)
 {
 }
 
-ChatClient::~ChatClient() = default;
+ChatClient::~ChatClient()
+{
+    delete m_connection;
+}
 
 void ChatClient::setupConnection()
 {

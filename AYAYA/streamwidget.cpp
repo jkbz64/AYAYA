@@ -40,11 +40,11 @@ StreamWidget::StreamWidget(QWidget* parent)
     connect(chat()->cache(), &EmotesCache::fetchedGlobalEmotes, this, &StreamWidget::onFetchedGlobalEmotes);
     // Processing
     connect(player(), &PlayerWidget::playerStyleChanged, this, &StreamWidget::onPlayerStyleChanged);
-    connect(this, &StreamWidget::enteredTheaterMode, player(), &PlayerWidget::resetStream);
-    connect(this, &StreamWidget::enteredFullscreenMode, player(), &PlayerWidget::resetStream);
-    connect(this, &StreamWidget::leftWindowMode, player(), &PlayerWidget::resetStream);
 
     connect(m_ui->splitter, &QSplitter::splitterMoved, this, &StreamWidget::onSplitterMoved);
+
+    layout()->setSpacing(0);
+    layout()->setMargin(0);
 }
 
 StreamWidget::~StreamWidget()
@@ -61,14 +61,13 @@ bool StreamWidget::checkInitStatus()
         emotesDownloaded = lastGlobalFetchDate.daysTo(QDateTime::currentDateTime()) <= 1;
     }
     const auto backendInited = isFulfilled("backend");
-    qDebug() << cacheInited << emotesDownloaded << backendInited;
     return cacheInited && emotesDownloaded && backendInited;
 }
 
 void StreamWidget::init()
 {
-    chat()->cache()->initCache();
     player()->setBackend(PlayerBackend::MPV);
+    chat()->cache()->initCache();
 }
 
 void StreamWidget::initialize(const Twitch::User& user, const Twitch::Stream& stream)
@@ -92,31 +91,24 @@ void StreamWidget::onSplitterMoved()
     m_ui->m_chat->followChat();
 }
 
-void StreamWidget::onPlayerStyleChanged(PlayerStyle oldStyle, PlayerStyle newStyle)
+void StreamWidget::onPlayerStyleChanged(PlayerStyle, PlayerStyle newStyle)
 {
-    if (oldStyle == PlayerStyle::Normal) {
-        setWindowFlag(Qt::Window);
-        if (newStyle == PlayerStyle::Theater) {
-            setWindowTitle("AYAYA - Theater Mode");
-            showMaximized();
-            emit enteredTheaterMode();
-        } else {
-            setWindowTitle("AYAYA - Fullscreen");
-            showFullScreen();
-            emit enteredFullscreenMode();
-        }
+    if (newStyle == PlayerStyle::Theater) {
+        chat()->hide();
+        chat()->hideInput();
+        chat()->setParent(player());
+        chat()->show();
+
+        emit enteredTheaterMode();
+    } else if (newStyle == PlayerStyle::Fullscreen) {
+        chat()->hide();
+
+        emit enteredFullscreenMode();
     } else {
-        if (newStyle == PlayerStyle::Fullscreen) {
-            showFullScreen();
-            emit enteredFullscreenMode();
-        } else if (newStyle == PlayerStyle::Theater) {
-            showMaximized();
-            emit enteredTheaterMode();
-        } else {
-            setWindowFlag(Qt::Widget);
-            showNormal();
-            emit leftWindowMode();
-        }
+        chat()->show();
+        m_ui->splitter->insertWidget(1, chat());
+
+        emit leftFullscreenMode();
     }
 }
 

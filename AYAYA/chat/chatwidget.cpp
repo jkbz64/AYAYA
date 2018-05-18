@@ -18,6 +18,8 @@ ChatWidget::ChatWidget(QWidget* parent)
     connect(m_chatClient, &ChatClient::joined, this, &ChatWidget::onJoined);
     connect(m_chatClient, &ChatClient::disconnected, this, &ChatWidget::onDisconnected);
     connect(m_chatClient, &ChatClient::messageReceived, this, &ChatWidget::onMessageReceived);
+
+    connect(m_emotesCache, &EmotesCache::loadedEmote, this, &ChatWidget::onEmoteLoaded);
 }
 
 ChatWidget::~ChatWidget()
@@ -28,7 +30,7 @@ ChatWidget::~ChatWidget()
 void ChatWidget::openChat(const Twitch::User& user)
 {
     m_chatClient->joinChannel(user.m_login);
-    m_emotesCache->fetchChannelEmotes(user.m_login);
+    m_emotesCache->loadChannelEmotes(user);
 }
 
 bool ChatWidget::isFollowingChat()
@@ -53,15 +55,22 @@ ChatClient* ChatWidget::client() const
     return m_chatClient;
 }
 
+void ChatWidget::hideInput()
+{
+    m_ui->m_messageEdit->hide();
+    m_ui->m_sendButton->hide();
+}
+
 void ChatWidget::onMessageReceived(const QString& author, const QString& message)
 {
-    /*   auto editedMessage = message;
-    QStringList words = message.split(QRegExp("[\r\n\t ]+"), QString::SkipEmptyParts);
+    auto editedMessage = message;
+    const auto words = QSet<QString>::fromList(message.split(QRegExp("[\r\n\t ]+")));
     for (const auto& word : words) {
-        if (m_emotesCache->hasEmote(word.simplified()))
+        if (m_emotesCache->isEmoteLoaded(word.simplified())) {
             editedMessage.replace(word, "<img src=\"" + word + "\" />");
+        }
     }
-    m_ui->m_chatView->addMessage(author + ": " + editedMessage);*/
+    m_ui->m_chatView->addMessage(author + ": " + editedMessage);
 }
 
 void ChatWidget::onJoined()
@@ -82,7 +91,8 @@ void ChatWidget::rejoin()
     // TODO rejoining strategy
 }
 
-void ChatWidget::onEmoteCached(QPair<Twitch::Emote, QImage> emote)
+void ChatWidget::onEmoteLoaded(const QPair<Twitch::Emote, QImage>& emote)
 {
+    qDebug() << emote.first.code();
     m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first.code()), QVariant(emote.second));
 }

@@ -13,6 +13,8 @@ namespace Ui {
 class MainWindow;
 }
 class InitWidget;
+class MainWidget;
+class MainNavigationBar;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -23,11 +25,20 @@ public:
 
     void init();
 
+    MainNavigationBar* navigationBar() const;
+
 private:
     Ui::MainWindow* m_ui;
     QVector<InitWidget*> m_initQueue;
+
     void setupInitWidget(InitWidget*);
     void initNextWidget();
+
+    int m_defaultMargin;
+    int m_defaultSpacing;
+
+    void removeMargins();
+    void restoreDefaultMargins();
 
 private slots:
 
@@ -37,9 +48,8 @@ private slots:
 
     void onStreamEntered(const Twitch::User&, const Twitch::Stream&);
 
-    void onEnteredTheaterMode();
     void onEnteredFullscreenMode();
-    void onLeftWindowMode();
+    void onLeftFullscreenMode();
 };
 
 #endif // MAINWINDOW_H

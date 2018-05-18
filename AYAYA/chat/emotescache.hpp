@@ -21,11 +21,10 @@ public:
 
     void initCache();
     void clearCache();
-    bool hasEmote(const QString&);
+    bool isEmoteLoaded(const QString&);
     void processQueuedEmotes();
 
-    void fetchGlobalEmotes();
-    void fetchChannelEmotes(const QString&);
+    void loadChannelEmotes(const Twitch::User&);
 
 signals:
     void clearedCache();
@@ -36,18 +35,29 @@ signals:
     void startedFetchingGlobalEmotes();
     void globalEmotesFetchProgress(EmotesBackend, const QString&, const QString&);
     void fetchedGlobalEmotes();
+
+    void startedFetchingChannelEmotes();
     void fetchedChannelEmotes(const QString&);
 
     void queuedEmotes();
+    void loadedEmote(const QPair<Twitch::Emote, QImage>&);
 
 private:
     Twitch::Api* m_api;
     QDir ensureCacheDirectory();
 
     bool m_inited;
+
+    QSet<QString> m_loadedEmotes;
     QVector<Twitch::Emote> m_emotesQueue;
+
+    void fetchGlobalEmotes();
     bool loadGlobalEmotes();
-    void loadEmotes(const Twitch::Emotes&);
+
+    JSON m_globalSubscriberEmotesJSON;
+    void fetchChannelEmotes(const QString&);
+
+    void onLoadedEmote(const QPair<Twitch::Emote, QImage>&);
 };
 
 #endif // EMOTESCACHE_HPP

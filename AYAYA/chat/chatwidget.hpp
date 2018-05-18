@@ -28,13 +28,15 @@ public:
     EmotesCache* cache() const;
     ChatClient* client() const;
 
+    void hideInput();
+
 private:
     Ui::ChatWidget* m_ui;
     EmotesCache* m_emotesCache;
     ChatClient* m_chatClient;
 
     // Emote Cache slots
-    void onEmoteCached(QPair<Twitch::Emote, QImage>);
+    void onEmoteLoaded(const QPair<Twitch::Emote, QImage>&);
 
     // Chat Client slots
     void onJoined();

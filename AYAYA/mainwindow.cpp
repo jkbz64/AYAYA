@@ -12,23 +12,27 @@ MainWindow::MainWindow(QWidget* parent)
     , m_ui(new Ui::MainWindow)
 {
     m_ui->setupUi(this);
+    m_defaultMargin = m_ui->m_mainWidget->layout()->margin();
+    m_defaultSpacing = m_ui->m_mainWidget->layout()->spacing();
+
     // Splash screen clap face
     auto clapFace = new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this);
     m_ui->m_clapFace->setMovie(clapFace);
 
-    // Browse
-    connect(m_ui->m_browseButton, &QPushButton::released, this, [this]() {
+    // Navigation bar
+    connect(navigationBar(), &MainNavigationBar::browseButtonPressed, [this]() {
         m_ui->m_mainStack->setCurrentWidget(m_ui->m_browserWidget);
+        m_ui->m_browserWidget->showTopGames();
     });
-    connect(m_ui->m_browseButton, &QPushButton::released, m_ui->m_browserWidget, &BrowserWidget::showTopGames);
+    connect(navigationBar(), &MainNavigationBar::quitButtonPressed, this, &MainWindow::close);
 
     // Browser
     connect(m_ui->m_browserWidget, &BrowserWidget::streamEntered, this, &MainWindow::onStreamEntered);
 
     // Stream
-    connect(m_ui->m_streamWidget, &StreamWidget::enteredTheaterMode, this, &MainWindow::onEnteredTheaterMode);
+    connect(m_ui->m_streamWidget, &StreamWidget::enteredTheaterMode, this, &MainWindow::onEnteredFullscreenMode);
     connect(m_ui->m_streamWidget, &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
-    connect(m_ui->m_streamWidget, &StreamWidget::leftWindowMode, this, &MainWindow::onLeftWindowMode);
+    connect(m_ui->m_streamWidget, &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
 }
 
 MainWindow::~MainWindow()
@@ -40,6 +44,11 @@ void MainWindow::init()
 {
     m_initQueue << m_ui->m_browserWidget << m_ui->m_streamWidget;
     initNextWidget();
+}
+
+MainNavigationBar* MainWindow::navigationBar() const
+{
+    return m_ui->m_navigationBar;
 }
 
 void MainWindow::setupInitWidget(InitWidget* widget)
@@ -58,6 +67,18 @@ void MainWindow::initNextWidget()
         m_initQueue.pop_front();
         setupInitWidget(currentInitWidget);
     }
+}
+
+void MainWindow::removeMargins()
+{
+    m_ui->m_mainWidget->layout()->setMargin(0);
+    m_ui->m_mainWidget->layout()->setSpacing(0);
+}
+
+void MainWindow::restoreDefaultMargins()
+{
+    m_ui->m_mainWidget->layout()->setMargin(m_defaultMargin);
+    m_ui->m_mainWidget->layout()->setSpacing(m_defaultSpacing);
 }
 
 void MainWindow::onInitStarted()
@@ -99,20 +120,22 @@ void MainWindow::onStreamEntered(const Twitch::User& user, const Twitch::Stream&
     m_ui->m_streamWidget->initialize(user, stream);
 }
 
-void MainWindow::onEnteredTheaterMode()
-{
-    hide();
-}
-
 void MainWindow::onEnteredFullscreenMode()
 {
-    hide();
+    showFullScreen();
+    navigationBar()->hide();
+    m_ui->m_horizontalLine->hide();
+    statusBar()->hide();
+
+    removeMargins();
 }
 
-void MainWindow::onLeftWindowMode()
+void MainWindow::onLeftFullscreenMode()
 {
-    show();
-    m_ui->m_streamWidget->setParent(this);
-    m_ui->m_centralStack->addWidget(m_ui->m_streamWidget);
-    m_ui->m_centralStack->setCurrentWidget(m_ui->m_streamWidget);
+    showNormal();
+    navigationBar()->show();
+    m_ui->m_horizontalLine->show();
+    statusBar()->show();
+
+    restoreDefaultMargins();
 }
