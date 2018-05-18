@@ -90,10 +90,10 @@ ControlsWidget* PlayerWidget::controlsWidget()
 
 void PlayerWidget::mouseMoveEvent(QMouseEvent* event)
 {
-    QOpenGLWidget::mouseMoveEvent(event);
     if (m_controlsWidget->isHidden())
         m_controlsWidget->show();
     m_controlsWidget->resetFadeTimer();
+    QOpenGLWidget::mouseMoveEvent(event);
 }
 
 void PlayerWidget::mouseDoubleClickEvent(QMouseEvent* event)

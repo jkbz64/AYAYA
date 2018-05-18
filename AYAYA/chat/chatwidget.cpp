@@ -7,13 +7,19 @@
 #include <QScrollBar>
 #include <TwitchQt/twitchuser.hpp>
 
+#include <QMouseEvent>
+
 ChatWidget::ChatWidget(QWidget* parent)
     : QWidget(parent)
     , m_ui(new Ui::ChatWidget)
     , m_emotesCache(new EmotesCache(this))
     , m_chatClient(new ChatClient(this))
+    , m_isMovable(true)
+    , m_isMoving(false)
+    , m_offset(0, 0)
 {
     m_ui->setupUi(this);
+    setMouseTracking(true);
 
     connect(m_chatClient, &ChatClient::joined, this, &ChatWidget::onJoined);
     connect(m_chatClient, &ChatClient::disconnected, this, &ChatWidget::onDisconnected);
@@ -55,10 +61,58 @@ ChatClient* ChatWidget::client() const
     return m_chatClient;
 }
 
+void ChatWidget::showInput()
+{
+    m_ui->m_messageEdit->show();
+    m_ui->m_sendButton->show();
+}
+
 void ChatWidget::hideInput()
 {
     m_ui->m_messageEdit->hide();
     m_ui->m_sendButton->hide();
+}
+
+void ChatWidget::setMovable(bool boolean)
+{
+    m_isMovable = boolean;
+    if (isMovable()) {
+        m_ui->m_chatView->setAttribute(Qt::WA_TransparentForMouseEvents);
+        m_ui->m_chatView->setStyleSheet("background-color: rgba(0, 0, 0, 0.5);");
+    } else {
+        m_ui->m_chatView->setAttribute(Qt::WA_TransparentForMouseEvents, false);
+        m_ui->m_chatView->setStyleSheet("");
+    }
+}
+
+bool ChatWidget::isMovable() const
+{
+    return m_isMovable;
+}
+
+void ChatWidget::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton && isMovable()) {
+        m_isMoving = true;
+        m_offset = event->pos();
+    }
+    QWidget::mousePressEvent(event);
+}
+
+void ChatWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    if (m_isMoving && isMovable()) {
+        move(mapToParent(event->pos() - m_offset));
+    }
+    QWidget::mouseMoveEvent(event);
+}
+
+void ChatWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton && m_isMoving && isMovable()) {
+        m_isMoving = false;
+    }
+    QWidget::mouseReleaseEvent(event);
 }
 
 void ChatWidget::onMessageReceived(const QString& author, const QString& message)
@@ -93,6 +147,5 @@ void ChatWidget::rejoin()
 
 void ChatWidget::onEmoteLoaded(const QPair<Twitch::Emote, QImage>& emote)
 {
-    qDebug() << emote.first.code();
     m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first.code()), QVariant(emote.second));
 }

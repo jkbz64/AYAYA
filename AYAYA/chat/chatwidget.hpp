@@ -28,12 +28,25 @@ public:
     EmotesCache* cache() const;
     ChatClient* client() const;
 
+    void showInput();
     void hideInput();
+
+    void setMovable(bool);
+    bool isMovable() const;
+
+protected:
+    virtual void mousePressEvent(QMouseEvent*) override;
+    virtual void mouseReleaseEvent(QMouseEvent*) override;
+    virtual void mouseMoveEvent(QMouseEvent*) override;
 
 private:
     Ui::ChatWidget* m_ui;
     EmotesCache* m_emotesCache;
     ChatClient* m_chatClient;
+
+    bool m_isMovable;
+    bool m_isMoving;
+    QPoint m_offset;
 
     // Emote Cache slots
     void onEmoteLoaded(const QPair<Twitch::Emote, QImage>&);

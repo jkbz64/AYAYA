@@ -7,7 +7,6 @@
 #include <TwitchQt/twitchstream.hpp>
 #include <TwitchQt/twitchuser.hpp>
 
-#include "player/controlswidget.hpp"
 #include "player/playerwidget.hpp"
 
 namespace {
@@ -94,10 +93,13 @@ void StreamWidget::onSplitterMoved()
 void StreamWidget::onPlayerStyleChanged(PlayerStyle, PlayerStyle newStyle)
 {
     if (newStyle == PlayerStyle::Theater) {
+        // Reparent chat so it breaks from splitter
         chat()->hide();
-        chat()->hideInput();
         chat()->setParent(player());
         chat()->show();
+
+        chat()->hideInput();
+        chat()->setMovable(true);
 
         emit enteredTheaterMode();
     } else if (newStyle == PlayerStyle::Fullscreen) {
@@ -106,6 +108,9 @@ void StreamWidget::onPlayerStyleChanged(PlayerStyle, PlayerStyle newStyle)
         emit enteredFullscreenMode();
     } else {
         chat()->show();
+        chat()->showInput();
+        chat()->setMovable(false);
+
         m_ui->splitter->insertWidget(1, chat());
 
         emit leftFullscreenMode();
