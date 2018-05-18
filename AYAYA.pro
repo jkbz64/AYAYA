@@ -41,7 +41,7 @@ SOURCES += \
     AYAYA/streamwidget.cpp \
     AYAYA/chat/emotescache.cpp \
     AYAYA/initwidget.cpp \
-    mainnavigationbar.cpp
+    AYAYA/mainnavigationbar.cpp
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
@@ -63,7 +63,7 @@ HEADERS += \
     AYAYA/streamwidget.hpp \
     AYAYA/chat/emotescache.hpp \
     AYAYA/initwidget.hpp \
-    mainnavigationbar.hpp
+    AYAYA/mainnavigationbar.hpp
 
 FORMS += \
     AYAYA/mainwindow.ui \
@@ -71,6 +71,6 @@ FORMS += \
     AYAYA/player/controlswidget.ui \
     AYAYA/chat/chatwidget.ui \
     AYAYA/streamwidget.ui \
-    mainnavigationbar.ui
+    AYAYA/mainnavigationbar.ui
 
 LIBS += -lmpv

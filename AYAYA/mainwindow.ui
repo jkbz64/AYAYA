@@ -205,7 +205,7 @@
   <customwidget>
    <class>MainNavigationBar</class>
    <extends>QWidget</extends>
-   <header>mainnavigationbar.hpp</header>
+   <header>AYAYA/mainnavigationbar.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
