@@ -54,13 +54,8 @@ StreamWidget::~StreamWidget()
 bool StreamWidget::checkInitStatus()
 {
     const auto cacheInited = isFulfilled("emoteCache");
-    auto emotesDownloaded = false;
-    if (initSettings().contains("lastGlobalFetchDate")) {
-        QDateTime lastGlobalFetchDate = initSettings().value("lastGlobalFetchDate").toDateTime();
-        emotesDownloaded = lastGlobalFetchDate.daysTo(QDateTime::currentDateTime()) <= 1;
-    }
     const auto backendInited = isFulfilled("backend");
-    return cacheInited && emotesDownloaded && backendInited;
+    return cacheInited && backendInited;
 }
 
 void StreamWidget::init()

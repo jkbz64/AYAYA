@@ -6,6 +6,8 @@
 #include "browser/gameitemwidget.hpp"
 #include "browser/streamitemwidget.hpp"
 
+#include <QPointer>
+
 BrowserWidget::BrowserWidget(QWidget* parent)
     : InitWidget(parent)
     , m_ui(new Ui::BrowserWidget)

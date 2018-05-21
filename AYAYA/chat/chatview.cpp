@@ -12,6 +12,7 @@ ChatView::ChatView(QWidget* parent)
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    setFrameShape(QFrame::NoFrame);
 }
 
 ChatView::~ChatView()

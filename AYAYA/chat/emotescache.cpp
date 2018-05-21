@@ -71,12 +71,13 @@ void EmotesCache::initCache()
         fetchGlobalEmotes();
 
         // FIXME Fetch and load subscriber json file into memory
-        auto subscriberEmotesReply = m_api->getTwitchSubscriberEmotes();
+        auto subscriberEmotesReply = m_api->getTwitchEmotesSubscriberEmotes();
         connect(subscriberEmotesReply, &Twitch::Reply::finished, this, [this, cacheDirectory, subscriberEmotesReply]() {
             if (subscriberEmotesReply->currentState() == Twitch::ReplyState::Success) {
                 QFile subscriberFile(cacheDirectory.absoluteFilePath("TwitchEmotes/subscriber.json"));
+                m_subscriberEmotes = subscriberEmotesReply->emotes();
                 if (subscriberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
-                    subscriberFile.write(JSON(subscriberEmotesReply->emotes()).dump().data());
+                    subscriberFile.write(JSON(m_subscriberEmotes).dump().data());
                 subscriberFile.close();
             }
             subscriberEmotesReply->deleteLater();
@@ -89,7 +90,7 @@ void EmotesCache::initCache()
     } else {
         QFile subscriberFile(cacheDirectory.absoluteFilePath("TwitchEmotes/subscriber.json"));
         if (subscriberFile.open(QIODevice::ReadOnly))
-            m_globalSubscriberEmotesJSON = JSON::parse(subscriberFile.readAll());
+            m_subscriberEmotes = JSON::parse(subscriberFile.readAll());
     }
 }
 
@@ -188,9 +189,9 @@ void EmotesCache::loadChannelEmotes(const Twitch::User& user)
     auto cacheDirectory = ensureCacheDirectory();
 
     // Load the TwitchEmotes from local cache
-    if (m_globalSubscriberEmotesJSON.find(user.m_id.toStdString()) != m_globalSubscriberEmotesJSON.end()) {
-        Twitch::Emotes channelEmotes = m_globalSubscriberEmotesJSON[user.m_id.toStdString()];
-        m_emotesQueue << channelEmotes;
+    if (m_subscriberEmotes.find(user.m_id.toStdString()) != m_subscriberEmotes.end()) {
+        for (const auto& emote : m_subscriberEmotes.values(user.m_id.toStdString()))
+            m_emotesQueue << emote;
         emit queuedEmotes();
     }
 
@@ -260,7 +261,7 @@ void EmotesCache::processQueuedEmotes()
                 if (imageReply->currentState() == Twitch::ReplyState::Success) {
                     auto image = imageReply->data().value<QImage>();
                     QFile imageFile(imagePath + ".png");
-                    if (imageFile.open(QIODevice::WriteOnly))
+                    if (imageFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
                         image.save(&imageFile, "PNG");
                     emit loadedEmote(qMakePair(emote, image));
                 } else {

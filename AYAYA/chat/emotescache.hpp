@@ -54,7 +54,7 @@ private:
     void fetchGlobalEmotes();
     bool loadGlobalEmotes();
 
-    JSON m_globalSubscriberEmotesJSON;
+    Twitch::EmotesMap m_subscriberEmotes;
     void fetchChannelEmotes(const QString&);
 
     void onLoadedEmote(const QPair<Twitch::Emote, QImage>&);

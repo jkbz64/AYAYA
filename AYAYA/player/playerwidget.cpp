@@ -99,10 +99,10 @@ void PlayerWidget::mouseMoveEvent(QMouseEvent* event)
 void PlayerWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QOpenGLWidget::mouseDoubleClickEvent(event);
-    if (playerStyle() == PlayerStyle::Fullscreen)
+    if (playerStyle() == PlayerStyle::Fullscreen || playerStyle() == PlayerStyle::Theater)
         setPlayerStyle(PlayerStyle::Normal);
     else
-        setPlayerStyle(PlayerStyle::Fullscreen);
+        setPlayerStyle(PlayerStyle::Theater);
 }
 
 void PlayerWidget::initializeGL()

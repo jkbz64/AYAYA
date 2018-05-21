@@ -14,7 +14,7 @@ ChatWidget::ChatWidget(QWidget* parent)
     , m_ui(new Ui::ChatWidget)
     , m_emotesCache(new EmotesCache(this))
     , m_chatClient(new ChatClient(this))
-    , m_isMovable(true)
+    , m_isMovable(false)
     , m_isMoving(false)
     , m_offset(0, 0)
 {
@@ -73,12 +73,16 @@ void ChatWidget::hideInput()
     m_ui->m_sendButton->hide();
 }
 
+#include <QSplitter>
+
 void ChatWidget::setMovable(bool boolean)
 {
     m_isMovable = boolean;
     if (isMovable()) {
         m_ui->m_chatView->setAttribute(Qt::WA_TransparentForMouseEvents);
         m_ui->m_chatView->setStyleSheet("background-color: rgba(0, 0, 0, 0.5);");
+        m_ui->m_chatView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        m_ui->m_chatView->setFocusPolicy(Qt::NoFocus);
     } else {
         m_ui->m_chatView->setAttribute(Qt::WA_TransparentForMouseEvents, false);
         m_ui->m_chatView->setStyleSheet("");
