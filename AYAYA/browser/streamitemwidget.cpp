@@ -1,36 +1,28 @@
 #include "streamitemwidget.hpp"
+#include "ui_streamitemwidget.h"
 #include <QPainter>
 #include <TwitchQt/twitchstream.hpp>
 
-StreamItemWidget::StreamItemWidget(const Twitch::Stream& stream)
-    : BrowserItemWidget(nullptr)
-{
-    m_data.setValue(stream);
-
-    setFrameStyle(QFrame::StyledPanel);
-    setFrameShadow(QFrame::Sunken);
-    setLineWidth(10);
-}
-
 StreamItemWidget::StreamItemWidget(const Twitch::Stream& stream, QWidget* parent)
     : BrowserItemWidget(parent)
+    , m_ui(new Ui::StreamItemWidget)
+    , m_stream(stream)
 {
-    m_data.setValue(stream);
+    m_ui->setupUi(this);
+    m_ui->m_nameLabel->setText(stream.m_userId);
+    m_ui->m_titleLabel->setText(stream.m_title);
+}
+
+StreamItemWidget::~StreamItemWidget()
+{
+    delete m_ui;
+}
+
+const Twitch::Stream& StreamItemWidget::stream() const
+{
+    return m_stream;
 }
 
 void StreamItemWidget::setPreview(const QPixmap& preview)
 {
-    m_preview = preview;
-}
-
-void StreamItemWidget::paintEvent(QPaintEvent* event)
-{
-    QFrame::paintEvent(event);
-    QPainter painter(this);
-    if (!m_preview.isNull())
-        painter.drawPixmap(rect(), m_preview);
-
-    painter.setPen(Qt::black);
-    painter.setFont(QFont("DIMITRI", 15));
-    painter.drawText(rect(), Qt::AlignCenter, "TODO");
 }

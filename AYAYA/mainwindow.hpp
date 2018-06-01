@@ -14,6 +14,8 @@ class MainWindow;
 }
 class InitWidget;
 class MainWidget;
+class BrowserWidget;
+class StreamWidget;
 class MainNavigationBar;
 
 class MainWindow : public QMainWindow {
@@ -26,6 +28,10 @@ public:
     void init();
 
     MainNavigationBar* navigationBar() const;
+    void setCurrentMainWidget(QWidget*) const;
+    QWidget* currentMainWidget() const;
+    BrowserWidget* browserWidget() const;
+    StreamWidget* streamWidget() const;
 
 private:
     Ui::MainWindow* m_ui;
@@ -45,6 +51,8 @@ private slots:
     void onInitStarted();
     void onInitProgress(const QString&);
     void onEndedIniting();
+
+    void onBrowsePressed();
 
     void onStreamEntered(const Twitch::User&, const Twitch::Stream&);
 

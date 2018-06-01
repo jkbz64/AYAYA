@@ -2,20 +2,17 @@
 #define STREAMBROWSER_HPP
 
 #include "browser.hpp"
+#include <TwitchQt/twitchstream.hpp>
 
-namespace Twitch {
-class Stream;
-}
-
-class StreamWidget;
+class StreamItemWidget;
 
 class StreamBrowser : public Browser {
     Q_OBJECT
 public:
-    explicit StreamBrowser(QWidget* = nullptr);
-signals:
-    void streamSelected(const Twitch::Stream&);
-    void updateRequested(StreamWidget*);
+    explicit StreamBrowser(QWidget* parent = nullptr);
+    ~StreamBrowser();
+
+    StreamItemWidget* addStream(const Twitch::Stream&);
 };
 
 #endif // STREAMBROWSER_HPP

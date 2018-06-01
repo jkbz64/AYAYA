@@ -53,7 +53,7 @@
       <enum>Qt::PlainText</enum>
      </property>
      <property name="pixmap">
-      <pixmap resource="AYAYA/fx/ayaya.qrc">:/images/twitch.png</pixmap>
+      <pixmap resource="fx/ayaya.qrc">:/images/twitch.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -83,31 +83,6 @@
     </spacer>
    </item>
    <item>
-    <widget class="QPushButton" name="m_settingsButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>1</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>80</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>80</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Settings</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QPushButton" name="m_browseButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -129,6 +104,31 @@
      </property>
      <property name="text">
       <string>Browse</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="m_settingsButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>1</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>150</width>
+       <height>80</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>150</width>
+       <height>80</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Settings</string>
      </property>
     </widget>
    </item>
@@ -156,8 +156,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>m_browseButton</tabstop>
+  <tabstop>m_settingsButton</tabstop>
+  <tabstop>m_quitButton</tabstop>
+ </tabstops>
  <resources>
-  <include location="AYAYA/fx/ayaya.qrc"/>
+  <include location="fx/ayaya.qrc"/>
  </resources>
  <connections/>
 </ui>

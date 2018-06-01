@@ -1,46 +1,35 @@
 #include "browser.hpp"
-#include "flowlayout.hpp"
+#include "browseritemwidget.hpp"
 
 Browser::Browser(QWidget* parent)
     : QScrollArea(parent)
-    , m_itemSize(150, 150)
 {
     setWidgetResizable(true);
+    setWidget(new QWidget(this));
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-    auto centralWidget = new QWidget(this);
-    centralWidget->setLayout(new FlowLayout(centralWidget));
-    setWidget(centralWidget);
 }
 
 Browser::~Browser() = default;
 
+const QVector<BrowserItemWidget*>& Browser::visibleWidgets() const
+{
+    return m_visibleWidgets;
+}
+
+QWidget* Browser::centralWidget() const
+{
+    return widget();
+}
+
 void Browser::addItem(BrowserItemWidget* item)
 {
-    item->setParent(this);
-
-    item->setFixedSize(m_itemSize);
-    item->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    widget()->layout()->addWidget(item);
-
-    connect(item, &BrowserItemWidget::hovered, [this, item]() { emit itemHovered(item); });
-    connect(item, &BrowserItemWidget::pressed, [this, item]() { emit itemPressed(item); });
-    connect(item, &BrowserItemWidget::resized, [this, item](QSize oldSize, QSize newSize) { emit itemResized(item, oldSize, newSize); });
-
-    m_browserItems.push_back(item);
+    m_visibleWidgets.push_back(item);
     emit itemAdded(item);
 }
 
 void Browser::clear()
 {
-    for (auto item : m_browserItems) {
-        emit itemRemoved(item);
-        item->deleteLater();
-    }
-    m_browserItems.clear();
-}
-
-const QVector<BrowserItemWidget*>& Browser::browserItems() const
-{
-    return m_browserItems;
+    for (auto& widget : m_visibleWidgets)
+        widget->deleteLater();
+    m_visibleWidgets.clear();
 }

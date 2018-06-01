@@ -28,12 +28,16 @@ void PlayerWidget::setBackend(PlayerBackend backend)
 
     if (m_impl)
         delete m_impl;
+
     m_impl = new detail::MpvPlayerImpl(this);
+
     emit startedBackendInit();
     m_impl->init();
 
+    // Install overlay when setting backend first time
     if (!layout())
         setupOverlay();
+
     emit backendChanged(backend);
 }
 
@@ -58,6 +62,7 @@ void PlayerWidget::setVolume(int value)
 {
     if (value > 0)
         m_beforeMuteVolume = value;
+
     if (m_impl)
         m_impl->setVolume(value);
 }

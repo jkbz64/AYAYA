@@ -12,27 +12,20 @@ MainWindow::MainWindow(QWidget* parent)
     , m_ui(new Ui::MainWindow)
 {
     m_ui->setupUi(this);
+    // Save default margins/ spacing for going back from fulllscreen mode
     m_defaultMargin = m_ui->m_mainWidget->layout()->margin();
     m_defaultSpacing = m_ui->m_mainWidget->layout()->spacing();
-
     // Splash screen clap face
-    auto clapFace = new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this);
-    m_ui->m_clapFace->setMovie(clapFace);
-
+    m_ui->m_clapFace->setMovie(new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this));
     // Navigation bar
-    connect(navigationBar(), &MainNavigationBar::browseButtonPressed, [this]() {
-        m_ui->m_mainStack->setCurrentWidget(m_ui->m_browserWidget);
-        m_ui->m_browserWidget->showTopGames();
-    });
+    connect(navigationBar(), &MainNavigationBar::browseButtonPressed, this, &MainWindow::onBrowsePressed);
     connect(navigationBar(), &MainNavigationBar::quitButtonPressed, this, &MainWindow::close);
-
     // Browser
-    connect(m_ui->m_browserWidget, &BrowserWidget::streamEntered, this, &MainWindow::onStreamEntered);
-
+    connect(browserWidget(), &BrowserWidget::streamEntered, this, &MainWindow::onStreamEntered);
     // Stream
-    connect(m_ui->m_streamWidget, &StreamWidget::enteredTheaterMode, this, &MainWindow::onEnteredFullscreenMode);
-    connect(m_ui->m_streamWidget, &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
-    connect(m_ui->m_streamWidget, &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
+    connect(streamWidget(), &StreamWidget::enteredTheaterMode, this, &MainWindow::onEnteredFullscreenMode);
+    connect(streamWidget(), &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
+    connect(streamWidget(), &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
 }
 
 MainWindow::~MainWindow()
@@ -51,6 +44,26 @@ MainNavigationBar* MainWindow::navigationBar() const
     return m_ui->m_navigationBar;
 }
 
+void MainWindow::setCurrentMainWidget(QWidget* widget) const
+{
+    m_ui->m_mainStack->setCurrentWidget(widget);
+}
+
+QWidget* MainWindow::currentMainWidget() const
+{
+    return m_ui->m_mainStack->currentWidget();
+}
+
+BrowserWidget* MainWindow::browserWidget() const
+{
+    return m_ui->m_browserWidget;
+}
+
+StreamWidget* MainWindow::streamWidget() const
+{
+    return m_ui->m_streamWidget;
+}
+
 void MainWindow::setupInitWidget(InitWidget* widget)
 {
     connect(widget, &InitWidget::startedIniting, this, &MainWindow::onInitStarted);
@@ -63,7 +76,7 @@ void MainWindow::setupInitWidget(InitWidget* widget)
 void MainWindow::initNextWidget()
 {
     if (!m_initQueue.empty()) {
-        auto currentInitWidget = m_initQueue.front();
+        const auto currentInitWidget = m_initQueue.front();
         m_initQueue.pop_front();
         setupInitWidget(currentInitWidget);
     }
@@ -95,7 +108,7 @@ void MainWindow::onInitProgress(const QString& progressText)
 
 void MainWindow::onEndedIniting()
 {
-    auto initedWidget = qobject_cast<InitWidget*>(sender());
+    const auto initedWidget = qobject_cast<InitWidget*>(sender());
     disconnect(initedWidget, &InitWidget::startedIniting, 0, 0);
     disconnect(initedWidget, &InitWidget::initProgress, 0, 0);
     disconnect(initedWidget, &InitWidget::endedIniting, 0, 0);
@@ -114,10 +127,15 @@ void MainWindow::onEndedIniting()
     }
 }
 
+void MainWindow::onBrowsePressed()
+{
+    setCurrentMainWidget(browserWidget());
+}
+
 void MainWindow::onStreamEntered(const Twitch::User& user, const Twitch::Stream& stream)
 {
-    m_ui->m_mainStack->setCurrentWidget(m_ui->m_streamWidget);
-    m_ui->m_streamWidget->initialize(user, stream);
+    setCurrentMainWidget(streamWidget());
+    streamWidget()->initialize(user, stream);
 }
 
 void MainWindow::onEnteredFullscreenMode()

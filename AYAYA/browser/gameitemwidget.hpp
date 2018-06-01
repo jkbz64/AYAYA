@@ -2,16 +2,19 @@
 #define GAMEITEMWIDGET_HPP
 
 #include "browseritemwidget.hpp"
+#include <TwitchQt/twitchgame.hpp>
 
-namespace Twitch {
-class Game;
+namespace Ui {
+class GameItemWidget;
 }
 
 class GameItemWidget : public BrowserItemWidget {
     Q_OBJECT
 public:
-    explicit GameItemWidget(const Twitch::Game&);
-    GameItemWidget(const Twitch::Game&, QWidget*);
+    explicit GameItemWidget(const Twitch::Game&, QWidget*);
+    ~GameItemWidget();
+
+    const Twitch::Game& game() const;
 
     void setBoxArt(const QPixmap&);
     void setViewerCount(int);
@@ -21,11 +24,9 @@ signals:
     void pressed();
     void hovered();
 
-protected:
-    virtual void paintEvent(QPaintEvent*) override;
-
 private:
-    QPixmap m_boxArt;
+    Ui::GameItemWidget* m_ui;
+    const Twitch::Game m_game;
     int m_viewerCount;
 };
 

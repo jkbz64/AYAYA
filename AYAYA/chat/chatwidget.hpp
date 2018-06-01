@@ -38,12 +38,14 @@ protected:
     virtual void mousePressEvent(QMouseEvent*) override;
     virtual void mouseReleaseEvent(QMouseEvent*) override;
     virtual void mouseMoveEvent(QMouseEvent*) override;
+    virtual void wheelEvent(QWheelEvent*) override;
 
 private:
     Ui::ChatWidget* m_ui;
     EmotesCache* m_emotesCache;
     ChatClient* m_chatClient;
 
+    float m_opacity;
     bool m_isMovable;
     bool m_isMoving;
     QPoint m_offset;

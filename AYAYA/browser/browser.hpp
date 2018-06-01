@@ -1,28 +1,26 @@
 #ifndef BROWSER_HPP
 #define BROWSER_HPP
 
-#include "browseritemwidget.hpp"
-#include <QScrollArea>
+#include <QGraphicsView>
+
+class BrowserItemWidget;
 
 class Browser : public QScrollArea {
     Q_OBJECT
 public:
-    explicit Browser(QWidget* = nullptr);
+    Browser(QWidget*);
     virtual ~Browser();
 
-    void addItem(BrowserItemWidget*);
+    const QVector<BrowserItemWidget*>& visibleWidgets() const;
+
+    QWidget* centralWidget() const;
     void clear();
-    const QVector<BrowserItemWidget*>& browserItems() const;
 signals:
     void itemAdded(BrowserItemWidget*);
-    void itemHovered(BrowserItemWidget*);
-    void itemPressed(BrowserItemWidget*);
-    void itemRemoved(BrowserItemWidget*);
-    void itemResized(BrowserItemWidget*, QSize, QSize);
 
 protected:
-    QSize m_itemSize;
-    QVector<BrowserItemWidget*> m_browserItems;
+    void addItem(BrowserItemWidget*);
+    QVector<BrowserItemWidget*> m_visibleWidgets;
 };
 
 #endif // BROWSER_HPP

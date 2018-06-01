@@ -79,7 +79,7 @@
    <item row="2" column="0" colspan="4">
     <widget class="QStackedWidget" name="m_browserStack">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="GameBrowser" name="m_gameBrowser"/>
      <widget class="StreamBrowser" name="m_streamBrowser"/>

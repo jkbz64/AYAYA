@@ -14,6 +14,7 @@ ChatWidget::ChatWidget(QWidget* parent)
     , m_ui(new Ui::ChatWidget)
     , m_emotesCache(new EmotesCache(this))
     , m_chatClient(new ChatClient(this))
+    , m_opacity(0.5)
     , m_isMovable(false)
     , m_isMoving(false)
     , m_offset(0, 0)
@@ -109,6 +110,13 @@ void ChatWidget::mouseMoveEvent(QMouseEvent* event)
         move(mapToParent(event->pos() - m_offset));
     }
     QWidget::mouseMoveEvent(event);
+}
+
+void ChatWidget::wheelEvent(QWheelEvent* event)
+{
+    m_opacity += event->delta() / 1000.f;
+    qDebug() << m_opacity;
+    m_ui->m_chatView->setStyleSheet("background-color: rgba(0, 0, 0, " + QString::number(m_opacity) + ");");
 }
 
 void ChatWidget::mouseReleaseEvent(QMouseEvent* event)

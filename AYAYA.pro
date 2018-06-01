@@ -24,14 +24,11 @@ SOURCES += \
     AYAYA/main.cpp \
     AYAYA/mainwindow.cpp \
     AYAYA/browserwidget.cpp \
-    AYAYA/browser/flowlayout.cpp \
     AYAYA/browser/gamebrowser.cpp \
-    AYAYA/browser/streambrowser.cpp \
+    AYAYA/browser/flowlayout.cpp \
     AYAYA/chat/chatwidget.cpp \
     AYAYA/player/playerwidget.cpp \
     AYAYA/player/controlswidget.cpp \
-    AYAYA/browser/browser.cpp \
-    AYAYA/browser/browseritemwidget.cpp \
     AYAYA/chat/chatview.cpp \
     AYAYA/chat/chatclient.cpp \
     AYAYA/player/mpvplayerimpl.cpp \
@@ -41,19 +38,19 @@ SOURCES += \
     AYAYA/streamwidget.cpp \
     AYAYA/chat/emotescache.cpp \
     AYAYA/initwidget.cpp \
-    AYAYA/mainnavigationbar.cpp
+    AYAYA/mainnavigationbar.cpp \
+    AYAYA/browser/browser.cpp \
+    AYAYA/browser/browseritemwidget.cpp \
+    AYAYA/browser/streambrowser.cpp
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
     AYAYA/browserwidget.hpp \
-    AYAYA/browser/flowlayout.hpp \
     AYAYA/browser/gamebrowser.hpp \
-    AYAYA/browser/streambrowser.hpp \
+    AYAYA/browser/flowlayout.hpp \
     AYAYA/chat/chatwidget.hpp \
     AYAYA/player/playerwidget.hpp \
     AYAYA/player/controlswidget.hpp \
-    AYAYA/browser/browser.hpp \
-    AYAYA/browser/browseritemwidget.hpp \
     AYAYA/chat/chatview.hpp \
     AYAYA/chat/chatclient.hpp \
     AYAYA/player/mpvplayerimpl.hpp \
@@ -63,7 +60,10 @@ HEADERS += \
     AYAYA/streamwidget.hpp \
     AYAYA/chat/emotescache.hpp \
     AYAYA/initwidget.hpp \
-    AYAYA/mainnavigationbar.hpp
+    AYAYA/mainnavigationbar.hpp \
+    AYAYA/browser/browser.hpp \
+    AYAYA/browser/browseritemwidget.hpp \
+    AYAYA/browser/streambrowser.hpp
 
 FORMS += \
     AYAYA/mainwindow.ui \
@@ -71,6 +71,8 @@ FORMS += \
     AYAYA/player/controlswidget.ui \
     AYAYA/chat/chatwidget.ui \
     AYAYA/streamwidget.ui \
-    AYAYA/mainnavigationbar.ui
+    AYAYA/mainnavigationbar.ui \
+    AYAYA/browser/gameitemwidget.ui \
+    AYAYA/browser/streamitemwidget.ui
 
 LIBS += -lmpv

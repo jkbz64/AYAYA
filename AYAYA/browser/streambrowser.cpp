@@ -1,13 +1,24 @@
 #include "streambrowser.hpp"
-#include "flowlayout.hpp"
-#include "streamitemwidget.hpp"
 
-#include <TwitchQt/twitchstream.hpp>
+#include "streamitemwidget.hpp"
+#include <QVBoxLayout>
 
 StreamBrowser::StreamBrowser(QWidget* parent)
     : Browser(parent)
 {
-    connect(this, &Browser::itemPressed, [this](BrowserItemWidget* item) {
-        emit streamSelected(qobject_cast<StreamItemWidget*>(item)->data().value<Twitch::Stream>());
-    });
+    centralWidget()->setLayout(new QVBoxLayout);
+}
+
+StreamBrowser::~StreamBrowser()
+{
+}
+
+StreamItemWidget* StreamBrowser::addStream(const Twitch::Stream& stream)
+{
+    auto streamWidget = new StreamItemWidget(stream, centralWidget());
+    streamWidget->setFixedHeight(150);
+    centralWidget()->layout()->addWidget(streamWidget);
+
+    addItem(streamWidget);
+    return streamWidget;
 }

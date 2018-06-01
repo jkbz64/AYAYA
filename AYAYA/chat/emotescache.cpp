@@ -113,7 +113,7 @@ void EmotesCache::fetchGlobalEmotes()
     emit startedFetchingGlobalEmotes();
     QDir cacheDirectory = ensureCacheDirectory();
 
-    auto globalEmotesReply = m_api->getGlobalEmotes();
+    auto globalEmotesReply = m_api->getTwitchEmotesGlobalEmotes();
     auto bttvEmotesReply = m_api->getBTTVGlobalEmotes();
     auto ffzEmotesReply = m_api->getFFZGlobalEmotes();
 
@@ -190,8 +190,9 @@ void EmotesCache::loadChannelEmotes(const Twitch::User& user)
 
     // Load the TwitchEmotes from local cache
     if (m_subscriberEmotes.find(user.m_id.toStdString()) != m_subscriberEmotes.end()) {
-        for (const auto& emote : m_subscriberEmotes.values(user.m_id.toStdString()))
+        for (const auto& emote : m_subscriberEmotes.values(user.m_id.toStdString())) {
             m_emotesQueue << emote;
+        }
         emit queuedEmotes();
     }
 
