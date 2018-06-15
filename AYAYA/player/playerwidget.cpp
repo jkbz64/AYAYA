@@ -48,8 +48,8 @@ const PlayerBackend& PlayerWidget::backend() const
 
 void PlayerWidget::openStream(const QString& streamName)
 {
-    if (m_impl)
-        m_impl->load(QString("https://www.twitch.tv/" + streamName));
+    /*if (m_impl)
+        m_impl->load(QString("https://www.twitch.tv/" + streamName));*/
 }
 
 void PlayerWidget::resetStream()
@@ -157,11 +157,12 @@ void PlayerWidget::onPressedResetButton()
 
 void PlayerWidget::onPressedMuteButton()
 {
-    if (m_beforeMuteVolume != -1) {
+    if (m_beforeMuteVolume != 0) {
+        m_beforeMuteVolume = m_impl->volume();
         setVolume(0);
-        m_beforeMuteVolume = -1;
     } else {
         setVolume(m_beforeMuteVolume);
+        m_beforeMuteVolume = 0;
     }
 }
 

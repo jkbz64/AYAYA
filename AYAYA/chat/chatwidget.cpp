@@ -12,7 +12,6 @@
 ChatWidget::ChatWidget(QWidget* parent)
     : QWidget(parent)
     , m_ui(new Ui::ChatWidget)
-    , m_emotesCache(new EmotesCache(this))
     , m_chatClient(new ChatClient(this))
     , m_opacity(0.5)
     , m_isMovable(false)
@@ -22,11 +21,11 @@ ChatWidget::ChatWidget(QWidget* parent)
     m_ui->setupUi(this);
     setMouseTracking(true);
 
-    connect(m_chatClient, &ChatClient::joined, this, &ChatWidget::onJoined);
-    connect(m_chatClient, &ChatClient::disconnected, this, &ChatWidget::onDisconnected);
-    connect(m_chatClient, &ChatClient::messageReceived, this, &ChatWidget::onMessageReceived);
+    connect(client(), &ChatClient::joinedChannel, this, &ChatWidget::onJoinedChannel);
+    connect(client(), &ChatClient::joinedChannel, chatView(), &ChatView::onJoinedChannel);
+    connect(client(), &ChatClient::disconnected, this, &ChatWidget::onDisconnected);
 
-    connect(m_emotesCache, &EmotesCache::loadedEmote, this, &ChatWidget::onEmoteLoaded);
+    connect(client(), &ChatClient::messageReceived, chatView(), &ChatView::onMessageReceived);
 }
 
 ChatWidget::~ChatWidget()
@@ -36,8 +35,7 @@ ChatWidget::~ChatWidget()
 
 void ChatWidget::openChat(const Twitch::User& user)
 {
-    m_chatClient->joinChannel(user.m_login);
-    m_emotesCache->loadChannelEmotes(user);
+    client()->joinChannel(user.m_login);
 }
 
 bool ChatWidget::isFollowingChat()
@@ -52,9 +50,9 @@ void ChatWidget::followChat()
     scrollBar->setValue(scrollBar->maximum());
 }
 
-EmotesCache* ChatWidget::cache() const
+ChatView* ChatWidget::chatView() const
 {
-    return m_emotesCache;
+    return m_ui->m_chatView;
 }
 
 ChatClient* ChatWidget::client() const
@@ -73,8 +71,6 @@ void ChatWidget::hideInput()
     m_ui->m_messageEdit->hide();
     m_ui->m_sendButton->hide();
 }
-
-#include <QSplitter>
 
 void ChatWidget::setMovable(bool boolean)
 {
@@ -106,17 +102,18 @@ void ChatWidget::mousePressEvent(QMouseEvent* event)
 
 void ChatWidget::mouseMoveEvent(QMouseEvent* event)
 {
-    if (m_isMoving && isMovable()) {
+    if (m_isMoving && isMovable())
         move(mapToParent(event->pos() - m_offset));
-    }
     QWidget::mouseMoveEvent(event);
 }
 
 void ChatWidget::wheelEvent(QWheelEvent* event)
 {
-    m_opacity += event->delta() / 1000.f;
-    qDebug() << m_opacity;
-    m_ui->m_chatView->setStyleSheet("background-color: rgba(0, 0, 0, " + QString::number(m_opacity) + ");");
+    if (isMovable()) {
+        m_opacity += event->delta() / 1000.f;
+        m_ui->m_chatView->setStyleSheet("background-color: rgba(0, 0, 0, " + QString::number(m_opacity) + ");");
+    }
+    QWidget::wheelEvent(event);
 }
 
 void ChatWidget::mouseReleaseEvent(QMouseEvent* event)
@@ -127,34 +124,14 @@ void ChatWidget::mouseReleaseEvent(QMouseEvent* event)
     QWidget::mouseReleaseEvent(event);
 }
 
-void ChatWidget::onMessageReceived(const QString& author, const QString& message)
+void ChatWidget::onJoinedChannel(const QString& /*channel*/)
 {
-    auto editedMessage = message;
-    const auto words = QSet<QString>::fromList(message.split(QRegExp("[\r\n\t ]+")));
-    for (const auto& word : words) {
-        if (m_emotesCache->isEmoteLoaded(word.simplified())) {
-            editedMessage.replace(word, "<img src=\"" + word + "\" />");
-        }
-    }
-    m_ui->m_chatView->addMessage(author + ": " + editedMessage);
-}
-
-void ChatWidget::onJoined()
-{
-    m_ui->m_chatView->setEnabled(true);
-    m_ui->m_chatView->reset();
-    m_ui->m_chatView->addMessage("You have joined #" + m_chatClient->currentChannel() + ".");
+    chatView()->setEnabled(true);
 }
 
 void ChatWidget::onDisconnected()
 {
-    m_ui->m_chatView->setEnabled(false);
-    // TODO retry until connected every x msec?
-}
-
-void ChatWidget::rejoin()
-{
-    // TODO rejoining strategy
+    chatView()->setEnabled(false);
 }
 
 void ChatWidget::onEmoteLoaded(const QPair<Twitch::Emote, QImage>& emote)

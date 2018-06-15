@@ -10,6 +10,8 @@ class EmotesCache;
 class ChatClient;
 class ChatView;
 
+class TwitchMessage;
+
 namespace Ui {
 class ChatWidget;
 }
@@ -25,8 +27,8 @@ public:
     bool isFollowingChat();
     void followChat();
 
-    EmotesCache* cache() const;
     ChatClient* client() const;
+    ChatView* chatView() const;
 
     void showInput();
     void hideInput();
@@ -42,7 +44,6 @@ protected:
 
 private:
     Ui::ChatWidget* m_ui;
-    EmotesCache* m_emotesCache;
     ChatClient* m_chatClient;
 
     float m_opacity;
@@ -53,12 +54,9 @@ private:
     // Emote Cache slots
     void onEmoteLoaded(const QPair<Twitch::Emote, QImage>&);
 
-    // Chat Client slots
-    void onJoined();
-    void onMessageReceived(const QString&, const QString&);
+private slots:
+    void onJoinedChannel(const QString&);
     void onDisconnected();
-
-    void rejoin();
 };
 
 #endif // CHATWIDGET_HPP

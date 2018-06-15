@@ -7,6 +7,7 @@
 #include <TwitchQt/twitchstream.hpp>
 #include <TwitchQt/twitchuser.hpp>
 
+#include "chat/chatview.hpp"
 #include "player/playerwidget.hpp"
 
 namespace {
@@ -31,12 +32,12 @@ StreamWidget::StreamWidget(QWidget* parent)
     connect(player(), &PlayerWidget::startedBackendInit, this, &StreamWidget::onStartedBackendInit);
     connect(player(), &PlayerWidget::backendChanged, this, &StreamWidget::onBackendChanged);
     // Init-Cache
-    connect(chat()->cache(), &EmotesCache::startedInitingCache, this, &StreamWidget::onStartedInitingCache);
-    connect(chat()->cache(), &EmotesCache::endedInitingCache, this, &StreamWidget::onEndedInitingCache);
+    connect(chat()->chatView()->emotesCache(), &EmotesCache::startedInitingCache, this, &StreamWidget::onStartedInitingCache);
+    connect(chat()->chatView()->emotesCache(), &EmotesCache::endedInitingCache, this, &StreamWidget::onEndedInitingCache);
     // Glboal emotes
-    connect(chat()->cache(), &EmotesCache::startedFetchingGlobalEmotes, this, &StreamWidget::onStartedFetchingGlobalEmotes);
-    connect(chat()->cache(), &EmotesCache::globalEmotesFetchProgress, this, &StreamWidget::onGlobalEmotesFetchProgress);
-    connect(chat()->cache(), &EmotesCache::fetchedGlobalEmotes, this, &StreamWidget::onFetchedGlobalEmotes);
+    connect(chat()->chatView()->emotesCache(), &EmotesCache::startedFetchingGlobalEmotes, this, &StreamWidget::onStartedFetchingGlobalEmotes);
+    connect(chat()->chatView()->emotesCache(), &EmotesCache::globalEmotesFetchProgress, this, &StreamWidget::onGlobalEmotesFetchProgress);
+    connect(chat()->chatView()->emotesCache(), &EmotesCache::fetchedGlobalEmotes, this, &StreamWidget::onFetchedGlobalEmotes);
     // Processing
     connect(player(), &PlayerWidget::playerStyleChanged, this, &StreamWidget::onPlayerStyleChanged);
 
@@ -61,7 +62,7 @@ bool StreamWidget::checkInitStatus()
 void StreamWidget::init()
 {
     player()->setBackend(PlayerBackend::MPV);
-    chat()->cache()->initCache();
+    chat()->chatView()->emotesCache()->initCache();
 }
 
 void StreamWidget::initialize(const Twitch::User& user, const Twitch::Stream& stream)
@@ -150,10 +151,6 @@ void StreamWidget::onStartedFetchingGlobalEmotes()
 
 void StreamWidget::onGlobalEmotesFetchProgress(EmotesBackend emotesBackend, const QString& current, const QString& total)
 {
-    // For now let's just show the TwitchEmotes progress because it is bigger
-    if (emotesBackend == EmotesBackend::TwitchEmotes) {
-        emit initProgress("Downloading TwitchEmotes: " + current + " / " + total);
-    }
 }
 
 void StreamWidget::onFetchedGlobalEmotes()

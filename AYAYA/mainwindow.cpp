@@ -127,9 +127,13 @@ void MainWindow::onEndedIniting()
     }
 }
 
+#include "browser/gamebrowser.hpp"
+
 void MainWindow::onBrowsePressed()
 {
     setCurrentMainWidget(browserWidget());
+    browserWidget()->setCurrentBrowser(browserWidget()->gameBrowser());
+    browserWidget()->showTopGames();
 }
 
 void MainWindow::onStreamEntered(const Twitch::User& user, const Twitch::Stream& stream)

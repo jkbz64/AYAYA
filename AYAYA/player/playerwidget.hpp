@@ -75,6 +75,8 @@ private:
     void setupOverlay();
     ControlsWidget* m_controlsWidget;
     int m_beforeMuteVolume;
+
+private slots:
     // Controls slots
     void onPressedResetButton();
     void onPressedMuteButton();

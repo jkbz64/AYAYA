@@ -43,6 +43,10 @@ void ChatClient::setupConnection()
     m_connection->setNickName(anon());
     m_connection->setRealName(anon());
     m_connection->open();
+
+    m_connection->sendCommand(IrcCommand::createCapability("REQ", "twitch.tv/membership"));
+    m_connection->sendCommand(IrcCommand::createCapability("REQ", "twitch.tv/commands"));
+    m_connection->sendCommand(IrcCommand::createCapability("REQ", "twitch.tv/tags"));
 }
 
 const QString& ChatClient::currentChannel() const
@@ -79,16 +83,35 @@ void ChatClient::depart()
     }
 }
 
+#include <QRegularExpression>
+
 void ChatClient::onMessageReceived(IrcMessage* message)
 {
     const auto messageType = message->type();
 
     if (messageType == IrcMessage::Type::Private) {
         auto privateMessage = qobject_cast<IrcPrivateMessage*>(message);
-        emit messageReceived(message->nick(), privateMessage->content());
+        // Use regexp to capture emote id and first range in format ID:START-END/etc
+        QRegularExpression reg("(\\d+?):(\\d*)-(\\d*)");
+        QRegularExpressionMatchIterator i = reg.globalMatch(privateMessage->tag("emotes").toString());
+        QVector<Twitch::Emote> emotes;
+        while (i.hasNext()) {
+            QRegularExpressionMatch match = i.next();
+            const auto id = match.captured(1);
+            const auto startIndex = match.captured(2).toInt();
+            const auto endIndex = match.captured(3).toInt();
+            emotes.push_back(Twitch::Emote::createEmote<Twitch::TwitchEmotes::Emote>(id.toInt(), privateMessage->content().mid(startIndex, 1 + endIndex - startIndex), -1, QString()));
+        }
+        emit messageReceived(TwitchMessage{
+            message->nick(),
+            privateMessage->content(),
+            QColor(privateMessage->tag("color").toString()),
+            privateMessage->tag("mod").toInt() == 1,
+            privateMessage->tag("subscriber").toInt() == 1,
+            emotes });
     } else if (messageType == IrcMessage::Type::Join) {
         m_currentChannel = qobject_cast<IrcJoinMessage*>(message)->channel().mid(1);
-        emit joined();
+        emit joinedChannel(m_currentChannel);
     } else if (messageType == IrcMessage::Type::Part) {
         m_currentChannel.clear();
         emit departed();

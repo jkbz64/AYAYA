@@ -31,11 +31,6 @@ JSON createEmotesDocument(const Twitch::Emotes& emotes)
     document["emotes"] = emotes;
     return document;
 }
-Twitch::Emotes getSubscriberEmotesForUser(const JSON& json, const QString& id)
-{
-    Twitch::Emotes emotes = json[id.toStdString()]["emotes"];
-    return emotes;
-}
 }
 
 EmotesCache::EmotesCache(QObject* parent)
@@ -59,39 +54,7 @@ void EmotesCache::initCache()
     if (!m_inited)
         emit startedInitingCache();
     // Init cache by loading global emotes
-    if (!loadGlobalEmotes()) {
-        // Remove old global files
-        QFile::remove(cacheDirectory.absoluteFilePath("TwitchEmotes/global.json"));
-        QFile::remove(cacheDirectory.absoluteFilePath("BTTV/global.json"));
-        QFile::remove(cacheDirectory.absoluteFilePath("FFZ/global.json"));
-        // Subscriber emotes
-        QFile::remove(cacheDirectory.absoluteFilePath("TwitchEmotes/subscriber.json"));
-
-        // Fetch global emotes
-        fetchGlobalEmotes();
-
-        // FIXME Fetch and load subscriber json file into memory
-        auto subscriberEmotesReply = m_api->getTwitchEmotesSubscriberEmotes();
-        connect(subscriberEmotesReply, &Twitch::Reply::finished, this, [this, cacheDirectory, subscriberEmotesReply]() {
-            if (subscriberEmotesReply->currentState() == Twitch::ReplyState::Success) {
-                QFile subscriberFile(cacheDirectory.absoluteFilePath("TwitchEmotes/subscriber.json"));
-                m_subscriberEmotes = subscriberEmotesReply->emotes();
-                if (subscriberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
-                    subscriberFile.write(JSON(m_subscriberEmotes).dump().data());
-                subscriberFile.close();
-            }
-            subscriberEmotesReply->deleteLater();
-            emit fetchedGlobalEmotes();
-        });
-        connect(subscriberEmotesReply, &Twitch::Reply::downloadProgress, [this](qint64 current, qint64 total) {
-            const QString totalString = total != -1 ? QString::number(bytesToMB(total)) + QString("MB") : QString("?");
-            emit globalEmotesFetchProgress(EmotesBackend::TwitchEmotes, QString::number(bytesToMB(current)) + "MB", totalString);
-        });
-    } else {
-        QFile subscriberFile(cacheDirectory.absoluteFilePath("TwitchEmotes/subscriber.json"));
-        if (subscriberFile.open(QIODevice::ReadOnly))
-            m_subscriberEmotes = JSON::parse(subscriberFile.readAll());
-    }
+    loadGlobalEmotes();
 }
 
 void EmotesCache::clearCache()
@@ -184,19 +147,15 @@ void EmotesCache::fetchChannelEmotes(const QString& channel)
     });
 }
 
-void EmotesCache::loadChannelEmotes(const Twitch::User& user)
+void EmotesCache::loadChannelEmotes(const QString& channel)
 {
-    auto cacheDirectory = ensureCacheDirectory();
+    fetchChannelEmotes(channel);
+}
 
-    // Load the TwitchEmotes from local cache
-    if (m_subscriberEmotes.find(user.m_id.toStdString()) != m_subscriberEmotes.end()) {
-        for (const auto& emote : m_subscriberEmotes.values(user.m_id.toStdString())) {
-            m_emotesQueue << emote;
-        }
-        emit queuedEmotes();
-    }
-
-    fetchChannelEmotes(user.m_login);
+void EmotesCache::loadEmotes(const QVector<Twitch::Emote>& emotes)
+{
+    m_emotesQueue << emotes;
+    emit queuedEmotes();
 }
 
 QDir EmotesCache::ensureCacheDirectory()
@@ -212,16 +171,14 @@ QDir EmotesCache::ensureCacheDirectory()
     return cacheDirectory;
 }
 
-bool EmotesCache::loadGlobalEmotes()
+void EmotesCache::loadGlobalEmotes()
 {
     auto cacheDirectory = ensureCacheDirectory();
     QFile globalTwitchEmotes(cacheDirectory.absoluteFilePath("TwitchEmotes/global.json"));
     QFile globalBTTVEmotes(cacheDirectory.absoluteFilePath("BTTV/global.json"));
     QFile globalFFZEmotes(cacheDirectory.absoluteFilePath("FFZ/global.json"));
 
-    QFile subsciberTwitchEmotes(cacheDirectory.absoluteFilePath("TwitchEmotes/subscriber.json"));
-
-    if (globalTwitchEmotes.exists() && globalBTTVEmotes.exists() && globalFFZEmotes.exists() && subsciberTwitchEmotes.exists()) {
+    if (globalTwitchEmotes.exists() && globalBTTVEmotes.exists() && globalFFZEmotes.exists()) {
         if (globalTwitchEmotes.open(QIODevice::ReadOnly) && globalBTTVEmotes.open(QIODevice::ReadOnly) && globalFFZEmotes.open(QIODevice::ReadOnly)) {
             Twitch::Emotes twitchEmotes = JSON::parse(globalTwitchEmotes.readAll())["emotes"];
             Twitch::Emotes bttvEmotes = JSON::parse(globalBTTVEmotes.readAll())["emotes"];
@@ -230,14 +187,18 @@ bool EmotesCache::loadGlobalEmotes()
             m_emotesQueue << bttvEmotes;
             m_emotesQueue << FFZEmotes;
             emit queuedEmotes();
-            if (!m_inited) {
-                emit endedInitingCache();
-                m_inited = true;
-            }
         }
-        return true;
+    } else {
+        QFile::remove(cacheDirectory.absoluteFilePath("TwitchEmotes/global.json"));
+        QFile::remove(cacheDirectory.absoluteFilePath("BTTV/global.json"));
+        QFile::remove(cacheDirectory.absoluteFilePath("FFZ/global.json"));
+        fetchGlobalEmotes();
     }
-    return false;
+
+    if (!m_inited) {
+        emit endedInitingCache();
+        m_inited = true;
+    }
 }
 
 void EmotesCache::onLoadedEmote(const QPair<Twitch::Emote, QImage>& pair)
@@ -250,26 +211,29 @@ void EmotesCache::processQueuedEmotes()
     auto cacheDirectory = ensureCacheDirectory();
     if (!m_emotesQueue.empty()) {
         const auto emote = m_emotesQueue.front();
-        const auto prefix = emotePrefix(emote);
-        const auto imagePath = cacheDirectory.absoluteFilePath(prefix + emote.id());
-        // Check if emote's image exsits on disk
-        if (QFile::exists(imagePath))
-            emit loadedEmote(qMakePair(emote, QImage(imagePath)));
-        else {
-            // Download image and cache it
-            auto imageReply = m_api->getImage(QString(emote.url()).replace("{{size}}", "1"));
-            connect(imageReply, &Twitch::ImageReply::finished, [this, imageReply, imagePath, emote]() {
-                if (imageReply->currentState() == Twitch::ReplyState::Success) {
-                    auto image = imageReply->data().value<QImage>();
-                    QFile imageFile(imagePath + ".png");
-                    if (imageFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
-                        image.save(&imageFile, "PNG");
-                    emit loadedEmote(qMakePair(emote, image));
-                } else {
-                    m_emotesQueue << emote;
-                    emit queuedEmotes();
-                }
-            });
+        qDebug() << emote.code();
+        if (!isEmoteLoaded(emote.code())) {
+            const auto prefix = emotePrefix(emote);
+            const auto imagePath = cacheDirectory.absoluteFilePath(prefix + emote.id());
+            // Check if emote's image exsits on disk
+            if (QFile::exists(imagePath))
+                emit loadedEmote(qMakePair(emote, QImage(imagePath)));
+            else {
+                // Download image and cache it
+                auto imageReply = m_api->getImage(QString(emote.url()).replace("{{size}}", "1"));
+                connect(imageReply, &Twitch::ImageReply::finished, [this, imageReply, imagePath, emote]() {
+                    if (imageReply->currentState() == Twitch::ReplyState::Success) {
+                        auto image = imageReply->data().value<QImage>();
+                        QFile imageFile(imagePath + ".png");
+                        if (imageFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+                            image.save(&imageFile, "PNG");
+                        emit loadedEmote(qMakePair(emote, image));
+                    } else {
+                        /*m_emotesQueue << emote;
+                        emit queuedEmotes();*/
+                    }
+                });
+            }
         }
         // Pop currently processed emote from queue
         m_emotesQueue.pop_front();

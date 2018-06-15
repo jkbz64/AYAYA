@@ -24,7 +24,9 @@ public:
     bool isEmoteLoaded(const QString&);
     void processQueuedEmotes();
 
-    void loadChannelEmotes(const Twitch::User&);
+    void loadGlobalEmotes();
+    void loadChannelEmotes(const QString&);
+    void loadEmotes(const QVector<Twitch::Emote>&);
 
 signals:
     void clearedCache();
@@ -52,11 +54,9 @@ private:
     QVector<Twitch::Emote> m_emotesQueue;
 
     void fetchGlobalEmotes();
-    bool loadGlobalEmotes();
-
-    Twitch::EmotesMap m_subscriberEmotes;
     void fetchChannelEmotes(const QString&);
 
+private slots:
     void onLoadedEmote(const QPair<Twitch::Emote, QImage>&);
 };
 
