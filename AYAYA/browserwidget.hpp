@@ -52,6 +52,8 @@ private:
     Ui::BrowserWidget* m_ui;
     QSettings m_settings;
     Twitch::Api* m_api;
+
+    QDateTime m_lastTopGamesFetch;
 };
 
 #endif // BROWSERWIDGET_H

@@ -8,6 +8,7 @@
 #include <TwitchQt/twitchuser.hpp>
 
 #include <QMouseEvent>
+#include <QSizeGrip>
 
 ChatWidget::ChatWidget(QWidget* parent)
     : QWidget(parent)
@@ -17,6 +18,7 @@ ChatWidget::ChatWidget(QWidget* parent)
     , m_isMovable(false)
     , m_isMoving(false)
     , m_offset(0, 0)
+    , m_sizeGrip(new QSizeGrip(this))
 {
     m_ui->setupUi(this);
     setMouseTracking(true);
@@ -26,6 +28,9 @@ ChatWidget::ChatWidget(QWidget* parent)
     connect(client(), &ChatClient::disconnected, this, &ChatWidget::onDisconnected);
 
     connect(client(), &ChatClient::messageReceived, chatView(), &ChatView::onMessageReceived);
+
+    qobject_cast<QVBoxLayout*>(layout())->addWidget(m_sizeGrip, 0, Qt::AlignBottom | Qt::AlignRight);
+    m_sizeGrip->hide();
 }
 
 ChatWidget::~ChatWidget()
@@ -55,32 +60,29 @@ ChatView* ChatWidget::chatView() const
     return m_ui->m_chatView;
 }
 
+QSizeGrip* ChatWidget::sizeGrip() const
+{
+    return m_sizeGrip;
+}
+
 ChatClient* ChatWidget::client() const
 {
     return m_chatClient;
-}
-
-void ChatWidget::showInput()
-{
-    m_ui->m_messageEdit->show();
-    m_ui->m_sendButton->show();
-}
-
-void ChatWidget::hideInput()
-{
-    m_ui->m_messageEdit->hide();
-    m_ui->m_sendButton->hide();
 }
 
 void ChatWidget::setMovable(bool boolean)
 {
     m_isMovable = boolean;
     if (isMovable()) {
+        setWindowFlag(Qt::SubWindow);
+        m_sizeGrip->show();
         m_ui->m_chatView->setAttribute(Qt::WA_TransparentForMouseEvents);
         m_ui->m_chatView->setStyleSheet("background-color: rgba(0, 0, 0, 0.5);");
         m_ui->m_chatView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         m_ui->m_chatView->setFocusPolicy(Qt::NoFocus);
     } else {
+        setWindowFlag(Qt::Widget);
+        m_sizeGrip->hide();
         m_ui->m_chatView->setAttribute(Qt::WA_TransparentForMouseEvents, false);
         m_ui->m_chatView->setStyleSheet("");
     }

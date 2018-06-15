@@ -37,23 +37,26 @@ bool BrowserWidget::checkInitStatus()
 
 void BrowserWidget::showTopGames()
 {
-    emit initProgress("Fetching Top Twitch Games");
-
-    gameBrowser()->clear();
     setCurrentBrowser(gameBrowser());
+    if (!m_lastTopGamesFetch.isValid() || m_lastTopGamesFetch.secsTo(QDateTime::currentDateTime()) > 60) {
+        emit initProgress("Fetching Top Twitch Games");
 
-    auto reply = m_api->getTopGames(100);
-    connect(reply, &Twitch::Reply::finished, [this, reply]() {
-        if (reply->currentState() == Twitch::ReplyState::Success) {
-            auto games = reply->data().value<Twitch::Games>();
+        gameBrowser()->clear();
 
-            for (const Twitch::Game& game : games)
-                connect(gameBrowser()->addGame(game), &BrowserItemWidget::pressed, this, &BrowserWidget::onGameSelected);
+        auto reply = m_api->getTopGames(100);
+        connect(reply, &Twitch::Reply::finished, [this, reply]() {
+            if (reply->currentState() == Twitch::ReplyState::Success) {
+                auto games = reply->data().value<Twitch::Games>();
 
-            setRequirementFulfilled("firstTopGamesFetch");
-            tryToEndInit();
-        }
-    });
+                for (const Twitch::Game& game : games)
+                    connect(gameBrowser()->addGame(game), &BrowserItemWidget::pressed, this, &BrowserWidget::onGameSelected);
+
+                setRequirementFulfilled("firstTopGamesFetch");
+                tryToEndInit();
+            }
+        });
+        m_lastTopGamesFetch = QDateTime::currentDateTime();
+    }
 }
 
 void BrowserWidget::searchStreamsByGame(const Twitch::Game& game)

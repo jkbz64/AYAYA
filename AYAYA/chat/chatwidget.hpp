@@ -12,6 +12,8 @@ class ChatView;
 
 class TwitchMessage;
 
+class QSizeGrip;
+
 namespace Ui {
 class ChatWidget;
 }
@@ -27,14 +29,12 @@ public:
     bool isFollowingChat();
     void followChat();
 
-    ChatClient* client() const;
-    ChatView* chatView() const;
-
-    void showInput();
-    void hideInput();
-
     void setMovable(bool);
     bool isMovable() const;
+
+    ChatClient* client() const;
+    ChatView* chatView() const;
+    QSizeGrip* sizeGrip() const;
 
 protected:
     virtual void mousePressEvent(QMouseEvent*) override;
@@ -50,6 +50,8 @@ private:
     bool m_isMovable;
     bool m_isMoving;
     QPoint m_offset;
+
+    QSizeGrip* m_sizeGrip;
 
     // Emote Cache slots
     void onEmoteLoaded(const QPair<Twitch::Emote, QImage>&);

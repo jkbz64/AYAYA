@@ -95,7 +95,6 @@ void StreamWidget::onPlayerStyleChanged(PlayerStyle, PlayerStyle newStyle)
         chat()->setParent(player());
         chat()->show();
 
-        chat()->hideInput();
         chat()->setMovable(true);
 
         emit enteredTheaterMode();
@@ -105,7 +104,6 @@ void StreamWidget::onPlayerStyleChanged(PlayerStyle, PlayerStyle newStyle)
         emit enteredFullscreenMode();
     } else {
         chat()->show();
-        chat()->showInput();
         chat()->setMovable(false);
 
         m_ui->splitter->insertWidget(1, chat());
@@ -123,7 +121,6 @@ void StreamWidget::onBackendChanged(PlayerBackend backend)
 {
     emit initProgress("Inited " + backendName(backend) + " backend");
     setRequirementFulfilled("backend");
-    // TODO Backend specific actions
     tryToEndInit();
 }
 
@@ -141,7 +138,6 @@ void StreamWidget::onEndedInitingCache()
 {
     emit initProgress("Initialized emotes cache!");
     setRequirementFulfilled("emoteCache");
-
     tryToEndInit();
 }
 
