@@ -18,6 +18,7 @@ QString backendName(const PlayerBackend backend)
         return QString("MPV");
         break;
     }
+    return QString();
 }
 }
 
@@ -65,7 +66,7 @@ void StreamWidget::init()
     chat()->chatView()->emotesCache()->initCache();
 }
 
-void StreamWidget::initialize(const Twitch::User& user, const Twitch::Stream& stream)
+void StreamWidget::initialize(const Twitch::User& user, const Twitch::Stream&)
 {
     m_ui->m_player->openStream(user.m_login);
     m_ui->m_chat->openChat(user);
@@ -149,7 +150,7 @@ void StreamWidget::onStartedFetchingGlobalEmotes()
     emit initProgress("Fetching global emotes");
 }
 
-void StreamWidget::onGlobalEmotesFetchProgress(EmotesBackend emotesBackend, const QString& current, const QString& total)
+void StreamWidget::onGlobalEmotesFetchProgress(EmotesBackend /*emotesBackend*/, const QString& /*current*/, const QString& /*total*/)
 {
 }
 

@@ -79,7 +79,7 @@ void BrowserWidget::onGameAdded(BrowserItemWidget* widget)
     });
 }
 
-void BrowserWidget::onStreamAdded(BrowserItemWidget* widget)
+void BrowserWidget::onStreamAdded(BrowserItemWidget*)
 {
     /*QPointer<GameItemWidget> gameWidget = qobject_cast<GameItemWidget*>(widget);
     auto boxArtReply = m_api->getBoxArtByUrl(gameWidget->game().m_boxArtUrl, gameWidget->width(), gameWidget->height());

@@ -212,7 +212,7 @@ void MpvPlayerImpl::handleMpvEvent(mpv_event* event)
         emit player()->loaded();
         break;
     case MPV_EVENT_LOG_MESSAGE: {
-        struct mpv_event_log_message* msg = (struct mpv_event_log_message*)event->data;
+        // struct mpv_event_log_message* msg = (struct mpv_event_log_message*)event->data;
 
         break;
     }

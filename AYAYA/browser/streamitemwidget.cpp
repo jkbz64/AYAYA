@@ -23,6 +23,6 @@ const Twitch::Stream& StreamItemWidget::stream() const
     return m_stream;
 }
 
-void StreamItemWidget::setPreview(const QPixmap& preview)
+void StreamItemWidget::setPreview(const QPixmap&)
 {
 }

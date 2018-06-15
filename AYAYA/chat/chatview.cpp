@@ -11,8 +11,8 @@
 
 ChatView::ChatView(QWidget* parent)
     : QTextBrowser(parent)
-    , m_spacing(5)
     , m_emotesCache(new EmotesCache(this))
+    , m_spacing(5)
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
