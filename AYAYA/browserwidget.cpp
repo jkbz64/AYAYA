@@ -1,12 +1,9 @@
 #include "browserwidget.hpp"
-#include "ui_browserwidget.h"
-
-#include <TwitchQt/Twitch>
-
 #include "browser/gameitemwidget.hpp"
 #include "browser/streamitemwidget.hpp"
-
+#include "ui_browserwidget.h"
 #include <QPointer>
+#include <TwitchQt/Twitch>
 
 BrowserWidget::BrowserWidget(QWidget* parent)
     : InitWidget(parent)

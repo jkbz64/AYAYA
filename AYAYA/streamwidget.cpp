@@ -1,14 +1,9 @@
 #include "streamwidget.hpp"
-#include "ui_streamwidget.h"
-
-#include <QMessageBox>
-#include <QSettings>
-
-#include <TwitchQt/twitchstream.hpp>
-#include <TwitchQt/twitchuser.hpp>
-
 #include "chat/chatview.hpp"
 #include "player/playerwidget.hpp"
+#include "ui_streamwidget.h"
+#include <TwitchQt/twitchstream.hpp>
+#include <TwitchQt/twitchuser.hpp>
 
 namespace {
 QString backendName(const PlayerBackend backend)

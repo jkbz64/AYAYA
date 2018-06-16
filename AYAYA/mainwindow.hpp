@@ -1,7 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QDir>
 #include <QMainWindow>
 
 namespace Twitch {
@@ -9,14 +8,15 @@ class User;
 class Stream;
 }
 
-namespace Ui {
-class MainWindow;
-}
 class InitWidget;
 class MainWidget;
 class BrowserWidget;
 class StreamWidget;
 class MainNavigationBar;
+
+namespace Ui {
+class MainWindow;
+}
 
 class MainWindow : public QMainWindow {
     Q_OBJECT

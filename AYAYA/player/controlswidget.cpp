@@ -1,12 +1,9 @@
 #include "controlswidget.hpp"
 #include "playerwidget.hpp"
 #include "ui_controlswidget.h"
-
-#include <QDebug>
 #include <QMovie>
-#include <QTimer>
-
 #include <QPropertyAnimation>
+#include <QTimer>
 
 ControlsWidget::ControlsWidget(PlayerWidget* player)
     : QWidget(player)

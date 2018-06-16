@@ -1,5 +1,4 @@
 #include "streambrowser.hpp"
-
 #include "streamitemwidget.hpp"
 #include <QVBoxLayout>
 

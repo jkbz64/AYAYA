@@ -2,8 +2,14 @@
 #define BROWSERWIDGET_H
 
 #include "initwidget.hpp"
-#include <QSettings>
-#include <TwitchQt/Twitch>
+#include <QDateTime>
+
+namespace Twitch {
+class Api;
+class User;
+class Stream;
+class Game;
+}
 
 class BrowserItemWidget;
 class GameItemWidget;

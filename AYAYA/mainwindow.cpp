@@ -1,10 +1,7 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
-#include <QDebug>
-
 #include <QMovie>
 #include <QPropertyAnimation>
-#include <QStandardPaths>
 #include <QTimer>
 
 MainWindow::MainWindow(QWidget* parent)

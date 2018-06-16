@@ -1,5 +1,4 @@
 #include "browseritemwidget.hpp"
-#include <QDebug>
 
 BrowserItemWidget::BrowserItemWidget(QWidget* parent)
     : QFrame(parent)

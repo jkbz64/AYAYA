@@ -2,11 +2,13 @@
 #define GAMEBROWSER_H
 
 #include "browser.hpp"
-#include <QGraphicsView>
-#include <TwitchQt/twitchgame.hpp>
 
 class GameWidget;
 class GameItemWidget;
+
+namespace Twitch {
+class Game;
+}
 
 class GameBrowser : public Browser {
     Q_OBJECT

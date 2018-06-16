@@ -1,11 +1,18 @@
 #ifndef EMOTESCACHE_HPP
 #define EMOTESCACHE_HPP
 
-#include <QFile>
+#include <QDir>
+#include <QImage>
 #include <QObject>
-#include <TwitchQt/Twitch>
+#include <QPair>
+#include <QSet>
+#include <TwitchQt/twitchemote.hpp>
 
 class QTimer;
+
+namespace Twitch {
+class Api;
+}
 
 enum class EmotesBackend {
     TwitchEmotes,

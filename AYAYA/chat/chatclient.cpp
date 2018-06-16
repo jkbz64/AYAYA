@@ -3,8 +3,6 @@
 #include <IrcCore/irccommand.h>
 #include <IrcCore/ircconnection.h>
 
-#include <QTimer>
-
 namespace {
 QString anon()
 {
@@ -15,7 +13,6 @@ QString anon()
 ChatClient::ChatClient(QObject* parent)
     : QObject(parent)
     , m_connection(nullptr)
-    , m_retryTimer(new QTimer(this))
     , m_currentChannel()
 {
 }

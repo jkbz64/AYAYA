@@ -1,7 +1,5 @@
 #include "streamitemwidget.hpp"
 #include "ui_streamitemwidget.h"
-#include <QPainter>
-#include <TwitchQt/twitchstream.hpp>
 
 StreamItemWidget::StreamItemWidget(const Twitch::Stream& stream, QWidget* parent)
     : BrowserItemWidget(parent)

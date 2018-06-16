@@ -1,9 +1,8 @@
 #include "emotescache.hpp"
-#include <QDir>
 #include <QDirIterator>
-#include <QMessageBox>
+#include <QImage>
 #include <QStandardPaths>
-#include <QTimer>
+#include <TwitchQt/Twitch>
 
 namespace {
 QString emotePrefix(const Twitch::Emote& emote)

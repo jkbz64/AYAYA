@@ -1,9 +1,5 @@
 #include "gameitemwidget.hpp"
 #include "ui_gameitemwidget.h"
-#include <QPaintEvent>
-#include <QPainter>
-
-#include <TwitchQt/twitchgame.hpp>
 
 GameItemWidget::GameItemWidget(const Twitch::Game& data, QWidget* parent)
     : BrowserItemWidget(parent)

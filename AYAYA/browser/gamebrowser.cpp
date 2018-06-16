@@ -1,11 +1,6 @@
 #include "gamebrowser.hpp"
-
-#include "gameitemwidget.hpp"
-#include <TwitchQt/twitchgame.hpp>
-
 #include "flowlayout.hpp"
-#include <QGraphicsItem>
-#include <QGraphicsProxyWidget>
+#include "gameitemwidget.hpp"
 
 GameBrowser::GameBrowser(QWidget* parent)
     : Browser(parent)

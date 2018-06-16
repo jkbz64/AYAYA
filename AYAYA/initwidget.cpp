@@ -1,6 +1,4 @@
 #include "initwidget.hpp"
-#include <QMainWindow>
-#include <mutex>
 
 namespace {
 // I was just too lazy to check if qsettings is shared between InitWidgets, lol.

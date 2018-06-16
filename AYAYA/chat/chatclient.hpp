@@ -43,7 +43,6 @@ protected:
     virtual void onDisconnected();
 
     IrcConnection* m_connection;
-    QTimer* m_retryTimer;
     QString m_currentChannel;
 };
 

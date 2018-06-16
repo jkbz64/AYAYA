@@ -3,12 +3,10 @@
 #include "chatview.hpp"
 #include "emotescache.hpp"
 #include "ui_chatwidget.h"
-
-#include <QScrollBar>
-#include <TwitchQt/twitchuser.hpp>
-
 #include <QMouseEvent>
+#include <QScrollBar>
 #include <QSizeGrip>
+#include <TwitchQt/twitchuser.hpp>
 
 ChatWidget::ChatWidget(QWidget* parent)
     : QWidget(parent)

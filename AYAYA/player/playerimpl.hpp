@@ -2,8 +2,8 @@
 #define PLAYERIMPL_HPP
 
 #include <QObject>
-#include <QString>
 
+class QString;
 class PlayerWidget;
 
 namespace detail {

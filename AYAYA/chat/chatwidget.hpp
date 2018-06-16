@@ -1,10 +1,12 @@
 #ifndef CHATWIDGET_HPP
 #define CHATWIDGET_HPP
 
-#include <QGraphicsView>
+#include <QWidget>
 
-#include <TwitchQt/twitchemote.hpp>
-#include <TwitchQt/twitchuser.hpp>
+namespace Twitch {
+class Emote;
+class User;
+}
 
 class EmotesCache;
 class ChatClient;

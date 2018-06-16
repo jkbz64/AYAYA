@@ -1,10 +1,8 @@
 #include "playerwidget.hpp"
 #include "controlswidget.hpp"
-
+#include "mpvplayerimpl.hpp"
 #include <QGridLayout>
 #include <QSpacerItem>
-
-#include "mpvplayerimpl.hpp"
 
 PlayerWidget::PlayerWidget(QWidget* parent)
     : QOpenGLWidget(parent)

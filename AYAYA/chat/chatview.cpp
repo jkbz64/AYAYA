@@ -1,11 +1,4 @@
 #include "chatview.hpp"
-#include <QGraphicsTextItem>
-#include <QRectF>
-#include <QScrollBar>
-
-#include <QDebug>
-#include <QTimer>
-
 #include "chatclient.hpp"
 #include "emotescache.hpp"
 
