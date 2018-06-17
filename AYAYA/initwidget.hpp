@@ -10,9 +10,10 @@ public:
     explicit InitWidget(QWidget* = nullptr);
     virtual ~InitWidget();
 
+    virtual void init() = 0;
+
     QSettings& initSettings();
 
-    virtual void init() = 0;
 signals:
     void startedIniting();
     void initProgress(const QString&);
@@ -29,6 +30,8 @@ private:
 
     void onStartedIniting();
     void onEndedIniting();
+
+    static QSettings m_initSettings;
 };
 
 #endif // INITWIDGET_HPP

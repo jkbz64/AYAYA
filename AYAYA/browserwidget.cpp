@@ -8,7 +8,6 @@
 BrowserWidget::BrowserWidget(QWidget* parent)
     : InitWidget(parent)
     , m_ui(new Ui::BrowserWidget)
-    , m_settings()
     , m_api(new Twitch::Api("hqq61vsp32mvxsfhy6a9o7eemxdv5e", this))
 {
     m_ui->setupUi(this);
@@ -22,9 +21,14 @@ BrowserWidget::~BrowserWidget()
     delete m_ui;
 }
 
-void BrowserWidget::init()
+GameBrowser* BrowserWidget::gameBrowser() const
 {
-    showTopGames();
+    return m_ui->m_gameBrowser;
+}
+
+StreamBrowser* BrowserWidget::streamBrowser() const
+{
+    return m_ui->m_streamBrowser;
 }
 
 bool BrowserWidget::checkInitStatus()
@@ -32,22 +36,23 @@ bool BrowserWidget::checkInitStatus()
     return isFulfilled("firstTopGamesFetch");
 }
 
+void BrowserWidget::init()
+{
+    showTopGames();
+}
+
 void BrowserWidget::showTopGames()
 {
     setCurrentBrowser(gameBrowser());
     if (!m_lastTopGamesFetch.isValid() || m_lastTopGamesFetch.secsTo(QDateTime::currentDateTime()) > 60) {
-        emit initProgress("Fetching Top Twitch Games");
-
         gameBrowser()->clear();
-
+        emit initProgress("Fetching Top Twitch Games");
         auto reply = m_api->getTopGames(100);
         connect(reply, &Twitch::Reply::finished, [this, reply]() {
             if (reply->currentState() == Twitch::ReplyState::Success) {
                 auto games = reply->data().value<Twitch::Games>();
-
                 for (const Twitch::Game& game : games)
                     connect(gameBrowser()->addGame(game), &BrowserItemWidget::pressed, this, &BrowserWidget::onGameSelected);
-
                 setRequirementFulfilled("firstTopGamesFetch");
                 tryToEndInit();
             }
@@ -69,6 +74,17 @@ void BrowserWidget::searchStreamsByGame(const Twitch::Game& game)
     });
 }
 
+Browser* BrowserWidget::currentBrowser() const
+{
+    return qobject_cast<Browser*>(m_ui->m_browserStack->currentWidget());
+}
+
+void BrowserWidget::setCurrentBrowser(Browser* browser)
+{
+    m_ui->m_browserStack->setCurrentWidget(browser);
+}
+
+// Slots
 void BrowserWidget::onGameAdded(BrowserItemWidget* widget)
 {
     QPointer<GameItemWidget> gameWidget = qobject_cast<GameItemWidget*>(widget);
@@ -107,24 +123,4 @@ void BrowserWidget::onStreamSelected()
             emit streamEntered(user, stream);
         }
     });
-}
-
-void BrowserWidget::setCurrentBrowser(Browser* browser)
-{
-    m_ui->m_browserStack->setCurrentWidget(browser);
-}
-
-Browser* BrowserWidget::currentBrowser() const
-{
-    return qobject_cast<Browser*>(m_ui->m_browserStack->currentWidget());
-}
-
-GameBrowser* BrowserWidget::gameBrowser() const
-{
-    return m_ui->m_gameBrowser;
-}
-
-StreamBrowser* BrowserWidget::streamBrowser() const
-{
-    return m_ui->m_streamBrowser;
 }

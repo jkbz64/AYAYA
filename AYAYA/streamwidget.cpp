@@ -38,14 +38,21 @@ StreamWidget::StreamWidget(QWidget* parent)
     connect(player(), &PlayerWidget::playerStyleChanged, this, &StreamWidget::onPlayerStyleChanged);
 
     connect(m_ui->splitter, &QSplitter::splitterMoved, this, &StreamWidget::onSplitterMoved);
-
-    layout()->setSpacing(0);
-    layout()->setMargin(0);
 }
 
 StreamWidget::~StreamWidget()
 {
     delete m_ui;
+}
+
+PlayerWidget* StreamWidget::player() const
+{
+    return m_ui->m_player;
+}
+
+ChatWidget* StreamWidget::chat() const
+{
+    return m_ui->m_chat;
 }
 
 bool StreamWidget::checkInitStatus()
@@ -67,44 +74,35 @@ void StreamWidget::initialize(const Twitch::User& user, const Twitch::Stream&)
     m_ui->m_chat->openChat(user);
 }
 
-PlayerWidget* StreamWidget::player() const
-{
-    return m_ui->m_player;
-}
-
-ChatWidget* StreamWidget::chat() const
-{
-    return m_ui->m_chat;
-}
-
-void StreamWidget::onSplitterMoved()
-{
-    m_ui->m_chat->followChat();
-}
-
+// Slots
 void StreamWidget::onPlayerStyleChanged(PlayerStyle, PlayerStyle newStyle)
 {
     if (newStyle == PlayerStyle::Theater) {
         // Reparent chat so it breaks from splitter
         chat()->hide();
         chat()->setParent(player());
-        chat()->show();
-
         chat()->setMovable(true);
+        chat()->show();
+        chat()->followChat();
 
         emit enteredTheaterMode();
     } else if (newStyle == PlayerStyle::Fullscreen) {
         chat()->hide();
-
         emit enteredFullscreenMode();
     } else {
-        chat()->show();
         chat()->setMovable(false);
+        chat()->show();
+        chat()->followChat();
 
         m_ui->splitter->insertWidget(1, chat());
 
         emit leftFullscreenMode();
     }
+}
+
+void StreamWidget::onSplitterMoved()
+{
+    m_ui->m_chat->followChat();
 }
 
 void StreamWidget::onStartedBackendInit()

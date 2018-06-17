@@ -1,15 +1,14 @@
 #include "initwidget.hpp"
 
-namespace {
-// I was just too lazy to check if qsettings is shared between InitWidgets, lol.
-QSettings m_initSettings("initSettings", QSettings::NativeFormat);
-}
+QSettings InitWidget::m_initSettings("init");
 
 InitWidget::InitWidget(QWidget* parent)
     : QWidget(parent)
 {
     connect(this, &InitWidget::startedIniting, this, &InitWidget::onStartedIniting);
 }
+
+InitWidget::~InitWidget() = default;
 
 QSettings& InitWidget::initSettings()
 {
@@ -31,16 +30,13 @@ bool InitWidget::checkInitStatus()
     return true;
 }
 
+void InitWidget::tryToEndInit()
+{
+    if (checkInitStatus())
+        emit endedIniting();
+}
+
 void InitWidget::onStartedIniting()
 {
     init();
 }
-
-void InitWidget::tryToEndInit()
-{
-    if (checkInitStatus()) {
-        emit endedIniting();
-    }
-}
-
-InitWidget::~InitWidget() = default;

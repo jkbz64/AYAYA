@@ -44,22 +44,21 @@ signals:
 public slots:
     void searchStreamsByGame(const Twitch::Game&);
 
+protected:
+    virtual bool checkInitStatus() override;
+
+private:
+    Ui::BrowserWidget* m_ui;
+    Twitch::Api* m_api;
+
+    QDateTime m_lastTopGamesFetch;
+
 private slots:
     void onGameAdded(BrowserItemWidget*);
     void onStreamAdded(BrowserItemWidget*);
 
     void onGameSelected();
     void onStreamSelected();
-
-protected:
-    virtual bool checkInitStatus() override;
-
-private:
-    Ui::BrowserWidget* m_ui;
-    QSettings m_settings;
-    Twitch::Api* m_api;
-
-    QDateTime m_lastTopGamesFetch;
 };
 
 #endif // BROWSERWIDGET_H

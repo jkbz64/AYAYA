@@ -1,4 +1,5 @@
 #include "mainwindow.hpp"
+#include "browser/gamebrowser.hpp"
 #include "ui_mainwindow.h"
 #include <QMovie>
 #include <QPropertyAnimation>
@@ -9,11 +10,6 @@ MainWindow::MainWindow(QWidget* parent)
     , m_ui(new Ui::MainWindow)
 {
     m_ui->setupUi(this);
-    // Save default margins/ spacing for going back from fulllscreen mode
-    m_defaultMargin = m_ui->m_mainWidget->layout()->margin();
-    m_defaultSpacing = m_ui->m_mainWidget->layout()->spacing();
-    // Splash screen clap face
-    m_ui->m_clapFace->setMovie(new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this));
     // Navigation bar
     connect(navigationBar(), &MainNavigationBar::browseButtonPressed, this, &MainWindow::onBrowsePressed);
     connect(navigationBar(), &MainNavigationBar::quitButtonPressed, this, &MainWindow::close);
@@ -23,6 +19,12 @@ MainWindow::MainWindow(QWidget* parent)
     connect(streamWidget(), &StreamWidget::enteredTheaterMode, this, &MainWindow::onEnteredFullscreenMode);
     connect(streamWidget(), &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
     connect(streamWidget(), &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
+
+    // Save default margins / spacing for going back from fulllscreen mode
+    m_defaultMargin = m_ui->m_mainWidget->layout()->margin();
+    m_defaultSpacing = m_ui->m_mainWidget->layout()->spacing();
+    // Splash screen clap face
+    m_ui->m_clapFace->setMovie(new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this));
 }
 
 MainWindow::~MainWindow()
@@ -30,25 +32,9 @@ MainWindow::~MainWindow()
     delete m_ui;
 }
 
-void MainWindow::init()
-{
-    m_initQueue << m_ui->m_browserWidget << m_ui->m_streamWidget;
-    initNextWidget();
-}
-
 MainNavigationBar* MainWindow::navigationBar() const
 {
     return m_ui->m_navigationBar;
-}
-
-void MainWindow::setCurrentMainWidget(QWidget* widget) const
-{
-    m_ui->m_mainStack->setCurrentWidget(widget);
-}
-
-QWidget* MainWindow::currentMainWidget() const
-{
-    return m_ui->m_mainStack->currentWidget();
 }
 
 BrowserWidget* MainWindow::browserWidget() const
@@ -61,10 +47,15 @@ StreamWidget* MainWindow::streamWidget() const
     return m_ui->m_streamWidget;
 }
 
+void MainWindow::init()
+{
+    m_initQueue << m_ui->m_browserWidget << m_ui->m_streamWidget;
+    initNextWidget();
+}
+
 void MainWindow::setupInitWidget(InitWidget* widget)
 {
     connect(widget, &InitWidget::startedIniting, this, &MainWindow::onInitStarted);
-    // Queued Connection lets us see some init progress logs ;)
     connect(widget, &InitWidget::initProgress, this, &MainWindow::onInitProgress, Qt::QueuedConnection);
     connect(widget, &InitWidget::endedIniting, this, &MainWindow::onEndedIniting);
     emit widget->startedIniting();
@@ -91,6 +82,17 @@ void MainWindow::restoreDefaultMargins()
     m_ui->m_mainWidget->layout()->setSpacing(m_defaultSpacing);
 }
 
+QWidget* MainWindow::currentMainWidget() const
+{
+    return m_ui->m_mainStack->currentWidget();
+}
+
+void MainWindow::setCurrentMainWidget(QWidget* widget) const
+{
+    m_ui->m_mainStack->setCurrentWidget(widget);
+}
+
+// Slots
 void MainWindow::onInitStarted()
 {
     m_ui->m_centralStack->setCurrentWidget(m_ui->m_splashWidget);
@@ -110,10 +112,10 @@ void MainWindow::onEndedIniting()
     disconnect(initedWidget, &InitWidget::initProgress, 0, 0);
     disconnect(initedWidget, &InitWidget::endedIniting, 0, 0);
 
-    if (!m_initQueue.empty()) {
+    if (!m_initQueue.empty())
         initNextWidget();
-    } else {
-        QTimer::singleShot(250, this, [this]() {
+    else {
+        QTimer::singleShot(50, this, [this]() {
             m_ui->m_statusLabel->setText("AYAYA is now starting");
         });
         // Let the user see the pretty sun... even if it's for a second :)
@@ -123,8 +125,6 @@ void MainWindow::onEndedIniting()
         });
     }
 }
-
-#include "browser/gamebrowser.hpp"
 
 void MainWindow::onBrowsePressed()
 {
