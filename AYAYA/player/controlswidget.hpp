@@ -3,13 +3,16 @@
 
 #include <QWidget>
 
+class PlayerWidget;
+
+class QPushButton;
+class QSlider;
+class QProgressBar;
+class QPropertyAnimation;
+
 namespace Ui {
 class ControlsWidget;
 }
-
-class PlayerWidget;
-
-class QPropertyAnimation;
 
 class ControlsWidget : public QWidget {
     Q_OBJECT
@@ -22,6 +25,14 @@ public:
     void resetFadeTimer();
 
     int currentVolume();
+
+    QPushButton* restartButton() const;
+    QPushButton* muteButton() const;
+    QProgressBar* bufferingBar() const;
+    QSlider* volumeSlider() const;
+    QPushButton* theaterButton() const;
+    QPushButton* fullscreenButton() const;
+
 signals:
     void pressedTheaterButton();
     void pressedFullscreenButton();
@@ -31,7 +42,6 @@ signals:
 
 private:
     Ui::ControlsWidget* m_ui;
-    int m_beforeMuteVolume;
     QTimer* m_fadeOutTimer;
     QMovie* m_loadingGif;
 

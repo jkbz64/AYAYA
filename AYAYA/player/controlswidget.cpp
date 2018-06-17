@@ -8,11 +8,11 @@
 ControlsWidget::ControlsWidget(PlayerWidget* player)
     : QWidget(player)
     , m_ui(new Ui::ControlsWidget)
-    , m_beforeMuteVolume(-1)
     , m_fadeOutTimer(new QTimer(this))
     , m_loadingGif(new QMovie(QString(":/gifs/clap.gif"), QByteArray(), this))
 {
     m_ui->setupUi(this);
+
     // Pre-setup
     m_ui->m_bufferingBar->hide();
 
@@ -29,11 +29,11 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
     connect(player, &PlayerWidget::ended, this, &ControlsWidget::onEnded);
 
     // Controls Widgets
-    connect(m_ui->m_restartButton, &QPushButton::pressed, this, &ControlsWidget::pressedRestartButton);
-    connect(m_ui->m_muteButton, &QPushButton::pressed, this, &ControlsWidget::pressedMuteButton);
-    connect(m_ui->m_volumeSlider, &QSlider::valueChanged, this, &ControlsWidget::changedVolume);
-    connect(m_ui->m_theaterModeButton, &QPushButton::pressed, this, &ControlsWidget::pressedTheaterButton);
-    connect(m_ui->m_fullscreenButton, &QPushButton::pressed, this, &ControlsWidget::pressedFullscreenButton);
+    connect(restartButton(), &QPushButton::pressed, this, &ControlsWidget::pressedRestartButton);
+    connect(muteButton(), &QPushButton::pressed, this, &ControlsWidget::pressedMuteButton);
+    connect(volumeSlider(), &QSlider::valueChanged, this, &ControlsWidget::changedVolume);
+    connect(theaterButton(), &QPushButton::pressed, this, &ControlsWidget::pressedTheaterButton);
+    connect(fullscreenButton(), &QPushButton::pressed, this, &ControlsWidget::pressedFullscreenButton);
 
     // Gif
     connect(m_loadingGif, &QMovie::frameChanged, [this]() {
@@ -45,6 +45,36 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
 ControlsWidget::~ControlsWidget()
 {
     delete m_ui;
+}
+
+QPushButton* ControlsWidget::restartButton() const
+{
+    return m_ui->m_restartButton;
+}
+
+QPushButton* ControlsWidget::muteButton() const
+{
+    return m_ui->m_muteButton;
+}
+
+QSlider* ControlsWidget::volumeSlider() const
+{
+    return m_ui->m_volumeSlider;
+}
+
+QProgressBar* ControlsWidget::bufferingBar() const
+{
+    return m_ui->m_bufferingBar;
+}
+
+QPushButton* ControlsWidget::theaterButton() const
+{
+    return m_ui->m_theaterModeButton;
+}
+
+QPushButton* ControlsWidget::fullscreenButton() const
+{
+    return m_ui->m_fullscreenButton;
 }
 
 void ControlsWidget::startFadeTimer()
@@ -61,41 +91,41 @@ void ControlsWidget::resetFadeTimer()
 
 int ControlsWidget::currentVolume()
 {
-    return m_ui->m_volumeSlider->value();
+    return volumeSlider()->value();
 }
 
 void ControlsWidget::onStartedLoading()
 {
-    m_ui->m_restartButton->blockSignals(true);
+    restartButton()->blockSignals(true);
     m_loadingGif->start();
 }
 
 void ControlsWidget::onLoaded()
 {
     m_loadingGif->stop();
-    m_ui->m_restartButton->setText("Restart");
-    m_ui->m_restartButton->blockSignals(false);
+    restartButton()->setText("Restart");
+    restartButton()->blockSignals(false);
 }
 
 void ControlsWidget::onEnded()
 {
-    m_ui->m_restartButton->blockSignals(true);
+    restartButton()->blockSignals(true);
 }
 
 void ControlsWidget::onBuffering(int value)
 {
-    m_ui->m_bufferingBar->show();
-    m_ui->m_bufferingBar->setValue(value);
+    bufferingBar()->show();
+    bufferingBar()->setValue(value);
 }
 
 void ControlsWidget::onPositionChanged(double)
 {
-    m_ui->m_bufferingBar->hide();
+    bufferingBar()->hide();
 }
 
 void ControlsWidget::onVolumeChanged(double value)
 {
-    m_ui->m_volumeSlider->blockSignals(true);
-    m_ui->m_volumeSlider->setValue(static_cast<int>(value));
-    m_ui->m_volumeSlider->blockSignals(false);
+    volumeSlider()->blockSignals(true);
+    volumeSlider()->setValue(static_cast<int>(value));
+    volumeSlider()->blockSignals(false);
 }

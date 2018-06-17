@@ -20,6 +20,11 @@ PlayerWidget::~PlayerWidget()
     delete m_impl;
 }
 
+ControlsWidget* PlayerWidget::controlsWidget()
+{
+    return m_controlsWidget;
+}
+
 void PlayerWidget::setBackend(PlayerBackend backend)
 {
     m_backend = backend;
@@ -58,7 +63,7 @@ void PlayerWidget::resetStream()
 
 void PlayerWidget::setVolume(int value)
 {
-    if (value > 0)
+    if (value != 0)
         m_beforeMuteVolume = value;
 
     if (m_impl)
@@ -86,17 +91,12 @@ const PlayerStyle& PlayerWidget::playerStyle() const
     return m_playerStyle;
 }
 
-ControlsWidget* PlayerWidget::controlsWidget()
-{
-    return m_controlsWidget;
-}
-
 void PlayerWidget::mouseMoveEvent(QMouseEvent* event)
 {
+    QOpenGLWidget::mouseMoveEvent(event);
     if (m_controlsWidget->isHidden())
         m_controlsWidget->show();
     m_controlsWidget->resetFadeTimer();
-    QOpenGLWidget::mouseMoveEvent(event);
 }
 
 void PlayerWidget::mouseDoubleClickEvent(QMouseEvent* event)
@@ -148,6 +148,7 @@ void PlayerWidget::setupOverlay()
     setLayout(overlayLayout);
 }
 
+// Slots
 void PlayerWidget::onPressedResetButton()
 {
     resetStream();
@@ -156,7 +157,6 @@ void PlayerWidget::onPressedResetButton()
 void PlayerWidget::onPressedMuteButton()
 {
     if (m_beforeMuteVolume != 0) {
-        m_beforeMuteVolume = m_impl->volume();
         setVolume(0);
     } else {
         setVolume(m_beforeMuteVolume);
