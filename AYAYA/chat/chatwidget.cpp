@@ -27,7 +27,7 @@ ChatWidget::ChatWidget(QWidget* parent)
 
     connect(client(), &ChatClient::messageReceived, chatView(), &ChatView::onMessageReceived);
 
-    qobject_cast<QVBoxLayout*>(layout())->addWidget(m_sizeGrip, 0, Qt::AlignBottom | Qt::AlignRight);
+    qobject_cast<QVBoxLayout*>(layout())->addWidget(sizeGrip(), 0, Qt::AlignBottom | Qt::AlignRight);
     m_sizeGrip->hide();
 }
 
@@ -131,7 +131,8 @@ void ChatWidget::onJoinedChannel(const QString& /*channel*/)
 
 void ChatWidget::onDisconnected()
 {
-    chatView()->setEnabled(false);
+    // It sometimes crashes when closing, fix this
+    // chatView()->setEnabled(false);
 }
 
 void ChatWidget::onEmoteLoaded(const QPair<Twitch::Emote, QImage>& emote)

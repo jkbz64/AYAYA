@@ -47,15 +47,16 @@ void BrowserWidget::showTopGames()
     if (!m_lastTopGamesFetch.isValid() || m_lastTopGamesFetch.secsTo(QDateTime::currentDateTime()) > 60) {
         gameBrowser()->clear();
         emit initProgress("Fetching Top Twitch Games");
-        auto reply = m_api->getTopGames(100);
-        connect(reply, &Twitch::Reply::finished, [this, reply]() {
-            if (reply->currentState() == Twitch::ReplyState::Success) {
-                auto games = reply->data().value<Twitch::Games>();
+        auto topGamesReply = m_api->getTopGames(100);
+        connect(topGamesReply, &Twitch::Reply::finished, [this, topGamesReply]() {
+            if (topGamesReply->currentState() == Twitch::ReplyState::Success) {
+                const auto games = topGamesReply->data().value<Twitch::Games>();
                 for (const Twitch::Game& game : games)
                     connect(gameBrowser()->addGame(game), &BrowserItemWidget::pressed, this, &BrowserWidget::onGameSelected);
                 setRequirementFulfilled("firstTopGamesFetch");
                 tryToEndInit();
             }
+            topGamesReply->deleteLater();
         });
         m_lastTopGamesFetch = QDateTime::currentDateTime();
     }
@@ -68,9 +69,12 @@ void BrowserWidget::searchStreamsByGame(const Twitch::Game& game)
 
     auto channelsReply = m_api->getStreamsByGameId(game.m_id);
     connect(channelsReply, &Twitch::Reply::finished, [this, channelsReply]() {
-        auto streams = channelsReply->data().value<Twitch::Streams>();
-        for (const Twitch::Stream& stream : streams)
-            connect(streamBrowser()->addStream(stream), &BrowserItemWidget::pressed, this, &BrowserWidget::onStreamSelected);
+        if (channelsReply->currentState() == Twitch::ReplyState::Success) {
+            auto streams = channelsReply->data().value<Twitch::Streams>();
+            for (const Twitch::Stream& stream : streams)
+                connect(streamBrowser()->addStream(stream), &BrowserItemWidget::pressed, this, &BrowserWidget::onStreamSelected);
+        }
+        channelsReply->deleteLater();
     });
 }
 
@@ -90,8 +94,11 @@ void BrowserWidget::onGameAdded(BrowserItemWidget* widget)
     QPointer<GameItemWidget> gameWidget = qobject_cast<GameItemWidget*>(widget);
     auto boxArtReply = m_api->getBoxArtByUrl(gameWidget->game().m_boxArtUrl, gameWidget->width(), gameWidget->height());
     connect(boxArtReply, &Twitch::Reply::finished, [boxArtReply, gameWidget]() {
-        if (gameWidget)
-            gameWidget->setBoxArt(QPixmap::fromImage(boxArtReply->data().value<QImage>()));
+        if (boxArtReply->currentState() == Twitch::ReplyState::Success) {
+            if (gameWidget)
+                gameWidget->setBoxArt(QPixmap::fromImage(boxArtReply->data().value<QImage>()));
+        }
+        boxArtReply->deleteLater();
     });
 }
 
@@ -122,5 +129,6 @@ void BrowserWidget::onStreamSelected()
             auto user = userReply->data().value<Twitch::User>();
             emit streamEntered(user, stream);
         }
+        userReply->deleteLater();
     });
 }

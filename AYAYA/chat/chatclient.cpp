@@ -61,7 +61,6 @@ void ChatClient::joinChannel(const QString& channel)
 
     if (!channel.isEmpty()) {
         depart();
-
         if (shouldDelay) {
             QObject* delayer = new QObject(this);
             connect(this, &ChatClient::connected, [this, channel, delayer]() {
@@ -75,9 +74,8 @@ void ChatClient::joinChannel(const QString& channel)
 
 void ChatClient::depart()
 {
-    if (m_connection && !m_currentChannel.isEmpty()) {
+    if (m_connection && !m_currentChannel.isEmpty())
         m_connection->sendCommand(IrcCommand::createPart(QString("#") + m_currentChannel));
-    }
 }
 
 #include <QRegularExpression>
@@ -88,7 +86,8 @@ void ChatClient::onMessageReceived(IrcMessage* message)
 
     if (messageType == IrcMessage::Type::Private) {
         auto privateMessage = qobject_cast<IrcPrivateMessage*>(message);
-        // Use regexp to capture emote id and first range in format ID:START-END/etc
+        // First group is the emote id, second and third is the first range of the emote text to be replaced
+        // At this point we only need to know the ID and emote Code, our replacing algorithm in the chat view is going to repalce all the stuff
         QRegularExpression reg("(\\d+?):(\\d*)-(\\d*)");
         QRegularExpressionMatchIterator i = reg.globalMatch(privateMessage->tag("emotes").toString());
         QVector<Twitch::Emote> emotes;
@@ -126,6 +125,5 @@ void ChatClient::onConnected()
 
 void ChatClient::onDisconnected()
 {
-    // TODO Retry until connected
     emit disconnected();
 }

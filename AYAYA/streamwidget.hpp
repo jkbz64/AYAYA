@@ -12,6 +12,8 @@ class User;
 
 class ChatWidget;
 
+class QSplitter;
+
 namespace Ui {
 class StreamWidget;
 }
@@ -28,6 +30,7 @@ public:
 
     PlayerWidget* player() const;
     ChatWidget* chat() const;
+    QSplitter* streamSplitter() const;
 
 signals:
     void enteredTheaterMode();

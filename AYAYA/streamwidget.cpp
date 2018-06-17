@@ -37,7 +37,7 @@ StreamWidget::StreamWidget(QWidget* parent)
     // Processing
     connect(player(), &PlayerWidget::playerStyleChanged, this, &StreamWidget::onPlayerStyleChanged);
 
-    connect(m_ui->splitter, &QSplitter::splitterMoved, this, &StreamWidget::onSplitterMoved);
+    connect(streamSplitter(), &QSplitter::splitterMoved, this, &StreamWidget::onSplitterMoved);
 }
 
 StreamWidget::~StreamWidget()
@@ -55,6 +55,11 @@ ChatWidget* StreamWidget::chat() const
     return m_ui->m_chat;
 }
 
+QSplitter* StreamWidget::streamSplitter() const
+{
+    return m_ui->m_splitter;
+}
+
 bool StreamWidget::checkInitStatus()
 {
     const auto cacheInited = isFulfilled("emoteCache");
@@ -70,8 +75,8 @@ void StreamWidget::init()
 
 void StreamWidget::initialize(const Twitch::User& user, const Twitch::Stream&)
 {
-    m_ui->m_player->openStream(user.m_login);
-    m_ui->m_chat->openChat(user);
+    player()->openStream(user.m_login);
+    chat()->openChat(user);
 }
 
 // Slots
@@ -94,7 +99,7 @@ void StreamWidget::onPlayerStyleChanged(PlayerStyle, PlayerStyle newStyle)
         chat()->show();
         chat()->followChat();
 
-        m_ui->splitter->insertWidget(1, chat());
+        streamSplitter()->insertWidget(1, chat());
 
         emit leftFullscreenMode();
     }
@@ -102,7 +107,7 @@ void StreamWidget::onPlayerStyleChanged(PlayerStyle, PlayerStyle newStyle)
 
 void StreamWidget::onSplitterMoved()
 {
-    m_ui->m_chat->followChat();
+    chat()->followChat();
 }
 
 void StreamWidget::onStartedBackendInit()

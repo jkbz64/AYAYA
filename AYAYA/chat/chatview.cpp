@@ -5,13 +5,8 @@
 ChatView::ChatView(QWidget* parent)
     : QTextBrowser(parent)
     , m_emotesCache(new EmotesCache(this))
-    , m_spacing(5)
 {
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    setFrameShape(QFrame::NoFrame);
-
-    connect(m_emotesCache, &EmotesCache::loadedEmote, this, &ChatView::onEmoteLoaded);
+    connect(emotesCache(), &EmotesCache::loadedEmote, this, &ChatView::onEmoteLoaded);
 }
 
 ChatView::~ChatView()
@@ -38,7 +33,7 @@ void ChatView::onJoinedChannel(const QString& channel)
 void ChatView::onMessageReceived(const TwitchMessage& message)
 {
     auto editedMessage = message.m_content;
-    m_emotesCache->loadEmotes(message.m_emotes);
+    emotesCache()->loadEmotes(message.m_emotes);
 
     QSet<QString> preCodes;
     for (const auto& emote : message.m_emotes)
@@ -46,7 +41,7 @@ void ChatView::onMessageReceived(const TwitchMessage& message)
 
     const auto words = QSet<QString>::fromList(message.m_content.split(QRegExp("[\r\n\t ]+")));
     for (const auto& word : words) {
-        if (m_emotesCache->isEmoteLoaded(word.simplified()) || preCodes.find(word.simplified()) != preCodes.end()) {
+        if (emotesCache()->isEmoteLoaded(word.simplified()) || preCodes.find(word.simplified()) != preCodes.end()) {
             editedMessage.replace(word, "<img src=\"" + word + "\" align=\"middle\"/>");
         }
     }

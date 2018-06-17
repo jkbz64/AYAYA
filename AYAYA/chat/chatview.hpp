@@ -3,7 +3,10 @@
 
 #include <QPair>
 #include <QTextBrowser>
-#include <TwitchQt/twitchemote.hpp>
+
+namespace Twitch {
+class Emote;
+}
 
 class TwitchMessage;
 class EmotesCache;
@@ -17,9 +20,6 @@ public:
     void reset();
     void addMessage(const QString&);
 
-    void setSpacing(int);
-    int spacing() const;
-
     EmotesCache* emotesCache() const;
 
 private slots:
@@ -30,7 +30,6 @@ private slots:
 
 private:
     EmotesCache* m_emotesCache;
-    int m_spacing;
 };
 
 #endif // CHATVIEW_HPP

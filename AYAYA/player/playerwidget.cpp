@@ -63,9 +63,6 @@ void PlayerWidget::resetStream()
 
 void PlayerWidget::setVolume(int value)
 {
-    if (value != 0)
-        m_beforeMuteVolume = value;
-
     if (m_impl)
         m_impl->setVolume(value);
 }
@@ -156,7 +153,8 @@ void PlayerWidget::onPressedResetButton()
 
 void PlayerWidget::onPressedMuteButton()
 {
-    if (m_beforeMuteVolume != 0) {
+    if (volume() != 0) {
+        m_beforeMuteVolume = volume();
         setVolume(0);
     } else {
         setVolume(m_beforeMuteVolume);
