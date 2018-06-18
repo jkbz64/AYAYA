@@ -1,6 +1,7 @@
 #ifndef CHATCLIENT_HPP
 #define CHATCLIENT_HPP
 
+#include "TwitchQt/twitchemote.hpp"
 #include <QColor>
 #include <QObject>
 
@@ -8,8 +9,6 @@ class QTimer;
 
 class IrcConnection;
 class IrcMessage;
-
-#include "TwitchQt/twitchemote.hpp"
 
 struct TwitchMessage {
     QString m_author;

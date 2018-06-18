@@ -43,13 +43,13 @@ void ChatWidget::openChat(const Twitch::User& user)
 
 bool ChatWidget::isFollowingChat()
 {
-    auto scrollBar = m_ui->m_chatView->verticalScrollBar();
+    const auto scrollBar = m_ui->m_chatView->verticalScrollBar();
     return scrollBar->value() == scrollBar->maximum();
 }
 
 void ChatWidget::followChat()
 {
-    auto scrollBar = m_ui->m_chatView->verticalScrollBar();
+    const auto scrollBar = m_ui->m_chatView->verticalScrollBar();
     scrollBar->setValue(scrollBar->maximum());
 }
 
@@ -78,11 +78,13 @@ void ChatWidget::setMovable(bool boolean)
         m_ui->m_chatView->setStyleSheet("background-color: rgba(0, 0, 0, 0.5);");
         m_ui->m_chatView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         m_ui->m_chatView->setFocusPolicy(Qt::NoFocus);
+        followChat();
     } else {
         setWindowFlag(Qt::Widget);
         m_sizeGrip->hide();
         m_ui->m_chatView->setAttribute(Qt::WA_TransparentForMouseEvents, false);
         m_ui->m_chatView->setStyleSheet("");
+        followChat();
     }
 }
 
@@ -110,8 +112,12 @@ void ChatWidget::mouseMoveEvent(QMouseEvent* event)
 void ChatWidget::wheelEvent(QWheelEvent* event)
 {
     if (isMovable()) {
-        m_opacity += event->delta() / 1000.f;
-        m_ui->m_chatView->setStyleSheet("background-color: rgba(0, 0, 0, " + QString::number(m_opacity) + ");");
+        if (qApp->keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            m_opacity += event->delta() / 1000.f;
+            chatView()->setStyleSheet("background-color: rgba(0, 0, 0, " + QString::number(m_opacity) + ");");
+        } else {
+            chatView()->verticalScrollBar()->setValue(chatView()->verticalScrollBar()->value() - event->delta());
+        }
     }
     QWidget::wheelEvent(event);
 }
