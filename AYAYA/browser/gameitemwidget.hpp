@@ -20,6 +20,11 @@ public:
     void setViewerCount(int);
 
     const QPixmap& boxArt() const;
+
+protected:
+    virtual void enterEvent(QEvent* event) override;
+    virtual void leaveEvent(QEvent* event) override;
+
 signals:
     void pressed();
     void hovered();

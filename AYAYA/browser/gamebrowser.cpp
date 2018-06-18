@@ -53,12 +53,11 @@ void GameBrowser::fixLayout()
 {
     const int row = width() / minItemSize();
     const int diff = width() % (minItemSize() + 1);
-    const int wPerOne = diff / (row - 1);
+    const int wPerOne = diff / row;
     // Update current item size
     m_currentItemSize = minItemSize() + wPerOne;
-    for (QWidget* w : visibleWidgets()) {
+    for (const auto w : visibleWidgets())
         w->setFixedSize(currentItemSize(), currentItemSize());
-    }
     // Update row count
     m_rowCount = row;
 }

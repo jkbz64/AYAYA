@@ -41,3 +41,13 @@ const QPixmap& GameItemWidget::boxArt() const
     else
         return QPixmap();
 }
+
+void GameItemWidget::enterEvent(QEvent*)
+{
+    setStyleSheet("background-color: #6441A4;");
+}
+
+void GameItemWidget::leaveEvent(QEvent*)
+{
+    setStyleSheet("");
+}
