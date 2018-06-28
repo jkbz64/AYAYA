@@ -57,6 +57,8 @@ private:
     void removeMargins();
     void restoreDefaultMargins();
 
+    QWidget* m_previousWidget;
+
 private slots:
 
     void onInitStarted();

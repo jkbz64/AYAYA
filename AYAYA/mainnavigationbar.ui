@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>984</width>
+    <width>888</width>
     <height>120</height>
    </rect>
   </property>
@@ -28,6 +28,12 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1" rowspan="3">
     <spacer name="horizontalSpacer">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>100</height>
+      </size>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -69,6 +75,12 @@
    </item>
    <item row="0" column="3" rowspan="2">
     <widget class="Line" name="line">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>100</height>
+      </size>
+     </property>
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -119,7 +131,7 @@
      <property name="maximumSize">
       <size>
        <width>180</width>
-       <height>120</height>
+       <height>100</height>
       </size>
      </property>
      <property name="text">
@@ -144,7 +156,7 @@
      <property name="maximumSize">
       <size>
        <width>230</width>
-       <height>120</height>
+       <height>100</height>
       </size>
      </property>
      <property name="text">

@@ -10,7 +10,8 @@ class PlayerImpl;
 class ControlsWidget;
 
 enum class PlayerBackend {
-    MPV,
+    Null,
+    Mpv,
     // TODO QtAV
     // TODO ??
 };

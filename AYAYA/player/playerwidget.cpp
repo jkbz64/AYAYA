@@ -1,8 +1,13 @@
 #include "playerwidget.hpp"
 #include "controlswidget.hpp"
-#include "mpvplayerimpl.hpp"
 #include <QGridLayout>
 #include <QSpacerItem>
+
+#include "nullplayerimpl.hpp"
+
+#ifdef MPV
+#include "mpvplayerimpl.hpp"
+#endif
 
 PlayerWidget::PlayerWidget(QWidget* parent)
     : QOpenGLWidget(parent)
@@ -32,7 +37,18 @@ void PlayerWidget::setBackend(PlayerBackend backend)
     if (m_impl)
         delete m_impl;
 
-    m_impl = new detail::MpvPlayerImpl(this);
+    switch (backend) {
+    case PlayerBackend::Null:
+        m_impl = new detail::NullPlayerImpl(this);
+        break;
+    case PlayerBackend::Mpv:
+#ifdef MPV
+        m_impl = new detail::MpvPlayerImpl(this);
+#else
+        throw std::runtime_error("AYAYA was not built with Mpv, compile AYAYA with CONFIG+=\"MPV\"");
+#endif
+        break;
+    }
 
     emit startedBackendInit();
     m_impl->init();

@@ -31,7 +31,6 @@ SOURCES += \
     AYAYA/player/controlswidget.cpp \
     AYAYA/chat/chatview.cpp \
     AYAYA/chat/chatclient.cpp \
-    AYAYA/player/mpvplayerimpl.cpp \
     AYAYA/player/playerimpl.cpp \
     AYAYA/browser/streamitemwidget.cpp \
     AYAYA/browser/gameitemwidget.cpp \
@@ -44,7 +43,8 @@ SOURCES += \
     AYAYA/browser/streambrowser.cpp \
     AYAYA/settingswidget.cpp \
     AYAYA/settings/globalsettings.cpp \
-    AYAYA/settings/settingstab.cpp
+    AYAYA/settings/settingstab.cpp \
+    AYAYA/player/nullplayerimpl.cpp
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
@@ -56,7 +56,6 @@ HEADERS += \
     AYAYA/player/controlswidget.hpp \
     AYAYA/chat/chatview.hpp \
     AYAYA/chat/chatclient.hpp \
-    AYAYA/player/mpvplayerimpl.hpp \
     AYAYA/player/playerimpl.hpp \
     AYAYA/browser/streamitemwidget.hpp \
     AYAYA/browser/gameitemwidget.hpp \
@@ -69,7 +68,8 @@ HEADERS += \
     AYAYA/browser/streambrowser.hpp \
     AYAYA/settingswidget.hpp \
     AYAYA/settings/globalsettings.hpp \
-    AYAYA/settings/settingstab.hpp
+    AYAYA/settings/settingstab.hpp \
+    AYAYA/player/nullplayerimpl.hpp
 
 FORMS += \
     AYAYA/mainwindow.ui \
@@ -84,4 +84,11 @@ FORMS += \
     AYAYA/settingswidget.ui \
     AYAYA/settings/globalsettings.ui
 
+mpv {
+DEFINES += MPV
+HEADERS += AYAYA/player/mpvplayerimpl.hpp
+SOURCES += AYAYA/player/mpvplayerimpl.cpp
 LIBS += -lmpv
+}
+
+

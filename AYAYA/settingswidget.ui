@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
-    <height>389</height>
+    <width>569</width>
+    <height>505</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,13 +15,6 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="1">
-    <widget class="QPushButton" name="m_saveButton">
-     <property name="text">
-      <string>Save</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
     <spacer name="m_spacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -34,7 +27,21 @@
      </property>
     </spacer>
    </item>
-   <item row="0" column="0" colspan="2">
+   <item row="1" column="2">
+    <widget class="QPushButton" name="m_saveButton">
+     <property name="text">
+      <string>Save</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="m_exitButton">
+     <property name="text">
+      <string>&lt;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="3">
     <widget class="QTabWidget" name="m_settingsTabs"/>
    </item>
   </layout>

@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , m_ui(new Ui::MainWindow)
     , m_theme(Theme::Default)
+    , m_previousWidget(nullptr)
 {
     m_ui->setupUi(this);
     // Navigation bar
@@ -30,7 +31,6 @@ MainWindow::MainWindow(QWidget* parent)
     m_ui->m_clapFace->setMovie(new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this));
 
     // Settings
-    connect(settingsWidget(), &SettingsWidget::saved, this, [this]() { setCurrentMainWidget(browserWidget()); });
     settingsWidget()->addTab<GlobalSettings>(this);
 }
 
@@ -176,6 +176,7 @@ void MainWindow::onBrowsePressed()
 
 void MainWindow::onSettingsPressed()
 {
+    m_previousWidget = currentMainWidget();
     setCurrentMainWidget(settingsWidget());
 }
 

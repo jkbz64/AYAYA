@@ -25,19 +25,22 @@ public:
     template <class T, typename... Args>
     void addTab(Args&&...);
 
+    QPushButton* exitButton() const;
     QPushButton* saveButton() const;
 
 signals:
     void saved();
+    void exited();
+
+private slots:
+    void onExitPressed();
+    void onSavePressed();
 
 private:
     Ui::SettingsWidget* m_ui;
+    QVector<SettingsTab*> m_tabs;
 
     void appendTab(SettingsTab*);
-
-    void setupTabs();
-
-    void onApplyPressed();
 };
 
 template <class T, typename... Args>

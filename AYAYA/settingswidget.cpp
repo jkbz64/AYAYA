@@ -8,7 +8,8 @@ SettingsWidget::SettingsWidget(QWidget* parent)
 {
     m_ui->setupUi(this);
 
-    connect(m_ui->m_saveButton, &QPushButton::pressed, this, &SettingsWidget::onApplyPressed);
+    connect(exitButton(), &QPushButton::pressed, this, &SettingsWidget::onExitPressed);
+    connect(saveButton(), &QPushButton::pressed, this, &SettingsWidget::onSavePressed);
 }
 
 SettingsWidget::~SettingsWidget()
@@ -18,10 +19,7 @@ SettingsWidget::~SettingsWidget()
 
 void SettingsWidget::init()
 {
-    const auto tabCount = m_ui->m_settingsTabs->count();
-    auto i = 0;
-    while (i < tabCount) {
-        const auto tab = qobject_cast<SettingsTab*>(m_ui->m_settingsTabs->widget(i++));
+    for (const auto tab : m_tabs) {
         tab->updateSettings();
         tab->applyChanges();
     }
@@ -33,6 +31,11 @@ void SettingsWidget::clear()
     m_ui->m_settingsTabs->clear();
 }
 
+QPushButton* SettingsWidget::exitButton() const
+{
+    return m_ui->m_exitButton;
+}
+
 QPushButton* SettingsWidget::saveButton() const
 {
     return m_ui->m_saveButton;
@@ -41,16 +44,17 @@ QPushButton* SettingsWidget::saveButton() const
 void SettingsWidget::appendTab(SettingsTab* tab)
 {
     m_ui->m_settingsTabs->addTab(tab, tab->tabName());
-    tab->updateSettings();
+    m_tabs.push_back(tab);
 }
 
-void SettingsWidget::onApplyPressed()
+void SettingsWidget::onExitPressed()
 {
-    const auto tabCount = m_ui->m_settingsTabs->count();
-    auto i = 0;
-    while (i < tabCount) {
-        const auto tab = qobject_cast<SettingsTab*>(m_ui->m_settingsTabs->widget(i++));
+    emit exited();
+}
+
+void SettingsWidget::onSavePressed()
+{
+    for (const auto tab : m_tabs)
         tab->applyChanges();
-    }
     emit saved();
 }

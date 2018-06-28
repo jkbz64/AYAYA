@@ -9,10 +9,14 @@ namespace {
 QString backendName(const PlayerBackend backend)
 {
     switch (backend) {
-    case PlayerBackend::MPV:
+    case PlayerBackend::Mpv:
         return QString("MPV");
         break;
+    case PlayerBackend::Null:
+        return QString("Null");
+        break;
     }
+
     return QString();
 }
 }
@@ -69,7 +73,11 @@ bool StreamWidget::checkInitStatus()
 
 void StreamWidget::init()
 {
-    player()->setBackend(PlayerBackend::MPV);
+#ifdef MPV
+    player()->setBackend(PlayerBackend::Mpv);
+#else
+    player()->setBackend(PlayerBackend::Null);
+#endif
     chat()->chatView()->emotesCache()->initCache();
 }
 
