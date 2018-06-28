@@ -161,6 +161,7 @@
            <number>0</number>
           </property>
           <widget class="BrowserWidget" name="m_browserWidget"/>
+          <widget class="SettingsWidget" name="m_settingsWidget"/>
           <widget class="StreamWidget" name="m_streamWidget"/>
          </widget>
         </item>
@@ -206,6 +207,12 @@
    <class>MainNavigationBar</class>
    <extends>QWidget</extends>
    <header>AYAYA/mainnavigationbar.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>AYAYA/settingswidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -83,16 +83,15 @@ void ChatClient::depart()
 void ChatClient::onMessageReceived(IrcMessage* message)
 {
     const auto messageType = message->type();
-
     if (messageType == IrcMessage::Type::Private) {
-        auto privateMessage = qobject_cast<IrcPrivateMessage*>(message);
+        const auto privateMessage = qobject_cast<IrcPrivateMessage*>(message);
         // First group is the emote id, second and third is the first range of the emote text to be replaced
         // At this point we only need to know the ID and emote Code, our replacing algorithm in the chat view is going to repalce all the stuff
         QRegularExpression reg("(\\d+?):(\\d*)-(\\d*)");
         QRegularExpressionMatchIterator i = reg.globalMatch(privateMessage->tag("emotes").toString());
         QVector<Twitch::Emote> emotes;
         while (i.hasNext()) {
-            QRegularExpressionMatch match = i.next();
+            const QRegularExpressionMatch match = i.next();
             const auto id = match.captured(1);
             const auto startIndex = match.captured(2).toInt();
             const auto endIndex = match.captured(3).toInt();

@@ -41,7 +41,10 @@ SOURCES += \
     AYAYA/mainnavigationbar.cpp \
     AYAYA/browser/browser.cpp \
     AYAYA/browser/browseritemwidget.cpp \
-    AYAYA/browser/streambrowser.cpp
+    AYAYA/browser/streambrowser.cpp \
+    AYAYA/settingswidget.cpp \
+    AYAYA/settings/globalsettings.cpp \
+    AYAYA/settings/settingstab.cpp
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
@@ -63,7 +66,10 @@ HEADERS += \
     AYAYA/mainnavigationbar.hpp \
     AYAYA/browser/browser.hpp \
     AYAYA/browser/browseritemwidget.hpp \
-    AYAYA/browser/streambrowser.hpp
+    AYAYA/browser/streambrowser.hpp \
+    AYAYA/settingswidget.hpp \
+    AYAYA/settings/globalsettings.hpp \
+    AYAYA/settings/settingstab.hpp
 
 FORMS += \
     AYAYA/mainwindow.ui \
@@ -73,6 +79,9 @@ FORMS += \
     AYAYA/streamwidget.ui \
     AYAYA/mainnavigationbar.ui \
     AYAYA/browser/gameitemwidget.ui \
-    AYAYA/browser/streamitemwidget.ui
+    AYAYA/browser/streamitemwidget.ui \
+    AYAYA/settingswidget.ui \
+    AYAYA/settingswidget.ui \
+    AYAYA/settings/globalsettings.ui
 
 LIBS += -lmpv

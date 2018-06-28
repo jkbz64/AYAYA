@@ -12,11 +12,17 @@ class InitWidget;
 class MainWidget;
 class BrowserWidget;
 class StreamWidget;
+class SettingsWidget;
 class MainNavigationBar;
 
 namespace Ui {
 class MainWindow;
 }
+
+enum class Theme {
+    Default,
+    Dark
+};
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -25,6 +31,9 @@ public:
     explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
 
+    void setTheme(Theme);
+    const Theme& theme() const;
+
     void init();
 
     MainNavigationBar* navigationBar() const;
@@ -32,9 +41,11 @@ public:
     QWidget* currentMainWidget() const;
     BrowserWidget* browserWidget() const;
     StreamWidget* streamWidget() const;
+    SettingsWidget* settingsWidget() const;
 
 private:
     Ui::MainWindow* m_ui;
+    Theme m_theme;
     QVector<InitWidget*> m_initQueue;
 
     void setupInitWidget(InitWidget*);
@@ -53,6 +64,7 @@ private slots:
     void onEndedIniting();
 
     void onBrowsePressed();
+    void onSettingsPressed();
 
     void onStreamEntered(const Twitch::User&, const Twitch::Stream&);
 

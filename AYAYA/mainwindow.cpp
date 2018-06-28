@@ -1,17 +1,21 @@
 #include "mainwindow.hpp"
 #include "browser/gamebrowser.hpp"
+#include "settings/globalsettings.hpp"
 #include "ui_mainwindow.h"
 #include <QMovie>
 #include <QPropertyAnimation>
+#include <QTextStream>
 #include <QTimer>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , m_ui(new Ui::MainWindow)
+    , m_theme(Theme::Default)
 {
     m_ui->setupUi(this);
     // Navigation bar
     connect(navigationBar(), &MainNavigationBar::browseButtonPressed, this, &MainWindow::onBrowsePressed);
+    connect(navigationBar(), &MainNavigationBar::settingsButtonPressed, this, &MainWindow::onSettingsPressed);
     connect(navigationBar(), &MainNavigationBar::quitButtonPressed, this, &MainWindow::close);
     // Browser
     connect(browserWidget(), &BrowserWidget::streamEntered, this, &MainWindow::onStreamEntered);
@@ -19,17 +23,49 @@ MainWindow::MainWindow(QWidget* parent)
     connect(streamWidget(), &StreamWidget::enteredTheaterMode, this, &MainWindow::onEnteredFullscreenMode);
     connect(streamWidget(), &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
     connect(streamWidget(), &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
-
     // Save default margins / spacing for going back from fulllscreen mode
     m_defaultMargin = m_ui->m_mainWidget->layout()->margin();
     m_defaultSpacing = m_ui->m_mainWidget->layout()->spacing();
     // Splash screen clap face
     m_ui->m_clapFace->setMovie(new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this));
+
+    // Settings
+    connect(settingsWidget(), &SettingsWidget::saved, this, [this]() { setCurrentMainWidget(browserWidget()); });
+    settingsWidget()->addTab<GlobalSettings>(this);
 }
 
 MainWindow::~MainWindow()
 {
     delete m_ui;
+}
+
+void MainWindow::setTheme(Theme theme)
+{
+    if (m_theme != theme) {
+        switch (theme) {
+        case Theme::Default:
+            qApp->setStyleSheet(styleSheet()); // Reset to default
+            break;
+        case Theme::Dark: {
+            QFile f(":qdarkstyle/style.qss");
+            if (!f.exists()) {
+                printf("Unable to set stylesheet, file not found\n");
+            } else {
+                f.open(QFile::ReadOnly | QFile::Text);
+                QTextStream ts(&f);
+                qApp->setStyleSheet(ts.readAll());
+            }
+            break;
+        }
+        }
+    }
+
+    m_theme = theme;
+}
+
+const Theme& MainWindow::theme() const
+{
+    return m_theme;
 }
 
 MainNavigationBar* MainWindow::navigationBar() const
@@ -47,9 +83,14 @@ StreamWidget* MainWindow::streamWidget() const
     return m_ui->m_streamWidget;
 }
 
+SettingsWidget* MainWindow::settingsWidget() const
+{
+    return m_ui->m_settingsWidget;
+}
+
 void MainWindow::init()
 {
-    m_initQueue << m_ui->m_browserWidget << m_ui->m_streamWidget;
+    m_initQueue << m_ui->m_settingsWidget << m_ui->m_browserWidget << m_ui->m_streamWidget;
     initNextWidget();
 }
 
@@ -131,6 +172,11 @@ void MainWindow::onBrowsePressed()
     setCurrentMainWidget(browserWidget());
     browserWidget()->setCurrentBrowser(browserWidget()->gameBrowser());
     browserWidget()->showTopGames();
+}
+
+void MainWindow::onSettingsPressed()
+{
+    setCurrentMainWidget(settingsWidget());
 }
 
 void MainWindow::onStreamEntered(const Twitch::User& user, const Twitch::Stream& stream)
