@@ -50,19 +50,25 @@ namespace {
 
 MpvPlayerImpl::MpvPlayerImpl(PlayerWidget* player)
     : PlayerImpl(player)
-    , m_initedGL(false)
 {
+    m_renderWidget = new MpvWidget(this);
 }
 
 MpvPlayerImpl::~MpvPlayerImpl()
 {
-    player()->makeCurrent();
+    const auto render = qobject_cast<MpvWidget*>(renderWidget());
+    render->makeCurrent();
     mpv_opengl_cb_set_update_callback(m_mpv_gl, NULL, NULL);
-    if (m_initedGL)
+    if (m_mpv_gl)
         mpv_opengl_cb_uninit_gl(m_mpv_gl);
 }
 
-mpv::qt::Handle& MpvPlayerImpl::handle()
+mpv_opengl_cb_context* MpvPlayerImpl::context() const
+{
+    return m_mpv_gl;
+}
+
+mpv::qt::Handle& MpvPlayerImpl::handle() const
 {
     return m_mpv;
 }
@@ -98,7 +104,7 @@ bool MpvPlayerImpl::init()
     if (!m_mpv_gl)
         throw std::runtime_error("OpenGL not compiled in");
 
-    mpv_opengl_cb_set_update_callback(m_mpv_gl, MpvPlayerImpl::onUpdate, (void*)this);
+    mpv_opengl_cb_set_update_callback(m_mpv_gl, MpvWidget::onUpdate, (void*)m_renderWidget);
 
     return true;
 }
@@ -121,50 +127,6 @@ void MpvPlayerImpl::setVolume(int value)
 int MpvPlayerImpl::volume() const
 {
     return getProperty(m_mpv, "volume").toInt();
-}
-
-bool MpvPlayerImpl::paintGL()
-{
-    mpv_opengl_cb_draw(m_mpv_gl, player()->defaultFramebufferObject(), player()->width(), -(player()->height()));
-    return true;
-}
-
-bool MpvPlayerImpl::initializeGL()
-{
-    if (m_initedGL) {
-        player()->makeCurrent();
-        mpv_opengl_cb_uninit_gl(m_mpv_gl);
-    }
-
-    int r = mpv_opengl_cb_init_gl(m_mpv_gl, NULL, get_proc_address, NULL);
-    if (r < 0)
-        throw std::runtime_error("could not initialize OpenGL");
-
-    m_initedGL = true;
-    return true;
-}
-
-void MpvPlayerImpl::maybeUpdate()
-{
-    if (player()->window()->isMinimized()) {
-        player()->makeCurrent();
-        paintGL();
-        player()->context()->swapBuffers(player()->context()->surface());
-        swapped();
-        player()->doneCurrent();
-    } else {
-        player()->update();
-    }
-}
-
-void MpvPlayerImpl::onUpdate(void* ctx)
-{
-    QMetaObject::invokeMethod((MpvPlayerImpl*)ctx, "maybeUpdate");
-}
-
-void MpvPlayerImpl::swapped()
-{
-    mpv_opengl_cb_report_flip(m_mpv_gl, 0);
 }
 
 void MpvPlayerImpl::processEvents()
@@ -221,5 +183,66 @@ void MpvPlayerImpl::handleMpvEvent(mpv_event* event)
     default:;
         // Ignore uninteresting or unknown events.
     }
+}
+
+// MpvWidget
+MpvWidget::MpvWidget(MpvPlayerImpl* impl)
+    : QOpenGLWidget(nullptr)
+    , m_impl(impl)
+    , m_initedGL(false)
+{
+}
+
+MpvWidget::~MpvWidget()
+{
+}
+
+void MpvWidget::initializeGL()
+{
+    QOpenGLWidget::initializeGL();
+    if (m_initedGL) {
+        makeCurrent();
+        mpv_opengl_cb_uninit_gl(m_impl->context());
+    }
+
+    int r = mpv_opengl_cb_init_gl(m_impl->context(), NULL, get_proc_address, NULL);
+    if (r < 0)
+        throw std::runtime_error("could not initialize OpenGL");
+
+    m_initedGL = true;
+}
+
+void MpvWidget::paintGL()
+{
+    QOpenGLWidget::paintGL();
+    mpv_opengl_cb_draw(m_impl->context(), defaultFramebufferObject(), m_impl->player()->width(), -(m_impl->player()->height()));
+}
+
+void MpvWidget::resizeGL(int w, int h)
+{
+    QOpenGLWidget::resizeGL(w, h);
+}
+
+void MpvWidget::onUpdate(void* ctx)
+{
+    QMetaObject::invokeMethod((MpvWidget*)ctx, "maybeUpdate");
+}
+
+void MpvWidget::maybeUpdate()
+{
+    const auto player = m_impl->player();
+    if (player->window()->isMinimized()) {
+        makeCurrent();
+        paintGL();
+        context()->swapBuffers(context()->surface());
+        swapped();
+        doneCurrent();
+    } else
+        update();
+}
+
+void MpvWidget::swapped()
+{
+    mpv_opengl_cb_report_flip(m_impl->context(), 0);
 }
 }

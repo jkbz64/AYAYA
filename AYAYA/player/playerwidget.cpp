@@ -9,14 +9,17 @@
 #include "mpvplayerimpl.hpp"
 #endif
 
+#include <QLabel>
+
 PlayerWidget::PlayerWidget(QWidget* parent)
-    : QOpenGLWidget(parent)
+    : QMainWindow(parent)
     , m_impl(nullptr)
     , m_playerStyle(PlayerStyle::Normal)
     , m_controlsWidget(nullptr)
     , m_beforeMuteVolume(65)
 {
-    setBaseSize(1, 1);
+    setWindowFlags(Qt::Widget | Qt::CustomizeWindowHint);
+    setBaseSize(450, 1);
     setMouseTracking(true);
 }
 
@@ -33,7 +36,6 @@ ControlsWidget* PlayerWidget::controlsWidget()
 void PlayerWidget::setBackend(PlayerBackend backend)
 {
     m_backend = backend;
-
     if (m_impl)
         delete m_impl;
 
@@ -51,10 +53,13 @@ void PlayerWidget::setBackend(PlayerBackend backend)
     }
 
     emit startedBackendInit();
-    m_impl->init();
+    if (m_impl->init()) {
+        const auto render = m_impl->renderWidget();
+        render->setMouseTracking(true);
+        setCentralWidget(render);
+    }
 
-    // Install overlay when setting backend first time
-    if (!layout())
+    if (backend != PlayerBackend::Null)
         setupOverlay();
 
     emit backendChanged(backend);
@@ -106,44 +111,23 @@ const PlayerStyle& PlayerWidget::playerStyle() const
 
 void PlayerWidget::mouseMoveEvent(QMouseEvent* event)
 {
-    QOpenGLWidget::mouseMoveEvent(event);
-    if (m_controlsWidget->isHidden())
-        m_controlsWidget->show();
-    m_controlsWidget->resetFadeTimer();
+    QMainWindow::mouseMoveEvent(event);
+    if (backend() != PlayerBackend::Null)
+        controlsWidget()->makeVisible();
 }
 
 void PlayerWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-    QOpenGLWidget::mouseDoubleClickEvent(event);
+    QMainWindow::mouseDoubleClickEvent(event);
     if (playerStyle() == PlayerStyle::Fullscreen || playerStyle() == PlayerStyle::Theater)
         setPlayerStyle(PlayerStyle::Normal);
     else
         setPlayerStyle(PlayerStyle::Theater);
 }
 
-void PlayerWidget::initializeGL()
-{
-    QOpenGLWidget::initializeGL();
-    if (m_impl)
-        m_impl->initializeGL();
-}
-
-void PlayerWidget::paintGL()
-{
-    QOpenGLWidget::paintGL();
-    if (m_impl)
-        m_impl->paintGL();
-}
-
-void PlayerWidget::resizeGL(int w, int h)
-{
-    if (m_impl && !m_impl->resizeGL(w, h))
-        QOpenGLWidget::resizeGL(w, h);
-}
-
 void PlayerWidget::setupOverlay()
 {
-    auto overlayLayout = new QGridLayout();
+    auto overlayLayout = new QGridLayout(centralWidget());
     m_controlsWidget = new ControlsWidget(this);
     m_beforeMuteVolume = m_controlsWidget->currentVolume();
 
@@ -157,8 +141,7 @@ void PlayerWidget::setupOverlay()
 
     overlayLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 0, 12, 1);
     overlayLayout->addWidget(m_controlsWidget, 12, 0, 2, 1);
-
-    setLayout(overlayLayout);
+    centralWidget()->setLayout(overlayLayout);
 }
 
 // Slots
@@ -197,4 +180,17 @@ void PlayerWidget::onPressedFullscreenButton()
         setPlayerStyle(PlayerStyle::Fullscreen);
     else
         setPlayerStyle(PlayerStyle::Normal);
+}
+
+#include <QEvent>
+
+bool PlayerWidget::eventFilter(QObject* watched, QEvent* event)
+{
+    if (watched == m_impl->renderWidget()) {
+        if (event->type() == QEvent::MouseMove) {
+            controlsWidget()->makeVisible();
+        }
+    } else {
+        return QMainWindow::eventFilter(watched, event);
+    }
 }

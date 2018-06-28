@@ -33,6 +33,8 @@ public:
     QPushButton* theaterButton() const;
     QPushButton* fullscreenButton() const;
 
+    void makeVisible();
+
 signals:
     void pressedTheaterButton();
     void pressedFullscreenButton();

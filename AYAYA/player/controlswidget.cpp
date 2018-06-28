@@ -77,6 +77,12 @@ QPushButton* ControlsWidget::fullscreenButton() const
     return m_ui->m_fullscreenButton;
 }
 
+void ControlsWidget::makeVisible()
+{
+    show();
+    resetFadeTimer();
+}
+
 void ControlsWidget::startFadeTimer()
 {
     m_fadeOutTimer->start();

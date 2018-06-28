@@ -5,28 +5,22 @@ namespace detail {
 PlayerImpl::PlayerImpl(PlayerWidget* player)
     : QObject(player)
     , m_playerWidget(player)
+    , m_renderWidget(nullptr)
 {
 }
 
-PlayerImpl::~PlayerImpl() = default;
+PlayerImpl::~PlayerImpl()
+{
+    delete m_renderWidget;
+}
 
 PlayerWidget* PlayerImpl::player()
 {
     return m_playerWidget;
 }
 
-bool PlayerImpl::initializeGL()
+QWidget* PlayerImpl::renderWidget()
 {
-    return false;
-}
-
-bool PlayerImpl::resizeGL(int, int)
-{
-    return false;
-}
-
-bool PlayerImpl::paintGL()
-{
-    return false;
+    return m_renderWidget;
 }
 }

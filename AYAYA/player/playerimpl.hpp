@@ -14,6 +14,7 @@ public:
     virtual ~PlayerImpl();
 
     PlayerWidget* player();
+    QWidget* renderWidget();
 
     virtual bool init() = 0;
     virtual void load(const QString&) = 0;
@@ -21,12 +22,9 @@ public:
     virtual void setVolume(int) = 0;
     virtual int volume() const = 0;
 
-    virtual bool paintGL();
-    virtual bool initializeGL();
-    virtual bool resizeGL(int, int);
-
-private:
+protected:
     PlayerWidget* m_playerWidget;
+    QWidget* m_renderWidget;
 };
 }
 

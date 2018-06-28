@@ -1,7 +1,7 @@
 #ifndef PLAYERWIDGET_HPP
 #define PLAYERWIDGET_HPP
 
-#include <QOpenGLWidget>
+#include <QMainWindow>
 
 namespace detail {
 class PlayerImpl;
@@ -22,7 +22,7 @@ enum class PlayerStyle {
     Fullscreen
 };
 
-class PlayerWidget : public QOpenGLWidget {
+class PlayerWidget : public QMainWindow {
     Q_OBJECT
 public:
     explicit PlayerWidget(QWidget* parent = nullptr);
@@ -41,6 +41,8 @@ public:
     const PlayerStyle& playerStyle() const;
 
     ControlsWidget* controlsWidget();
+
+    virtual bool eventFilter(QObject*, QEvent*) override;
 
 signals:
     // Backend
@@ -62,10 +64,6 @@ signals:
 protected:
     virtual void mouseMoveEvent(QMouseEvent*) override;
     virtual void mouseDoubleClickEvent(QMouseEvent*) override;
-
-    virtual void initializeGL() override;
-    virtual void paintGL() override;
-    virtual void resizeGL(int, int) override;
 
 private:
     detail::PlayerImpl* m_impl;

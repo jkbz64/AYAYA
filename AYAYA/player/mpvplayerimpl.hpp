@@ -2,6 +2,7 @@
 #define MPVPLAYERIMPL_HPP
 
 #include "playerimpl.hpp"
+#include <QOpenGLWidget>
 #include <mpv/qthelper.hpp>
 
 class QOpenGLWidget;
@@ -14,15 +15,14 @@ public:
     MpvPlayerImpl(PlayerWidget*);
     virtual ~MpvPlayerImpl();
 
-    mpv::qt::Handle& handle();
+    mpv::qt::Handle& handle() const;
+    mpv_opengl_cb_context* context() const;
 
     virtual bool init() override;
     virtual void load(const QString&) override;
     virtual QString currentPath() override;
     virtual void setVolume(int) override;
     virtual int volume() const override;
-    virtual bool paintGL() override;
-    virtual bool initializeGL() override;
 
 signals:
     void mpvEvent();
@@ -30,14 +30,33 @@ signals:
 private:
     mutable mpv::qt::Handle m_mpv;
     mpv_opengl_cb_context* m_mpv_gl;
-    bool m_initedGL;
 
 private slots:
-    static void onUpdate(void*);
-    void swapped();
-    void maybeUpdate();
     void handleMpvEvent(mpv_event*);
     void processEvents();
+};
+
+class MpvWidget : public QOpenGLWidget {
+    Q_OBJECT
+public:
+    MpvWidget(MpvPlayerImpl*);
+    virtual ~MpvWidget();
+
+protected:
+    virtual void initializeGL() override;
+    virtual void paintGL() override;
+    virtual void resizeGL(int, int) override;
+
+private:
+    MpvPlayerImpl* m_impl;
+    bool m_initedGL;
+
+    friend class detail::MpvPlayerImpl;
+    static void onUpdate(void*);
+
+private slots:
+    void maybeUpdate();
+    void swapped();
 };
 }
 

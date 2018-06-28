@@ -3,6 +3,7 @@ CONFIG   += c++14 communi
 
 COMMUNI  += core model util
 
+
 TARGET = AYAYA
 TEMPLATE = app
 
