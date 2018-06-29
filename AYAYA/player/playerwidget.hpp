@@ -12,7 +12,7 @@ class ControlsWidget;
 enum class PlayerBackend {
     Null,
     Mpv,
-    // TODO QtAV
+    Vlc
     // TODO ??
 };
 

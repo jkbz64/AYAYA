@@ -9,6 +9,10 @@
 #include "mpvplayerimpl.hpp"
 #endif
 
+#ifdef VLC
+#include "vlcplayerimpl.hpp"
+#endif
+
 #include <QLabel>
 
 PlayerWidget::PlayerWidget(QWidget* parent)
@@ -47,7 +51,14 @@ void PlayerWidget::setBackend(PlayerBackend backend)
 #ifdef MPV
         m_impl = new detail::MpvPlayerImpl(this);
 #else
-        throw std::runtime_error("AYAYA was not built with Mpv, compile AYAYA with CONFIG+=\"MPV\"");
+        throw std::runtime_error("AYAYA was not built with Mpv, compile AYAYA with CONFIG+=\"Mpv\"");
+#endif
+        break;
+    case PlayerBackend::Vlc:
+#ifdef VLC
+        m_impl = new detail::VlcPlayerImpl(this);
+#else
+        throw std::runtime_error("AYAYA was not built with Vlc, compile AYAYA with CONFIG+=\"Vlc\"");
 #endif
         break;
     }

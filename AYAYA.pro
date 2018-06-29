@@ -1,8 +1,9 @@
 QT       += core gui widgets network
 CONFIG   += c++14 communi
 
-COMMUNI  += core model util
+CONFIG += vlc
 
+COMMUNI  += core model util
 
 TARGET = AYAYA
 TEMPLATE = app
@@ -92,4 +93,10 @@ SOURCES += AYAYA/player/mpvplayerimpl.cpp
 LIBS += -lmpv
 }
 
+vlc {
+DEFINES += VLC
+HEADERS += AYAYA/player/vlcplayerimpl.hpp
+SOURCES += AYAYA/player/vlcplayerimpl.cpp
+LIBS += -lvlc
+}
 
