@@ -66,8 +66,9 @@ void PlayerWidget::setBackend(PlayerBackend backend)
     emit startedBackendInit();
     if (m_impl->init()) {
         const auto render = m_impl->renderWidget();
-        render->setMouseTracking(true);
         setCentralWidget(render);
+        render->installEventFilter(this);
+        render->setMouseTracking(true);
     }
 
     if (backend != PlayerBackend::Null)
@@ -193,6 +194,7 @@ void PlayerWidget::onPressedFullscreenButton()
         setPlayerStyle(PlayerStyle::Normal);
 }
 
+#include <QDebug>
 #include <QEvent>
 
 bool PlayerWidget::eventFilter(QObject* watched, QEvent* event)

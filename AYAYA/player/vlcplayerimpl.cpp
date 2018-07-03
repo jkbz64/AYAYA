@@ -1,4 +1,6 @@
 #include "vlcplayerimpl.hpp"
+#include "playerwidget.hpp"
+#include <QOpenGLWidget>
 #include <QWidget>
 #include <QWindow>
 #include <vlc/vlc.h>
@@ -13,7 +15,9 @@ VlcPlayerImpl::VlcPlayerImpl(PlayerWidget* player)
     , m_vlcPlayer(nullptr)
     , m_renderWindow(new QWindow())
 {
-    m_renderWidget = QWidget::createWindowContainer(m_renderWindow);
+    m_renderWindow->setFlags(Qt::FramelessWindowHint | Qt::WindowTransparentForInput);
+    m_renderWidget = QWidget::createWindowContainer(m_renderWindow, player);
+    m_renderWidget->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 }
 
 VlcPlayerImpl::~VlcPlayerImpl()
@@ -25,14 +29,13 @@ VlcPlayerImpl::~VlcPlayerImpl()
 bool VlcPlayerImpl::init()
 {
     const char* const vlc_args[] = {
-        "extraintf", "http"
+        "-I=core,http"
     };
-
     m_vlcInstance = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
     if (!m_vlcInstance)
         return false;
 
-    libvlc_media_t* vlcMedia = libvlc_media_new_path(m_vlcInstance, qtu(QString("xd.m3u8")));
+    libvlc_media_t* vlcMedia = libvlc_media_new_location(m_vlcInstance, qtu(QString("https://video-weaver.fra02.hls.ttvnw.net/v1/playlist/CvgCLUu_6MlUMERbS6JA4TSWBEKObr7cGzYV6MK-7DieFoeFD07Cd9KAhASrikBUyQxHcvtlGYrLYPf1RcA1DOrphivmmMF2oEAW26z6mcYGsiGctd36_S96FEQZEDAK-VPwPrBjrYjCUn_A0uIgATwmSnc40I73TeiBitsX-4RB8sSFldAsWKZ8KTdz3_dAY2JsSNAjSOsBbutLHv6U3tPpb-mvjlMXPAQ4qgUIkCbMdWBMVIjokaD0QFMDXhphtGCs7OoNYjOWWi4YWR-hIfD-CwdNEvqEFiH6jPQRD10ueXq4yfnelFz_kl0qMsAbZXrm15eaZAMAsCEHIudm121mPss13SlcfY6yezksOLp3oXWfa8BznEn2sIQwzEZ2HE7l77O9l2aP-diSVuMGigr_sk4L2SkpaV8VS3kkdJsyqATdJCZRTQthav-GdO9f-JMoAZ8AdRx0iU0S3jM6lxmjM0_MEEWd-vlw_zNEKSW9izYLV9pVJ8bWfRIQhzqUpOGrNlXyMYJ6TGkOOhoMiOyXD2KfCxlbXZMs.m3u8")));
     if (!vlcMedia)
         return false;
 

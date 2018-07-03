@@ -12,7 +12,6 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
     , m_loadingGif(new QMovie(QString(":/gifs/clap.gif"), QByteArray(), this))
 {
     m_ui->setupUi(this);
-
     // Pre-setup
     m_ui->m_bufferingBar->hide();
 
