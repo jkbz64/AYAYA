@@ -3,10 +3,10 @@
 #include <QGridLayout>
 #include <QSpacerItem>
 
-#include "nullplayerimpl.hpp"
+#include "backends/nullplayerimpl.hpp"
 
 #ifdef MPV
-#include "mpvplayerimpl.hpp"
+#include "backends/mpvplayerimpl.hpp"
 #endif
 
 #include <QLabel>
