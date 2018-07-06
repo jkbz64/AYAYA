@@ -1,15 +1,8 @@
 #include "vlcplayerimpl.hpp"
 #include "playerwidget.hpp"
-#include <QOpenGLWidget>
-#include <QPalette>
-#include <QWidget>
-#include <QWindow>
 #include <vlc/vlc.h>
 
 #define qtu(i) ((i).toUtf8().constData())
-
-#include <QOpenGLShader>
-#include <QOpenGLTexture>
 
 #include <QMutex>
 #include <QPainter>
@@ -44,7 +37,6 @@ VlcPlayerImpl::VlcPlayerImpl(PlayerWidget* player)
     : PlayerImpl(player)
     , m_vlcInstance(nullptr)
     , m_vlcPlayer(nullptr)
-    , m_renderWindow(new QWindow())
 {
     m_renderWidget = new VlcWidget(this);
 }
@@ -62,32 +54,41 @@ bool VlcPlayerImpl::init()
         "--no-xlib",
         "--no-video-title-show"
     };
+
     m_vlcInstance = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
     if (!m_vlcInstance)
         return false;
-
-    libvlc_media_t* vlcMedia = libvlc_media_new_location(m_vlcInstance, qtu(QString("https://video-weaver.fra02.hls.ttvnw.net/v1/playlist/Cv8C-UwJxcXEKIHvkkCXYg3UIQKDW27nUorQG3BR3-17sqcYMBRMzjHJV6jaM-Ce_0e-TtrXTZ0U7ZosBVIkdws8tzo5IPIbIwNmm7P-ZXg_GArrcOerB3J0i1ZYq8N0cbW8ELKpIn6PUbrF4YMQEbxs8igz7otzc0AtacaCl_wuLyEoF_-fBhWO1Fi-g03v8ye_ku5GvXpd0qfWYMerAo9H10YtJkfDVBWbkxADKc9fA5DYrXlYnj0828bqBf3DaydymGEHv3Ekc1oceDFHFk3G5ha_7grMiY-zUdgs3csQNoLlEuBzutiFeMHhRWwFoEP0lZyZVkxvJchFDg3L_e2f7I0_TIcI5Bv5kw3SDFuZmosnVZnYkwbV8kVbQOdNAjCIEiLpdOwnJapacT5XIglIt5qmy6I4wYiO-BfYAoeEep6EIodZhqJ23jFVxiA8E4OU6gWBk-hIhvt3jhzm9fcQKcAYzvXrX8busOXPb7EP-fpyt89xq3_4nkDAaF_BnKYSEPhJau0JbYJFkAz3JiXK0bMaDDijfyPksEbTBPE-SA.m3u8")));
-    if (!vlcMedia)
-        return false;
-
-    m_vlcPlayer = libvlc_media_player_new_from_media(vlcMedia);
-    if (!m_vlcPlayer)
-        return false;
-
-    libvlc_video_set_callbacks(m_vlcPlayer, videoLockCallBack, videoUnlockCallback, videoDisplayCallback, m_renderWidget);
-    libvlc_video_set_format(m_vlcPlayer, "RV24", 1920, 1080, 1920 * 3);
-
-    libvlc_media_player_play(m_vlcPlayer);
 
     return true;
 }
 
 void VlcPlayerImpl::load(const QString& path)
 {
+    if (m_vlcPlayer) { // Stop and delete player
+        libvlc_media_player_stop(m_vlcPlayer);
+        libvlc_media_player_release(m_vlcPlayer);
+    }
+
+    libvlc_media_t* vlcMedia = libvlc_media_new_location(m_vlcInstance, qtu(path));
+    if (!vlcMedia)
+        throw std::runtime_error("Failed to open path");
+
+    m_vlcPlayer = libvlc_media_player_new_from_media(vlcMedia);
+    if (!m_vlcPlayer)
+        throw std::runtime_error("Failed to create VLC player from media");
+
+    // Set callbacks for drawing to pixelbuffer
+    libvlc_video_set_callbacks(m_vlcPlayer, videoLockCallBack, videoUnlockCallback, videoDisplayCallback, m_renderWidget);
+    libvlc_video_set_format(m_vlcPlayer, "RV24", 1920, 1080, 1920 * 3);
+
+    // Start playing immediately
+    libvlc_media_player_play(m_vlcPlayer);
 }
 
 QString VlcPlayerImpl::currentPath()
 {
+    // TODO libvlc_media_get_
+    return QString();
 }
 
 void VlcPlayerImpl::setVolume(int vol)

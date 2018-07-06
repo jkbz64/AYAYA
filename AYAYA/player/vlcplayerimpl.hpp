@@ -30,7 +30,6 @@ public:
 private:
     libvlc_instance_t* m_vlcInstance;
     libvlc_media_player_t* m_vlcPlayer;
-    QWindow* m_renderWindow;
 };
 
 class PixelBuffer {
