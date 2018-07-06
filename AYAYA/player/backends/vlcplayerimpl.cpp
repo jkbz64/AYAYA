@@ -1,5 +1,5 @@
 #include "vlcplayerimpl.hpp"
-#include "playerwidget.hpp"
+#include "../playerwidget.hpp"
 #include <vlc/vlc.h>
 
 #define qtu(i) ((i).toUtf8().constData())

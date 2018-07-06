@@ -10,10 +10,8 @@
 #endif
 
 #ifdef VLC
-#include "vlcplayerimpl.hpp"
+#include "backends/vlcplayerimpl.hpp"
 #endif
-
-#include <QLabel>
 
 PlayerWidget::PlayerWidget(QWidget* parent)
     : QMainWindow(parent)

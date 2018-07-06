@@ -95,8 +95,8 @@ LIBS += -lmpv
 
 vlc {
 DEFINES += VLC
-HEADERS += AYAYA/player/vlcplayerimpl.hpp
-SOURCES += AYAYA/player/vlcplayerimpl.cpp
+HEADERS += AYAYA/player/backends/vlcplayerimpl.hpp
+SOURCES += AYAYA/player/backends/vlcplayerimpl.cpp
 LIBS += -lvlc
 }
 
