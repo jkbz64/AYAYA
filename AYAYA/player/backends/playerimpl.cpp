@@ -1,5 +1,5 @@
 #include "playerimpl.hpp"
-#include "playerwidget.hpp"
+#include "../playerwidget.hpp"
 
 namespace detail {
 PlayerImpl::PlayerImpl(PlayerWidget* player)
