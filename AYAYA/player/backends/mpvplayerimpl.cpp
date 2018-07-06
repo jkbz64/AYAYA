@@ -1,5 +1,5 @@
 #include "mpvplayerimpl.hpp"
-#include "playerwidget.hpp"
+#include "../playerwidget.hpp"
 #include <QOpenGLContext>
 #include <QOpenGLWidget>
 #include <mpv/opengl_cb.h>
