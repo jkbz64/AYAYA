@@ -62,6 +62,7 @@ signals:
     void playerStyleChanged(PlayerStyle, PlayerStyle);
 
 protected:
+    virtual void resizeEvent(QResizeEvent*) override;
     virtual void mouseMoveEvent(QMouseEvent*) override;
     virtual void mouseDoubleClickEvent(QMouseEvent*) override;
 

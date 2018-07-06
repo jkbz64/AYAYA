@@ -67,7 +67,6 @@ void PlayerWidget::setBackend(PlayerBackend backend)
     if (m_impl->init()) {
         const auto render = m_impl->renderWidget();
         setCentralWidget(render);
-        render->installEventFilter(this);
         render->setMouseTracking(true);
     }
 
@@ -178,6 +177,13 @@ void PlayerWidget::onVolumeChanged(int value)
     setVolume(value);
 }
 
+#include <QResizeEvent>
+
+void PlayerWidget::resizeEvent(QResizeEvent* event)
+{
+    QMainWindow::resizeEvent(event);
+}
+
 void PlayerWidget::onPressedTheaterButton()
 {
     if (m_playerStyle != PlayerStyle::Theater)
@@ -201,7 +207,8 @@ bool PlayerWidget::eventFilter(QObject* watched, QEvent* event)
 {
     if (watched == m_impl->renderWidget()) {
         if (event->type() == QEvent::MouseMove) {
-            controlsWidget()->makeVisible();
+            if (controlsWidget())
+                controlsWidget()->makeVisible();
         }
     } else {
         return QMainWindow::eventFilter(watched, event);
