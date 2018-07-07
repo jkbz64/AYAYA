@@ -5,6 +5,7 @@
 
 class QString;
 class PlayerWidget;
+class StreamExtractor;
 
 namespace detail {
 class PlayerImpl : public QObject {

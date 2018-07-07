@@ -16,6 +16,12 @@ enum class PlayerBackend {
     // TODO ??
 };
 
+enum class ExtractorBackend {
+    Null,
+    Ytdl,
+    //Streamlink
+};
+
 enum class PlayerStyle {
     Normal,
     Theater,
@@ -68,6 +74,7 @@ protected:
 private:
     detail::PlayerImpl* m_impl;
     PlayerBackend m_backend;
+    ExtractorBackend m_extractorBackend;
     PlayerStyle m_playerStyle;
 
     // ControlsWidget
