@@ -46,7 +46,9 @@ SOURCES += \
     AYAYA/settingswidget.cpp \
     AYAYA/settings/globalsettings.cpp \
     AYAYA/settings/settingstab.cpp \
-    AYAYA/player/backends/nullplayerimpl.cpp
+    AYAYA/player/backends/nullplayerimpl.cpp \
+    AYAYA/player/streamextractor.cpp \
+    AYAYA/player/extractors/ytdlextractor.cpp \
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
@@ -71,7 +73,9 @@ HEADERS += \
     AYAYA/settingswidget.hpp \
     AYAYA/settings/globalsettings.hpp \
     AYAYA/settings/settingstab.hpp \
-    AYAYA/player/backends/nullplayerimpl.hpp
+    AYAYA/player/backends/nullplayerimpl.hpp \
+    AYAYA/player/streamextractor.hpp \
+    AYAYA/player/extractors/ytdlextractor.hpp \
 
 FORMS += \
     AYAYA/mainwindow.ui \

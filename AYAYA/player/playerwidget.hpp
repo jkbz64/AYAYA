@@ -7,6 +7,8 @@ namespace detail {
 class PlayerImpl;
 }
 
+class StreamExtractor;
+
 class ControlsWidget;
 
 enum class PlayerBackend {
@@ -14,6 +16,12 @@ enum class PlayerBackend {
     Mpv,
     Vlc
     // TODO ??
+};
+
+enum class ExtractorBackend {
+    Null,
+    Ytdl,
+    //Streamlink
 };
 
 enum class PlayerStyle {
@@ -30,6 +38,9 @@ public:
 
     void setBackend(PlayerBackend);
     const PlayerBackend& backend() const;
+
+    void setExtractor(ExtractorBackend);
+    const ExtractorBackend& extractorBackend() const;
 
     void openStream(const QString&);
     void resetStream();
@@ -69,6 +80,8 @@ protected:
 private:
     detail::PlayerImpl* m_impl;
     PlayerBackend m_backend;
+    StreamExtractor* m_streamExtractor;
+    ExtractorBackend m_extractorBackend;
     PlayerStyle m_playerStyle;
 
     // ControlsWidget

@@ -6,6 +6,10 @@
 
 #include <QDebug>
 
+#include "player/extractors/ytdlextractor.hpp"
+#include <QFutureWatcher>
+#include <QUrl>
+
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);

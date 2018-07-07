@@ -80,6 +80,10 @@ void StreamWidget::init()
 #else
     player()->setBackend(PlayerBackend::Null);
 #endif
+    if (QFile::exists(qApp->applicationDirPath() + "/extractors/youtube-dl"))
+        player()->setExtractor(ExtractorBackend::Ytdl);
+    else
+        player()->setExtractor(ExtractorBackend::Null);
     chat()->chatView()->emotesCache()->initCache();
 }
 

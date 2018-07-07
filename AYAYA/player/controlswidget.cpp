@@ -121,6 +121,7 @@ void ControlsWidget::onBuffering(int value)
 {
     bufferingBar()->show();
     bufferingBar()->setValue(value);
+    makeVisible();
 }
 
 void ControlsWidget::onPositionChanged(double)
