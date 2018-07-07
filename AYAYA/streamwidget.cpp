@@ -75,6 +75,8 @@ void StreamWidget::init()
 {
 #ifdef MPV
     player()->setBackend(PlayerBackend::Mpv);
+#elif VLC
+    player()->setBackend(PlayerBackend::Vlc);
 #else
     player()->setBackend(PlayerBackend::Null);
 #endif

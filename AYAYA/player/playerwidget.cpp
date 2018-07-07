@@ -9,6 +9,10 @@
 #include "backends/mpvplayerimpl.hpp"
 #endif
 
+#ifdef VLC
+#include "backends/vlcplayerimpl.hpp"
+#endif
+
 #include "extractors/ytdlextractor.hpp"
 
 PlayerWidget::PlayerWidget(QWidget* parent)
@@ -48,7 +52,14 @@ void PlayerWidget::setBackend(PlayerBackend backend)
 #ifdef MPV
         m_impl = new detail::MpvPlayerImpl(this);
 #else
-        throw std::runtime_error("AYAYA was not built with Mpv, compile AYAYA with CONFIG+=\"MPV\"");
+        throw std::runtime_error("AYAYA was not built with Mpv, compile AYAYA with CONFIG+=\"Mpv\"");
+#endif
+        break;
+    case PlayerBackend::Vlc:
+#ifdef VLC
+        m_impl = new detail::VlcPlayerImpl(this);
+#else
+        throw std::runtime_error("AYAYA was not built with Vlc, compile AYAYA with CONFIG+=\"Vlc\"");
 #endif
         break;
     }
@@ -56,8 +67,8 @@ void PlayerWidget::setBackend(PlayerBackend backend)
     emit startedBackendInit();
     if (m_impl->init()) {
         const auto render = m_impl->renderWidget();
-        render->setMouseTracking(true);
         setCentralWidget(render);
+        render->setMouseTracking(true);
     }
 
     if (backend != PlayerBackend::Null)
@@ -100,7 +111,6 @@ void PlayerWidget::openStream(const QString& streamName)
     if (m_streamExtractor) {
         auto bestUrl = m_streamExtractor->getStreamUrl("twitch.tv/" + streamName);
         connect(bestUrl, &ExtractorReply<QUrl>::finished, [this, bestUrl]() {
-            qDebug() << bestUrl->result().toString();
             if (m_impl)
                 m_impl->load(bestUrl->result().toString());
         });
@@ -198,6 +208,13 @@ void PlayerWidget::onVolumeChanged(int value)
     setVolume(value);
 }
 
+#include <QResizeEvent>
+
+void PlayerWidget::resizeEvent(QResizeEvent* event)
+{
+    QMainWindow::resizeEvent(event);
+}
+
 void PlayerWidget::onPressedTheaterButton()
 {
     if (m_playerStyle != PlayerStyle::Theater)
@@ -214,13 +231,15 @@ void PlayerWidget::onPressedFullscreenButton()
         setPlayerStyle(PlayerStyle::Normal);
 }
 
+#include <QDebug>
 #include <QEvent>
 
 bool PlayerWidget::eventFilter(QObject* watched, QEvent* event)
 {
     if (watched == m_impl->renderWidget()) {
         if (event->type() == QEvent::MouseMove) {
-            controlsWidget()->makeVisible();
+            if (controlsWidget())
+                controlsWidget()->makeVisible();
         }
     } else {
         return QMainWindow::eventFilter(watched, event);

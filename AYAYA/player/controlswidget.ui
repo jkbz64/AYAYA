@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>619</width>
-    <height>48</height>
+    <width>1030</width>
+    <height>150</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,8 +31,11 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">background-color: transparent;</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1">

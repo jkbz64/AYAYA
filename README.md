@@ -16,6 +16,7 @@ Qt Desktop Twitch.tv client written in Qt5.
 **Supported video backends:**
 * Null - Allows you to use AYAYA only for chat
 * [mpv](https://github.com/mpv-player/mpv)
+* [vlc](https://www.videolan.org) - (Experimental)
 
 ## Getting dependencies
 ### Windows

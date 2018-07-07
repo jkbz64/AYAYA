@@ -95,4 +95,10 @@ SOURCES += AYAYA/player/backends/mpvplayerimpl.cpp
 LIBS += -lmpv
 }
 
+vlc {
+DEFINES += VLC
+HEADERS += AYAYA/player/backends/vlcplayerimpl.hpp
+SOURCES += AYAYA/player/backends/vlcplayerimpl.cpp
+LIBS += -lvlc
+}
 
