@@ -1,8 +1,6 @@
 QT       += core gui widgets network
 CONFIG   += c++14 communi
 
-CONFIG += vlc
-
 COMMUNI  += core model util
 
 TARGET = AYAYA
