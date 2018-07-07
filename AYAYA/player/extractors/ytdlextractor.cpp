@@ -60,9 +60,10 @@ ExtractorReply<QUrl>* YtdlExtractor::getStreamUrl(const QString& name, const Str
 {
     QFuture<QUrl> urlFuture = QtConcurrent::run(QThreadPool::globalInstance(), [ name, format ]() -> auto {
         QStringList args;
-        args << "-f" << format << "-g" << name;
+        if (!format.isEmpty())
+            args << "-f" << format;
+        args << "-g" << name;
 
-        qDebug() << args;
         QProcess ytdl;
         ytdl.start(ytdlExecutablePath(), args);
 

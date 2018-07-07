@@ -12,7 +12,7 @@ public:
     ~YtdlExtractor();
 
     virtual ExtractorReply<StreamFormats>* getStreamFormats(const QUrl&) override;
-    virtual ExtractorReply<QUrl>* getStreamUrl(const QString&, const StreamFormat&) override;
+    virtual ExtractorReply<QUrl>* getStreamUrl(const QString&, const StreamFormat& = StreamFormat("best")) override;
 };
 
 #endif

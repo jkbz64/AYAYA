@@ -17,7 +17,7 @@ public:
     virtual ~StreamExtractor();
 
     virtual ExtractorReply<StreamFormats>* getStreamFormats(const QUrl&) = 0;
-    virtual ExtractorReply<QUrl>* getStreamUrl(const QString&, const StreamFormat&) = 0;
+    virtual ExtractorReply<QUrl>* getStreamUrl(const QString&, const StreamFormat& = StreamFormat()) = 0;
 };
 
 #endif // STREAMEXTRACTOR_HPP

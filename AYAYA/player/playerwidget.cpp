@@ -9,11 +9,12 @@
 #include "backends/mpvplayerimpl.hpp"
 #endif
 
-#include <QLabel>
+#include "extractors/ytdlextractor.hpp"
 
 PlayerWidget::PlayerWidget(QWidget* parent)
     : QMainWindow(parent)
     , m_impl(nullptr)
+    , m_streamExtractor(nullptr)
     , m_playerStyle(PlayerStyle::Normal)
     , m_controlsWidget(nullptr)
     , m_beforeMuteVolume(65)
@@ -70,10 +71,41 @@ const PlayerBackend& PlayerWidget::backend() const
     return m_backend;
 }
 
+void PlayerWidget::setExtractor(ExtractorBackend backend)
+{
+    m_extractorBackend = backend;
+
+    switch (backend) {
+    case ExtractorBackend::Null:
+        m_streamExtractor = nullptr;
+        break;
+
+    case ExtractorBackend::Ytdl:
+        m_streamExtractor = new YtdlExtractor(this);
+        break;
+    }
+}
+
+const ExtractorBackend& PlayerWidget::extractorBackend() const
+{
+    return m_extractorBackend;
+}
+
+#include <QFutureWatcher>
+#include <QMessageBox>
+#include <QUrl>
+
 void PlayerWidget::openStream(const QString& streamName)
 {
-    if (m_impl)
-        m_impl->load(QString("https://www.twitch.tv/" + streamName));
+    if (m_streamExtractor) {
+        auto bestUrl = m_streamExtractor->getStreamUrl("twitch.tv/" + streamName);
+        connect(bestUrl, &ExtractorReply<QUrl>::finished, [this, bestUrl]() {
+            qDebug() << bestUrl->result().toString();
+            if (m_impl)
+                m_impl->load(bestUrl->result().toString());
+        });
+    } else
+        QMessageBox::warning(this->window(), "Null stream extractor selected", "No stream extractors available", QMessageBox::Ok);
 }
 
 void PlayerWidget::resetStream()
