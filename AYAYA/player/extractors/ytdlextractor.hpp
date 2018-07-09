@@ -11,8 +11,10 @@ public:
     YtdlExtractor(QObject* = nullptr);
     ~YtdlExtractor();
 
-    virtual ExtractorReply<StreamFormats>* getStreamFormats(const QUrl&) override;
-    virtual ExtractorReply<QUrl>* getStreamUrl(const QString&, const StreamFormat& = StreamFormat("best")) override;
+    virtual bool isAvailable() override;
+
+    virtual StreamFormatsReply* getStreamFormats(const QUrl&) override;
+    virtual StreamUrlReply* getStreamUrl(const QString&, const StreamFormat& = StreamFormat("best")) override;
 };
 
 #endif

@@ -109,10 +109,17 @@ const ExtractorBackend& PlayerWidget::extractorBackend() const
 void PlayerWidget::openStream(const QString& streamName)
 {
     if (m_streamExtractor) {
-        auto bestUrl = m_streamExtractor->getStreamUrl("twitch.tv/" + streamName);
-        connect(bestUrl, &ExtractorReply<QUrl>::finished, [this, bestUrl]() {
+        m_currentStreamName = streamName;
+        // Fetch best quality and play it
+        auto bestUrlReply = m_streamExtractor->getStreamUrl("twitch.tv/" + streamName);
+        connect(bestUrlReply, &StreamUrlReply::finished, [this, bestUrlReply]() {
             if (m_impl)
-                m_impl->load(bestUrl->result().toString());
+                m_impl->load(bestUrlReply->result().toString());
+        });
+        // Fetch all qualities and fill the controls combo with them
+        auto availableFormatsReply = m_streamExtractor->getStreamFormats("twitch.tv/" + streamName);
+        connect(availableFormatsReply, &StreamFormatsReply::finished, [this, availableFormatsReply]() {
+            controlsWidget()->setFormats(availableFormatsReply->result());
         });
     } else
         QMessageBox::warning(this->window(), "Null stream extractor selected", "No stream extractors available", QMessageBox::Ok);
@@ -178,6 +185,7 @@ void PlayerWidget::setupOverlay()
     connect(m_controlsWidget, &ControlsWidget::changedVolume, this, &PlayerWidget::onVolumeChanged);
     connect(m_controlsWidget, &ControlsWidget::pressedTheaterButton, this, &PlayerWidget::onPressedTheaterButton);
     connect(m_controlsWidget, &ControlsWidget::pressedFullscreenButton, this, &PlayerWidget::onPressedFullscreenButton);
+    connect(m_controlsWidget, &ControlsWidget::streamFormatChanged, this, &PlayerWidget::onStreamFormatChanged);
 
     m_controlsWidget->startFadeTimer();
 
@@ -208,13 +216,6 @@ void PlayerWidget::onVolumeChanged(int value)
     setVolume(value);
 }
 
-#include <QResizeEvent>
-
-void PlayerWidget::resizeEvent(QResizeEvent* event)
-{
-    QMainWindow::resizeEvent(event);
-}
-
 void PlayerWidget::onPressedTheaterButton()
 {
     if (m_playerStyle != PlayerStyle::Theater)
@@ -229,6 +230,17 @@ void PlayerWidget::onPressedFullscreenButton()
         setPlayerStyle(PlayerStyle::Fullscreen);
     else
         setPlayerStyle(PlayerStyle::Normal);
+}
+
+void PlayerWidget::onStreamFormatChanged(const StreamFormat& format)
+{
+    if (!format.isEmpty()) { // In case no signal-blocking at the startup
+        auto formatUrlReply = m_streamExtractor->getStreamUrl("twitch.tv/" + m_currentStreamName, format);
+        connect(formatUrlReply, &StreamUrlReply::finished, [this, formatUrlReply]() {
+            if (m_impl)
+                m_impl->load(formatUrlReply->result().toString());
+        });
+    }
 }
 
 #include <QDebug>

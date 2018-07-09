@@ -8,8 +8,9 @@ class PlayerImpl;
 }
 
 class StreamExtractor;
-
 class ControlsWidget;
+
+using StreamFormat = QString;
 
 enum class PlayerBackend {
     Null,
@@ -73,7 +74,6 @@ signals:
     void playerStyleChanged(PlayerStyle, PlayerStyle);
 
 protected:
-    virtual void resizeEvent(QResizeEvent*) override;
     virtual void mouseMoveEvent(QMouseEvent*) override;
     virtual void mouseDoubleClickEvent(QMouseEvent*) override;
 
@@ -83,6 +83,8 @@ private:
     StreamExtractor* m_streamExtractor;
     ExtractorBackend m_extractorBackend;
     PlayerStyle m_playerStyle;
+
+    QString m_currentStreamName;
 
     // ControlsWidget
     void setupOverlay();
@@ -96,6 +98,7 @@ private slots:
     void onVolumeChanged(int);
     void onPressedTheaterButton();
     void onPressedFullscreenButton();
+    void onStreamFormatChanged(const StreamFormat&);
 };
 
 #endif // PLAYERWIDGET_HPP

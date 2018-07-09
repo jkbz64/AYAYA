@@ -33,6 +33,8 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
     connect(volumeSlider(), &QSlider::valueChanged, this, &ControlsWidget::changedVolume);
     connect(theaterButton(), &QPushButton::pressed, this, &ControlsWidget::pressedTheaterButton);
     connect(fullscreenButton(), &QPushButton::pressed, this, &ControlsWidget::pressedFullscreenButton);
+    connect(formatsComboBox(), static_cast<void (QComboBox::*)(int)>(&QComboBox::highlighted), this, &ControlsWidget::onFormatComboActivated);
+    connect(formatsComboBox(), static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged), this, &ControlsWidget::onFormatComboTextChanged);
 
     // Gif
     connect(m_loadingGif, &QMovie::frameChanged, [this]() {
@@ -76,9 +78,23 @@ QPushButton* ControlsWidget::fullscreenButton() const
     return m_ui->m_fullscreenButton;
 }
 
+QComboBox* ControlsWidget::formatsComboBox() const
+{
+    return m_ui->m_formatsComboBox;
+}
+
 void ControlsWidget::makeVisible()
 {
-    show();
+    if (!isVisible()) {
+        show();
+        resetFadeTimer();
+    }
+}
+
+void ControlsWidget::onFadeOutTimeout()
+{
+    if (!m_isFormatsComboActivated)
+        hide();
     resetFadeTimer();
 }
 
@@ -97,6 +113,15 @@ void ControlsWidget::resetFadeTimer()
 int ControlsWidget::currentVolume()
 {
     return volumeSlider()->value();
+}
+
+void ControlsWidget::setFormats(const StreamFormats& formats)
+{
+    formatsComboBox()->clear();
+    formatsComboBox()->blockSignals(true);
+    formatsComboBox()->addItems(QStringList::fromVector(formats));
+    formatsComboBox()->setCurrentIndex(formats.size() - 1);
+    formatsComboBox()->blockSignals(false);
 }
 
 void ControlsWidget::onStartedLoading()
@@ -119,9 +144,8 @@ void ControlsWidget::onEnded()
 
 void ControlsWidget::onBuffering(int value)
 {
-    bufferingBar()->show();
-    bufferingBar()->setValue(value);
     makeVisible();
+    bufferingBar()->setValue(value);
 }
 
 void ControlsWidget::onPositionChanged(double)
@@ -134,4 +158,17 @@ void ControlsWidget::onVolumeChanged(double value)
     volumeSlider()->blockSignals(true);
     volumeSlider()->setValue(static_cast<int>(value));
     volumeSlider()->blockSignals(false);
+}
+
+void ControlsWidget::onFormatComboActivated(int)
+{
+    m_isFormatsComboActivated = true;
+    m_fadeOutTimer->stop();
+}
+
+void ControlsWidget::onFormatComboTextChanged(const QString& format)
+{
+    m_isFormatsComboActivated = false;
+    m_fadeOutTimer->start();
+    emit streamFormatChanged(format);
 }

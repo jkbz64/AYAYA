@@ -27,7 +27,12 @@ YtdlExtractor::~YtdlExtractor() = default;
 #include <QRegularExpression>
 #include <QtConcurrent/QtConcurrent>
 
-ExtractorReply<StreamFormats>* YtdlExtractor::getStreamFormats(const QUrl& url)
+bool YtdlExtractor::isAvailable()
+{
+    return QFile::exists(ytdlExecutablePath());
+}
+
+StreamFormatsReply* YtdlExtractor::getStreamFormats(const QUrl& url)
 {
     QFuture<StreamFormats> formatsFuture = QtConcurrent::run(QThreadPool::globalInstance(), [url]() -> auto {
         QStringList args;
@@ -51,12 +56,12 @@ ExtractorReply<StreamFormats>* YtdlExtractor::getStreamFormats(const QUrl& url)
         return StreamFormats();
     });
 
-    auto reply = new ExtractorReply<StreamFormats>(this);
+    auto reply = new StreamFormatsReply(this);
     reply->setFuture(formatsFuture);
     return reply;
 }
 
-ExtractorReply<QUrl>* YtdlExtractor::getStreamUrl(const QString& name, const StreamFormat& format)
+StreamUrlReply* YtdlExtractor::getStreamUrl(const QString& name, const StreamFormat& format)
 {
     QFuture<QUrl> urlFuture = QtConcurrent::run(QThreadPool::globalInstance(), [ name, format ]() -> auto {
         QStringList args;
@@ -72,7 +77,7 @@ ExtractorReply<QUrl>* YtdlExtractor::getStreamUrl(const QString& name, const Str
         return QUrl();
     });
 
-    auto reply = new ExtractorReply<QUrl>(this);
+    auto reply = new StreamUrlReply(this);
     reply->setFuture(urlFuture);
     return reply;
 }

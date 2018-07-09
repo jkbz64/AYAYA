@@ -3,12 +3,13 @@
 
 #include <QFuture>
 #include <QObject>
+#include <QVector>
 
 using StreamFormat = QString;
 using StreamFormats = QVector<StreamFormat>;
 
-template <class T>
-using ExtractorReply = QFutureWatcher<T>;
+using StreamFormatsReply = QFutureWatcher<StreamFormats>;
+using StreamUrlReply = QFutureWatcher<QUrl>;
 
 class StreamExtractor : public QObject {
     Q_OBJECT
@@ -16,8 +17,10 @@ public:
     StreamExtractor(QObject*);
     virtual ~StreamExtractor();
 
-    virtual ExtractorReply<StreamFormats>* getStreamFormats(const QUrl&) = 0;
-    virtual ExtractorReply<QUrl>* getStreamUrl(const QString&, const StreamFormat& = StreamFormat()) = 0;
+    virtual bool isAvailable() = 0;
+
+    virtual StreamFormatsReply* getStreamFormats(const QUrl&) = 0;
+    virtual StreamUrlReply* getStreamUrl(const QString&, const StreamFormat& = StreamFormat()) = 0;
 };
 
 #endif // STREAMEXTRACTOR_HPP
