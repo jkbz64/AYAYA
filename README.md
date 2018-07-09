@@ -18,6 +18,10 @@ Qt Desktop Twitch.tv client written in Qt5.
 * [mpv](https://github.com/mpv-player/mpv)
 * [vlc](https://www.videolan.org) - (Experimental)
 
+**Supported stream extractors:**
+* Null
+* [youtube-dl](https://rg3.github.io/youtube-dl/)
+
 ## Getting dependencies
 ### Windows
 Well... since the only available video backend(for now) is mpv, and it compiles on windows only under MSYS2, you will need to build it using MSYS2. You have to pretty much compile mpv by yourself(good luck with mpv's dependencies) and install MSYS2 version of QT5. Then do the clone-qmake-make routine. (More video backends are planned(tm) so we won't need to use MSYS2 in future for building on Windows).
