@@ -169,6 +169,6 @@ void ControlsWidget::onFormatComboActivated(int)
 void ControlsWidget::onFormatComboTextChanged(const QString& format)
 {
     m_isFormatsComboActivated = false;
-    m_fadeOutTimer->start();
+    resetFadeTimer();
     emit streamFormatChanged(format);
 }

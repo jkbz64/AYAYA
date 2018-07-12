@@ -1,6 +1,7 @@
 #include "mainwindow.hpp"
 #include "browser/gamebrowser.hpp"
 #include "settings/globalsettings.hpp"
+#include "settings/playersettings.hpp"
 #include "ui_mainwindow.h"
 #include <QMovie>
 #include <QPropertyAnimation>
@@ -32,6 +33,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     // Settings
     settingsWidget()->addTab<GlobalSettings>(this);
+    settingsWidget()->addTab<PlayerSettings>(streamWidget()->player());
 }
 
 MainWindow::~MainWindow()

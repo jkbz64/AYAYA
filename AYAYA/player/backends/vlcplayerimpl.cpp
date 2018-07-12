@@ -7,6 +7,8 @@
 #include <QMutex>
 #include <QPainter>
 
+#include <QDebug>
+
 namespace {
 QMutex m_vlcMutex;
 
@@ -93,7 +95,8 @@ QString VlcPlayerImpl::currentPath()
 
 void VlcPlayerImpl::setVolume(int vol)
 {
-    libvlc_audio_set_volume(m_vlcPlayer, vol);
+    if (m_vlcPlayer)
+        libvlc_audio_set_volume(m_vlcPlayer, vol);
 }
 
 int VlcPlayerImpl::volume() const
@@ -119,6 +122,7 @@ PixelBuffer& VlcWidget::pixelBuffer()
 void VlcWidget::paintEvent(QPaintEvent* event)
 {
     QWidget::paintEvent(event);
+    qDebug() << size();
     QPainter painter(this);
     if (m_vlcMutex.tryLock()) {
         if (pixelBuffer().shouldUpdate()) {
@@ -127,7 +131,10 @@ void VlcWidget::paintEvent(QPaintEvent* event)
         }
         m_vlcMutex.unlock();
     }
-    painter.drawImage(0, 0, m_image.scaled(m_impl->player()->width(), m_impl->player()->height()));
+    painter.fillRect(0, 0, m_impl->player()->width(), m_impl->player()->height(), QColor(0, 0, 0, 255));
+    const auto scaled = m_image.scaled(m_impl->player()->width(), m_impl->player()->height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    const auto h = m_impl->player()->height() - scaled.height();
+    painter.drawImage(0, h / 2.f, scaled);
 }
 
 // Pixel buffer

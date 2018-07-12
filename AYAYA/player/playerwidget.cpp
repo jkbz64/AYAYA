@@ -192,6 +192,7 @@ void PlayerWidget::setupOverlay()
     overlayLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 0, 12, 1);
     overlayLayout->addWidget(m_controlsWidget, 12, 0, 2, 1);
     centralWidget()->setLayout(overlayLayout);
+    centralWidget()->setMinimumWidth(controlsWidget()->minimumSizeHint().width());
 }
 
 // Slots
