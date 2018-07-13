@@ -119,10 +119,10 @@ void PlayerWidget::openStream(const QString& streamName)
         // Fetch all qualities and fill the controls combo with them
         auto availableFormatsReply = m_streamExtractor->getStreamFormats("twitch.tv/" + streamName);
         connect(availableFormatsReply, &StreamFormatsReply::finished, [this, availableFormatsReply]() {
-            controlsWidget()->setFormats(availableFormatsReply->result());
+            if (controlsWidget())
+                controlsWidget()->setFormats(availableFormatsReply->result());
         });
-    } else
-        QMessageBox::warning(this->window(), "Null stream extractor selected", "No stream extractors available", QMessageBox::Ok);
+    }
 }
 
 void PlayerWidget::resetStream()

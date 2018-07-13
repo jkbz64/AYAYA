@@ -1,11 +1,13 @@
 #include "nullplayerimpl.hpp"
-
+#include "../playerwidget.hpp"
 #include <QLabel>
 
 detail::NullPlayerImpl::NullPlayerImpl(PlayerWidget* player)
     : PlayerImpl(player)
 {
-    m_renderWidget = new QLabel("Null Backend. Set different backend in the settings or compile AYAYA with one of supported backends.");
+    auto label = new QLabel("Null Backend. Set different backend in the settings or compile AYAYA with one of supported backends.", player);
+    label->setWordWrap(true);
+    m_renderWidget = label;
 }
 
 detail::NullPlayerImpl::~NullPlayerImpl()
