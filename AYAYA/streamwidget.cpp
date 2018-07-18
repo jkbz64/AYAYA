@@ -73,13 +73,6 @@ bool StreamWidget::checkInitStatus()
 
 void StreamWidget::init()
 {
-#ifdef MPV
-    player()->setBackend(PlayerBackend::Mpv);
-#elif VLC
-    player()->setBackend(PlayerBackend::Vlc);
-#else
-    player()->setBackend(PlayerBackend::Null);
-#endif
     if (QFile::exists(qApp->applicationDirPath() + "/extractors/youtube-dl"))
         player()->setExtractor(ExtractorBackend::Ytdl);
     else
@@ -164,5 +157,4 @@ void StreamWidget::onGlobalEmotesFetchProgress(EmotesBackend /*emotesBackend*/, 
 
 void StreamWidget::onFetchedGlobalEmotes()
 {
-    initSettings().setValue("lastGlobalFetchDate", QDateTime::currentDateTime());
 }

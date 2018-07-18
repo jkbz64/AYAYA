@@ -19,6 +19,7 @@ SettingsWidget::~SettingsWidget()
 
 void SettingsWidget::init()
 {
+
     for (const auto tab : m_tabs) {
         tab->updateSettings();
         tab->applyChanges();

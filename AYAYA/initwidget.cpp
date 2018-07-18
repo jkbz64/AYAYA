@@ -1,7 +1,5 @@
 #include "initwidget.hpp"
 
-QSettings InitWidget::m_initSettings("init");
-
 InitWidget::InitWidget(QWidget* parent)
     : QWidget(parent)
 {
@@ -9,11 +7,6 @@ InitWidget::InitWidget(QWidget* parent)
 }
 
 InitWidget::~InitWidget() = default;
-
-QSettings& InitWidget::initSettings()
-{
-    return m_initSettings;
-}
 
 bool InitWidget::isFulfilled(const QString& key)
 {

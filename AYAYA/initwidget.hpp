@@ -11,9 +11,6 @@ public:
     virtual ~InitWidget();
 
     virtual void init() = 0;
-
-    QSettings& initSettings();
-
 signals:
     void startedIniting();
     void initProgress(const QString&);
@@ -30,8 +27,6 @@ private:
 
     void onStartedIniting();
     void onEndedIniting();
-
-    static QSettings m_initSettings;
 };
 
 #endif // INITWIDGET_HPP

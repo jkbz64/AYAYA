@@ -34,6 +34,8 @@ PlayerSettings::PlayerSettings(PlayerWidget* playerWidget, QWidget* parent)
 #ifdef VLC
     m_ui->m_backendComboBox->addItem("Vlc");
 #endif
+
+    connect(m_ui->m_setCurrentBackendButton, &QPushButton::pressed, this, &PlayerSettings::onCurrentBackendChanged);
 }
 
 PlayerSettings::~PlayerSettings()
@@ -113,7 +115,9 @@ void PlayerSettings::applyChanges()
     const auto volume = m_ui->m_defaultVolumeSpinBox->value();
     settings.setValue("defaultVolume", volume);
     m_playerWidget->setVolume(volume);
-    settings.setValue("backend", m_ui->m_backendLabel->text());
+
+    const auto backendName = m_ui->m_backendLabel->text();
+    settings.setValue("backend", backendName);
 
     // Keep aspect ratio
     const auto keepAspectRation = m_ui->m_keepAspectRatioCheckBox->isChecked();
@@ -123,7 +127,7 @@ void PlayerSettings::applyChanges()
     settings.beginGroup("mpv");
 
     QVariantMap mpvSettings;
-    for (auto i = 0; i < m_ui->m_mpvCustomTableWidget->rowCount(); ++i) {
+    for (auto i = 0u; i < m_ui->m_mpvCustomTableWidget->rowCount(); ++i) {
         const auto key = m_ui->m_mpvCustomTableWidget->item(i, 0)->text();
         const auto value = m_ui->m_mpvCustomTableWidget->item(i, 1)->text();
         mpvSettings.insert(key, value);
@@ -134,10 +138,20 @@ void PlayerSettings::applyChanges()
 #endif
 
 #ifdef VLC
-
+    settings.beginGroup("vlc");
+    // TODO
+    settings.endGroup();
 #endif
 
+    const auto currentBackend = getBackendType(backendName);
+    m_playerWidget->setBackend(currentBackend);
+
     settings.endGroup();
+}
+
+void PlayerSettings::onCurrentBackendChanged()
+{
+    m_ui->m_backendLabel->setText(m_ui->m_backendComboBox->currentText());
 }
 
 void PlayerSettings::onBackendChanged(const QString& backendName)

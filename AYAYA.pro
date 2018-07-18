@@ -47,7 +47,8 @@ SOURCES += \
     AYAYA/player/backends/nullplayerimpl.cpp \
     AYAYA/player/streamextractor.cpp \
     AYAYA/player/extractors/ytdlextractor.cpp \
-    AYAYA/settings/playersettings.cpp
+    AYAYA/settings/playersettings.cpp \
+    AYAYA/settings/quickstartdialog.cpp
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
@@ -75,7 +76,8 @@ HEADERS += \
     AYAYA/player/backends/nullplayerimpl.hpp \
     AYAYA/player/streamextractor.hpp \
     AYAYA/player/extractors/ytdlextractor.hpp \
-    AYAYA/settings/playersettings.hpp
+    AYAYA/settings/playersettings.hpp \
+    AYAYA/settings/quickstartdialog.hpp
 
 FORMS += \
     AYAYA/mainwindow.ui \
@@ -89,7 +91,8 @@ FORMS += \
     AYAYA/settingswidget.ui \
     AYAYA/settingswidget.ui \
     AYAYA/settings/globalsettings.ui \
-    AYAYA/settings/playersettings.ui
+    AYAYA/settings/playersettings.ui \
+    AYAYA/settings/quickstartdialog.ui
 
 mpv {
 DEFINES += MPV

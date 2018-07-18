@@ -26,6 +26,7 @@ private:
     PlayerWidget* m_playerWidget;
 
 private slots:
+    void onCurrentBackendChanged();
     void onBackendChanged(const QString&);
     void onRequestedMpvCustomMenu(const QPoint&);
 };

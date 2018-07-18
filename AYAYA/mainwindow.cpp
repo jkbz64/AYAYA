@@ -15,21 +15,26 @@ MainWindow::MainWindow(QWidget* parent)
     , m_previousWidget(nullptr)
 {
     m_ui->setupUi(this);
+
+    // Splash screen clap face
+    m_ui->m_clapFace->setMovie(new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this));
+
     // Navigation bar
     connect(navigationBar(), &MainNavigationBar::browseButtonPressed, this, &MainWindow::onBrowsePressed);
     connect(navigationBar(), &MainNavigationBar::settingsButtonPressed, this, &MainWindow::onSettingsPressed);
     connect(navigationBar(), &MainNavigationBar::quitButtonPressed, this, &MainWindow::close);
+
     // Browser
     connect(browserWidget(), &BrowserWidget::streamEntered, this, &MainWindow::onStreamEntered);
+
     // Stream
     connect(streamWidget(), &StreamWidget::enteredTheaterMode, this, &MainWindow::onEnteredFullscreenMode);
     connect(streamWidget(), &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
     connect(streamWidget(), &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
+
     // Save default margins / spacing for going back from fulllscreen mode
     m_defaultMargin = m_ui->m_mainWidget->layout()->margin();
     m_defaultSpacing = m_ui->m_mainWidget->layout()->spacing();
-    // Splash screen clap face
-    m_ui->m_clapFace->setMovie(new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this));
 
     // Settings
     settingsWidget()->addTab<GlobalSettings>(this);
