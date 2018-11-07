@@ -1,15 +1,18 @@
 #include "settingswidget.hpp"
-#include "settings/settingstab.hpp"
 #include "ui_settingswidget.h"
+
+#include "settings/quickstartdialog.hpp"
+#include "settings/settingstab.hpp"
+
+#include <QFile>
+#include <QStandardPaths>
 
 SettingsWidget::SettingsWidget(QWidget* parent)
     : InitWidget(parent)
     , m_ui(new Ui::SettingsWidget)
 {
     m_ui->setupUi(this);
-
-    connect(exitButton(), &QPushButton::pressed, this, &SettingsWidget::onExitPressed);
-    connect(saveButton(), &QPushButton::pressed, this, &SettingsWidget::onSavePressed);
+    m_ui->m_settingsArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 SettingsWidget::~SettingsWidget()
@@ -17,9 +20,35 @@ SettingsWidget::~SettingsWidget()
     delete m_ui;
 }
 
+#include "settings/quickstartdialog.hpp"
+
 void SettingsWidget::init()
 {
+    QSettings settings("AYAYA");
+    const bool quickstart = settings.value("quickstart", true).toBool();
+    if (quickstart) {
+        auto quickstartDialog = new QuickstartDialog(this);
+        int ret = quickstartDialog->exec();
+        if (ret == QDialog::Accepted) {
+            settings.beginGroup("global");
+            settings.setValue("theme", QVariant::fromValue(quickstartDialog->selectedTheme()).toInt());
+            settings.endGroup();
 
+            settings.beginGroup("extractor");
+            settings.setValue("backend", QVariant::fromValue(quickstartDialog->selectedExtractorBackend()).toInt());
+            settings.endGroup();
+
+            settings.beginGroup("player");
+            settings.setValue("backend", QVariant::fromValue(quickstartDialog->selectedPlayerBackend()).toInt());
+            settings.endGroup();
+
+            settings.setValue("quickstart", false);
+        }
+        quickstartDialog->deleteLater();
+    }
+    // Sync the changes in files before loading changes in specific tabs
+    settings.sync();
+    // Load settings from file and apply changes at the startup
     for (const auto tab : m_tabs) {
         tab->updateSettings();
         tab->applyChanges();
@@ -27,35 +56,18 @@ void SettingsWidget::init()
     tryToEndInit();
 }
 
-void SettingsWidget::clear()
+void SettingsWidget::applyChanges()
 {
-    m_ui->m_settingsTabs->clear();
+    for (const auto tab : m_tabs) {
+        tab->applyChanges();
+    }
 }
 
-QPushButton* SettingsWidget::exitButton() const
-{
-    return m_ui->m_exitButton;
-}
-
-QPushButton* SettingsWidget::saveButton() const
-{
-    return m_ui->m_saveButton;
-}
+#include <QVBoxLayout>
 
 void SettingsWidget::appendTab(SettingsTab* tab)
 {
-    m_ui->m_settingsTabs->addTab(tab, tab->tabName());
     m_tabs.push_back(tab);
-}
-
-void SettingsWidget::onExitPressed()
-{
-    emit exited();
-}
-
-void SettingsWidget::onSavePressed()
-{
-    for (const auto tab : m_tabs)
-        tab->applyChanges();
-    emit saved();
+    qobject_cast<QVBoxLayout*>(m_ui->m_settingsWidget->layout())->addWidget(tab);
+    connect(tab, &SettingsTab::settingChanged, [tab]() { tab->applyChanges(); });
 }

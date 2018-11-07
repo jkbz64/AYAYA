@@ -1,5 +1,6 @@
 #include "mainwindow.hpp"
 #include "browser/gamebrowser.hpp"
+#include "settings/extractorsettings.hpp"
 #include "settings/globalsettings.hpp"
 #include "settings/playersettings.hpp"
 #include "ui_mainwindow.h"
@@ -38,7 +39,12 @@ MainWindow::MainWindow(QWidget* parent)
 
     // Settings
     settingsWidget()->addTab<GlobalSettings>(this);
+    settingsWidget()->addTab<ExtractorSettings>(streamWidget()->player());
     settingsWidget()->addTab<PlayerSettings>(streamWidget()->player());
+
+    m_ui->m_settingsWidget->hide();
+    m_ui->m_settingsSplitter->setStretchFactor(0, 1);
+    m_ui->m_settingsSplitter->setStretchFactor(1, 0);
 }
 
 MainWindow::~MainWindow()
@@ -70,7 +76,7 @@ void MainWindow::setTheme(Theme theme)
     m_theme = theme;
 }
 
-const Theme& MainWindow::theme() const
+const MainWindow::Theme& MainWindow::theme() const
 {
     return m_theme;
 }
@@ -181,10 +187,23 @@ void MainWindow::onBrowsePressed()
     browserWidget()->showTopGames();
 }
 
+#include <QPropertyAnimation>
+
 void MainWindow::onSettingsPressed()
 {
-    m_previousWidget = currentMainWidget();
-    setCurrentMainWidget(settingsWidget());
+    if (m_ui->m_settingsWidget->isHidden()) {
+        m_ui->m_settingsWidget->show();
+        QTimer::singleShot(0, [sw = m_ui->m_settingsWidget]() {
+            QPropertyAnimation* anim = new QPropertyAnimation(sw, "pos");
+            anim->setStartValue(QPoint(sw->pos().x() + sw->width(), sw->pos().y()));
+            anim->setEndValue(QPoint(sw->pos().x(), sw->pos().y()));
+            anim->setDuration(600);
+            anim->setEasingCurve(QEasingCurve::OutBack);
+            anim->start(QAbstractAnimation::DeletionPolicy::DeleteWhenStopped);
+        });
+    } else {
+        m_ui->m_settingsWidget->hide();
+    }
 }
 
 void MainWindow::onStreamEntered(const Twitch::User& user, const Twitch::Stream& stream)
@@ -197,7 +216,6 @@ void MainWindow::onEnteredFullscreenMode()
 {
     showFullScreen();
     navigationBar()->hide();
-    m_ui->m_horizontalLine->hide();
     statusBar()->hide();
 
     removeMargins();
@@ -207,7 +225,6 @@ void MainWindow::onLeftFullscreenMode()
 {
     showNormal();
     navigationBar()->show();
-    m_ui->m_horizontalLine->show();
     statusBar()->show();
 
     restoreDefaultMargins();

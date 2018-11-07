@@ -2,16 +2,25 @@
 <ui version="4.0">
  <class>QuickstartDialog</class>
  <widget class="QDialog" name="QuickstartDialog">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>564</width>
-    <height>597</height>
+    <height>511</height>
    </rect>
   </property>
+  <property name="baseSize">
+   <size>
+    <width>570</width>
+    <height>520</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Quickstart</string>
   </property>
   <property name="modal">
    <bool>false</bool>
@@ -53,19 +62,6 @@
       <set>Qt::AlignCenter</set>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="2">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="1" column="1">
        <widget class="QGroupBox" name="m_themeGroupBox">
         <property name="title">
@@ -82,6 +78,12 @@
            </property>
            <property name="text">
             <string>Default</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -105,9 +107,18 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="1" column="2">
-          <widget class="QRadioButton" name="m_nullRadioButton">
+          <widget class="QRadioButton" name="m_nullBackendRadioButton">
            <property name="text">
             <string>Null (Chat-Only mode)</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -115,6 +126,9 @@
           <widget class="QLabel" name="m_playerBackendLabel">
            <property name="text">
             <string>Pick your preffered player (available options can vary depending on your compiled version). Every one of them can work different, so if you have framerate issues, stream looks bad, etc, you can easily switch between them.</string>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -126,6 +140,9 @@
          </item>
          <item row="1" column="0">
           <widget class="QRadioButton" name="m_mpvRadioButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Mpv (Recommended)</string>
            </property>
@@ -133,6 +150,9 @@
          </item>
          <item row="1" column="1">
           <widget class="QRadioButton" name="m_vlcRadioButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
            </property>
@@ -147,19 +167,6 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="0">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="2" column="0" colspan="3">
        <widget class="QGroupBox" name="m_streamExtractorGroupBox">
         <property name="title">
@@ -169,36 +176,46 @@
          <set>Qt::AlignCenter</set>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="1" column="1">
-          <widget class="QPushButton" name="m_streamlinkButton">
-           <property name="styleSheet">
-            <string notr="true">.QPushButton { background-color: green; }</string>
+         <item row="2" column="0">
+          <widget class="QRadioButton" name="m_ytdlRadioButton">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
            </property>
+           <property name="text">
+            <string>Youtube-Dl</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QRadioButton" name="m_streamlinkRadioButton">
            <property name="text">
             <string>Streamlink</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="0" colspan="2">
+         <item row="2" column="2">
+          <widget class="QRadioButton" name="m_nullExtractorRadioButton">
+           <property name="text">
+            <string>Null</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="3">
           <widget class="QLabel" name="m_streamExtractorLabel">
            <property name="text">
-            <string>We need stream extractor to get the stream urls and available formats. For your convenience AYAYA can downlad it for you, just pick one (or more).</string>
+            <string>Set the default stream extractor, we need stream extractor to get the stream urls and available formats.</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QPushButton" name="m_ytdlButton">
-           <property name="styleSheet">
-            <string notr="true">.QPushButton { background-color: green; }</string>
-           </property>
-           <property name="text">
-            <string>Youtube-dl</string>
            </property>
           </widget>
          </item>

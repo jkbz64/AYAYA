@@ -8,8 +8,9 @@ namespace Twitch {
 class Api;
 class User;
 class Stream;
-class Game;
 }
+
+#include <TwitchQt/twitchgame.hpp>
 
 class BrowserItemWidget;
 class GameItemWidget;
@@ -57,7 +58,7 @@ private slots:
     void onGameAdded(BrowserItemWidget*);
     void onStreamAdded(BrowserItemWidget*);
 
-    void onGameSelected();
+    void onGameSelected(const Twitch::Game);
     void onStreamSelected();
 };
 

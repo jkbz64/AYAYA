@@ -1,6 +1,7 @@
 #include "chatview.hpp"
 #include "chatclient.hpp"
 #include "emotescache.hpp"
+#include <QTextBlock>
 
 ChatView::ChatView(QWidget* parent)
     : QTextBrowser(parent)
@@ -20,7 +21,7 @@ EmotesCache* ChatView::emotesCache() const
 
 void ChatView::addMessage(const QString& message)
 {
-    append(message + "\n");
+    append(message);
 }
 
 void ChatView::onJoinedChannel(const QString& channel)
@@ -42,10 +43,27 @@ void ChatView::onMessageReceived(const TwitchMessage& message)
     const auto words = QSet<QString>::fromList(message.m_content.split(QRegExp("[\r\n\t ]+")));
     for (const auto& word : words) {
         if (emotesCache()->isEmoteLoaded(word.simplified()) || preCodes.find(word.simplified()) != preCodes.end()) {
-            editedMessage.replace(word, "<img src=\"" + word + "\" align=\"middle\"/>");
+            editedMessage.replace(word, "<img src=\"" + word + "\" align=\"middle\"></img>");
         }
     }
-    addMessage("<b>" + message.m_author + "</b>: " + editedMessage);
+    addMessage("<p><b><font color=\"" + message.m_color.name() + "\">" + message.m_author + "</font></b>: " + editedMessage + "</p>");
+
+    auto b = document()->lastBlock().blockFormat();
+    b.setLineHeight(30, QTextBlockFormat::FixedHeight);
+
+    QTextCursor cursor(document());
+    cursor.movePosition(QTextCursor::End);
+    cursor.movePosition(QTextCursor::PreviousBlock, QTextCursor::KeepAnchor);
+    cursor.setBlockFormat(b);
+
+    if (document()->blockCount() > 50) { // Keep only the 50 newest comments
+        QTextCursor eraseCursor(document());
+        cursor.movePosition(QTextCursor::Start);
+        cursor.movePosition(QTextCursor::NextBlock);
+        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+        cursor.removeSelectedText();
+    }
 }
 
 void ChatView::onEmoteLoaded(const QPair<Twitch::Emote, QImage>& emote)

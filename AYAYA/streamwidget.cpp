@@ -6,6 +6,8 @@
 #include <TwitchQt/twitchuser.hpp>
 
 namespace {
+using PlayerBackend = PlayerWidget::Backend;
+using ExtractorBackend = PlayerWidget::ExtractorBackend;
 QString backendName(const PlayerBackend backend)
 {
     switch (backend) {
@@ -73,10 +75,6 @@ bool StreamWidget::checkInitStatus()
 
 void StreamWidget::init()
 {
-    if (QFile::exists(qApp->applicationDirPath() + "/extractors/youtube-dl"))
-        player()->setExtractor(ExtractorBackend::Ytdl);
-    else
-        player()->setExtractor(ExtractorBackend::Null);
     chat()->chatView()->emotesCache()->initCache();
 }
 

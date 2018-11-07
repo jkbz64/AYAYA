@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ExtractorSettings</class>
+ <widget class="QWidget" name="ExtractorSettings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>378</width>
+    <height>501</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="m_extractorGroupBox">
+     <property name="title">
+      <string>Extractor</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="2" column="0">
+       <widget class="QLabel" name="m_prefferedQualityLabel">
+        <property name="text">
+         <string>Preffered quality:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="3">
+       <widget class="QComboBox" name="m_extractorComboBox">
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <item>
+         <property name="text">
+          <string>Null</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Youtube-Dl</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Streamlink</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="m_currentExtractorLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Current extractor:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QPushButton" name="m_setExtractorButton">
+        <property name="text">
+         <string>Set</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2" colspan="2">
+       <widget class="QComboBox" name="m_prefferedQualityComboBox">
+        <item>
+         <property name="text">
+          <string>Best</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>160p</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>360p</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>480p</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>720p</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>720p60</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1080p</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1080p60</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Custom</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="2" colspan="2">
+       <widget class="QLineEdit" name="m_customPrefferedQualityLineEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="3">
+       <widget class="QLabel" name="m_extractorLabel">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

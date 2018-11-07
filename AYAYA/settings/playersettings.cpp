@@ -3,7 +3,11 @@
 
 #include "../player/playerwidget.hpp"
 
+#include <QMetaEnum>
+#include <QSpinBox>
+
 namespace {
+using PlayerBackend = PlayerWidget::Backend;
 PlayerBackend getBackendType(const QString& backendName)
 {
     if (backendName == "Null")
@@ -36,6 +40,11 @@ PlayerSettings::PlayerSettings(PlayerWidget* playerWidget, QWidget* parent)
 #endif
 
     connect(m_ui->m_setCurrentBackendButton, &QPushButton::pressed, this, &PlayerSettings::onCurrentBackendChanged);
+    connect(m_ui->m_defaultVolumeSpinBox, &QSpinBox::editingFinished, this, &PlayerSettings::settingChanged);
+
+    connect(playerWidget, &PlayerWidget::backendChanged, [this](PlayerBackend backend) {
+        m_ui->m_backendLabel->setText(QMetaEnum::fromType<PlayerBackend>().valueToKey(static_cast<int>(backend)));
+    });
 }
 
 PlayerSettings::~PlayerSettings()
@@ -54,23 +63,12 @@ void PlayerSettings::updateSettings()
     settings.beginGroup("player");
 
     // Load current backend
-    const auto currentBackend = settings.value("backend", "Null").toString();
-    m_ui->m_backendLabel->setText(currentBackend);
-    m_ui->m_backendComboBox->setCurrentText(currentBackend);
-
-    // Preffered Quality
-    const auto prefferedQuality = settings.value("prefferedQuality", "Best").toString();
-    m_ui->m_prefferedQualityComboBox->setCurrentText(prefferedQuality);
-    if (prefferedQuality == "Custom")
-        m_ui->m_customPrefferedQualityLineEdit->setText(settings.value("customQuality").toString());
+    const auto currentBackend = settings.value("backend", QVariant::fromValue(PlayerBackend::Null));
+    m_ui->m_backendComboBox->setCurrentIndex(currentBackend.toInt());
 
     // Default volume
     const auto volume = settings.value("defaultVolume", 50).toInt();
     m_ui->m_defaultVolumeSpinBox->setValue(volume);
-
-    // Keep aspect ratio
-    const auto keepAspectRatio = settings.value("keepAspectRatio", true).toBool();
-    m_ui->m_keepAspectRatioCheckBox->setChecked(keepAspectRatio);
 
 #ifdef MPV
     settings.beginGroup("mpv");
@@ -99,18 +97,6 @@ void PlayerSettings::applyChanges()
     QSettings settings("AYAYA");
     settings.beginGroup("player");
 
-    // Preffered Quality
-    const auto prefferedQuality = m_ui->m_prefferedQualityComboBox->currentText();
-    if (prefferedQuality != "Custom") {
-        settings.setValue("prefferedQuality", prefferedQuality);
-        settings.remove("customQuality");
-    } else {
-        const auto customQuality = m_ui->m_customPrefferedQualityLineEdit->text();
-        settings.setValue("customQuality", customQuality);
-    }
-
-    // TODO: PlayerWidget->setPrefferedQuality()
-
     // Volume
     const auto volume = m_ui->m_defaultVolumeSpinBox->value();
     settings.setValue("defaultVolume", volume);
@@ -119,15 +105,11 @@ void PlayerSettings::applyChanges()
     const auto backendName = m_ui->m_backendLabel->text();
     settings.setValue("backend", backendName);
 
-    // Keep aspect ratio
-    const auto keepAspectRation = m_ui->m_keepAspectRatioCheckBox->isChecked();
-    settings.setValue("keepAspectRatio", keepAspectRation);
-
 #ifdef MPV
     settings.beginGroup("mpv");
 
     QVariantMap mpvSettings;
-    for (auto i = 0u; i < m_ui->m_mpvCustomTableWidget->rowCount(); ++i) {
+    for (auto i = 0; i < m_ui->m_mpvCustomTableWidget->rowCount(); ++i) {
         const auto key = m_ui->m_mpvCustomTableWidget->item(i, 0)->text();
         const auto value = m_ui->m_mpvCustomTableWidget->item(i, 1)->text();
         mpvSettings.insert(key, value);
@@ -143,8 +125,7 @@ void PlayerSettings::applyChanges()
     settings.endGroup();
 #endif
 
-    const auto currentBackend = getBackendType(backendName);
-    m_playerWidget->setBackend(currentBackend);
+    m_playerWidget->setBackend(getBackendType(backendName));
 
     settings.endGroup();
 }
@@ -152,6 +133,7 @@ void PlayerSettings::applyChanges()
 void PlayerSettings::onCurrentBackendChanged()
 {
     m_ui->m_backendLabel->setText(m_ui->m_backendComboBox->currentText());
+    settingChanged();
 }
 
 void PlayerSettings::onBackendChanged(const QString& backendName)

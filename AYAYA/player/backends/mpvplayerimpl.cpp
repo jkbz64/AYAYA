@@ -50,6 +50,7 @@ namespace {
 
 MpvPlayerImpl::MpvPlayerImpl(PlayerWidget* player)
     : PlayerImpl(player)
+    , m_mpv_gl(nullptr)
 {
     m_renderWidget = new MpvWidget(this);
 }
@@ -59,7 +60,7 @@ MpvPlayerImpl::~MpvPlayerImpl()
     const auto render = qobject_cast<MpvWidget*>(renderWidget());
     render->makeCurrent();
     mpv_opengl_cb_set_update_callback(m_mpv_gl, NULL, NULL);
-    if (m_mpv_gl)
+    if (m_mpv_gl && render->initedGL())
         mpv_opengl_cb_uninit_gl(m_mpv_gl);
 }
 
@@ -82,8 +83,6 @@ bool MpvPlayerImpl::init()
     if (!m_mpv)
         throw std::runtime_error("could not create mpv context");
 
-    mpv_set_option_string(m_mpv, "keepaspect", "no");
-    mpv_set_option_string(m_mpv, "ytdl", "yes");
     mpv_set_option_string(m_mpv, "vo", "opengl-cb");
     mpv_set_option_string(m_mpv, "demuxer-seekable-cache", "no");
     mpv_set_option_string(m_mpv, "cache-secs", "8");
@@ -195,6 +194,11 @@ MpvWidget::MpvWidget(MpvPlayerImpl* impl)
 
 MpvWidget::~MpvWidget()
 {
+}
+
+bool MpvWidget::initedGL() const
+{
+    return m_initedGL;
 }
 
 void MpvWidget::initializeGL()

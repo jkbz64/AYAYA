@@ -20,6 +20,7 @@ PlayerWidget::PlayerWidget(QWidget* parent)
     , m_impl(nullptr)
     , m_streamExtractor(nullptr)
     , m_playerStyle(PlayerStyle::Normal)
+    , m_currentStreamPath()
     , m_controlsWidget(nullptr)
     , m_beforeMuteVolume(65)
 {
@@ -38,24 +39,24 @@ ControlsWidget* PlayerWidget::controlsWidget()
     return m_controlsWidget;
 }
 
-void PlayerWidget::setBackend(PlayerBackend backend)
+void PlayerWidget::setBackend(Backend backend)
 {
     m_backend = backend;
     if (m_impl)
         delete m_impl;
 
     switch (backend) {
-    case PlayerBackend::Null:
+    case Backend::Null:
         m_impl = new detail::NullPlayerImpl(this);
         break;
-    case PlayerBackend::Mpv:
+    case Backend::Mpv:
 #ifdef MPV
         m_impl = new detail::MpvPlayerImpl(this);
 #else
         throw std::runtime_error("AYAYA was not built with Mpv, compile AYAYA with CONFIG+=\"Mpv\"");
 #endif
         break;
-    case PlayerBackend::Vlc:
+    case Backend::Vlc:
 #ifdef VLC
         m_impl = new detail::VlcPlayerImpl(this);
 #else
@@ -71,13 +72,13 @@ void PlayerWidget::setBackend(PlayerBackend backend)
         render->setMouseTracking(true);
     }
 
-    if (backend != PlayerBackend::Null)
+    if (backend != Backend::Null)
         setupOverlay();
 
     emit backendChanged(backend);
 }
 
-const PlayerBackend& PlayerWidget::backend() const
+const PlayerWidget::Backend& PlayerWidget::backend() const
 {
     return m_backend;
 }
@@ -95,11 +96,18 @@ void PlayerWidget::setExtractor(ExtractorBackend backend)
         m_streamExtractor = new YtdlExtractor(this);
         break;
     }
+
+    emit extractorChanged(backend);
 }
 
-const ExtractorBackend& PlayerWidget::extractorBackend() const
+const PlayerWidget::ExtractorBackend& PlayerWidget::extractorBackend() const
 {
     return m_extractorBackend;
+}
+
+QString PlayerWidget::streamPath() const
+{
+    return m_currentStreamPath;
 }
 
 #include <QFutureWatcher>
@@ -109,7 +117,7 @@ const ExtractorBackend& PlayerWidget::extractorBackend() const
 void PlayerWidget::openStream(const QString& streamName)
 {
     if (m_streamExtractor) {
-        m_currentStreamName = streamName;
+        m_currentStreamPath = streamName;
         // Fetch best quality and play it
         auto bestUrlReply = m_streamExtractor->getStreamUrl("twitch.tv/" + streamName);
         connect(bestUrlReply, &StreamUrlReply::finished, [this, bestUrlReply]() {
@@ -122,10 +130,17 @@ void PlayerWidget::openStream(const QString& streamName)
             if (controlsWidget())
                 controlsWidget()->setFormats(availableFormatsReply->result());
         });
-    }
+    } else
+        QMessageBox::warning(this, "No extractor has been set", "The extractor has not been selected", QMessageBox::Ok);
 }
 
-void PlayerWidget::resetStream()
+void PlayerWidget::stop()
+{
+    if (m_impl)
+        m_impl->load(" ");
+}
+
+void PlayerWidget::reset()
 {
     if (m_impl)
         m_impl->load(m_impl->currentPath());
@@ -161,7 +176,7 @@ const PlayerStyle& PlayerWidget::playerStyle() const
 void PlayerWidget::mouseMoveEvent(QMouseEvent* event)
 {
     QMainWindow::mouseMoveEvent(event);
-    if (backend() != PlayerBackend::Null)
+    if (backend() != Backend::Null)
         controlsWidget()->makeVisible();
 }
 
@@ -180,14 +195,14 @@ void PlayerWidget::setupOverlay()
     m_controlsWidget = new ControlsWidget(this);
     m_beforeMuteVolume = m_controlsWidget->currentVolume();
 
-    connect(m_controlsWidget, &ControlsWidget::pressedRestartButton, this, &PlayerWidget::onPressedResetButton);
-    connect(m_controlsWidget, &ControlsWidget::pressedMuteButton, this, &PlayerWidget::onPressedMuteButton);
-    connect(m_controlsWidget, &ControlsWidget::changedVolume, this, &PlayerWidget::onVolumeChanged);
-    connect(m_controlsWidget, &ControlsWidget::pressedTheaterButton, this, &PlayerWidget::onPressedTheaterButton);
-    connect(m_controlsWidget, &ControlsWidget::pressedFullscreenButton, this, &PlayerWidget::onPressedFullscreenButton);
-    connect(m_controlsWidget, &ControlsWidget::streamFormatChanged, this, &PlayerWidget::onStreamFormatChanged);
+    connect(controlsWidget(), &ControlsWidget::pressedRestartButton, this, &PlayerWidget::reset);
+    connect(controlsWidget(), &ControlsWidget::pressedMuteButton, this, &PlayerWidget::onPressedMuteButton);
+    connect(controlsWidget(), &ControlsWidget::changedVolume, this, &PlayerWidget::setVolume);
+    connect(controlsWidget(), &ControlsWidget::pressedTheaterButton, this, &PlayerWidget::onPressedTheaterButton);
+    connect(controlsWidget(), &ControlsWidget::pressedFullscreenButton, this, &PlayerWidget::onPressedFullscreenButton);
+    connect(controlsWidget(), &ControlsWidget::streamFormatChanged, this, &PlayerWidget::onStreamFormatChanged);
 
-    m_controlsWidget->startFadeTimer();
+    controlsWidget()->startFadeTimer();
 
     overlayLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 0, 12, 1);
     overlayLayout->addWidget(m_controlsWidget, 12, 0, 2, 1);
@@ -196,11 +211,6 @@ void PlayerWidget::setupOverlay()
 }
 
 // Slots
-void PlayerWidget::onPressedResetButton()
-{
-    resetStream();
-}
-
 void PlayerWidget::onPressedMuteButton()
 {
     if (volume() != 0) {
@@ -210,11 +220,6 @@ void PlayerWidget::onPressedMuteButton()
         setVolume(m_beforeMuteVolume);
         m_beforeMuteVolume = 0;
     }
-}
-
-void PlayerWidget::onVolumeChanged(int value)
-{
-    setVolume(value);
 }
 
 void PlayerWidget::onPressedTheaterButton()
@@ -236,7 +241,7 @@ void PlayerWidget::onPressedFullscreenButton()
 void PlayerWidget::onStreamFormatChanged(const StreamFormat& format)
 {
     if (!format.isEmpty()) { // In case no signal-blocking at the startup
-        auto formatUrlReply = m_streamExtractor->getStreamUrl("twitch.tv/" + m_currentStreamName, format);
+        auto formatUrlReply = m_streamExtractor->getStreamUrl("twitch.tv/" + m_currentStreamPath, format);
         connect(formatUrlReply, &StreamUrlReply::finished, [this, formatUrlReply]() {
             if (m_impl)
                 m_impl->load(formatUrlReply->result().toString());
@@ -244,7 +249,6 @@ void PlayerWidget::onStreamFormatChanged(const StreamFormat& format)
     }
 }
 
-#include <QDebug>
 #include <QEvent>
 
 bool PlayerWidget::eventFilter(QObject* watched, QEvent* event)

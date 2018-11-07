@@ -44,21 +44,28 @@ void BrowserWidget::init()
 void BrowserWidget::showTopGames()
 {
     setCurrentBrowser(gameBrowser());
+    gameBrowser()->clear();
+
+    static auto games = Twitch::Games();
+
     if (!m_lastTopGamesFetch.isValid() || m_lastTopGamesFetch.secsTo(QDateTime::currentDateTime()) > 60) {
         gameBrowser()->clear();
         emit initProgress("Fetching Top Twitch Games");
         auto topGamesReply = m_api->getTopGames(100);
         connect(topGamesReply, &Twitch::Reply::finished, [this, topGamesReply]() {
             if (topGamesReply->currentState() == Twitch::ReplyState::Success) {
-                const auto games = topGamesReply->data().value<Twitch::Games>();
+                games = topGamesReply->data().value<Twitch::Games>();
                 for (const Twitch::Game& game : games)
-                    connect(gameBrowser()->addGame(game), &BrowserItemWidget::pressed, this, &BrowserWidget::onGameSelected);
+                    gameBrowser()->addGame(game);
                 setRequirementFulfilled("firstTopGamesFetch");
                 tryToEndInit();
             }
             topGamesReply->deleteLater();
         });
         m_lastTopGamesFetch = QDateTime::currentDateTime();
+    } else {
+        for (const Twitch::Game& game : games)
+            gameBrowser()->addGame(game);
     }
 }
 
@@ -95,8 +102,12 @@ void BrowserWidget::onGameAdded(BrowserItemWidget* widget)
     auto boxArtReply = m_api->getBoxArtByUrl(gameWidget->game().m_boxArtUrl, gameWidget->width(), gameWidget->height());
     connect(boxArtReply, &Twitch::Reply::finished, [boxArtReply, gameWidget]() {
         if (boxArtReply->currentState() == Twitch::ReplyState::Success) {
-            if (gameWidget)
-                gameWidget->setBoxArt(QPixmap::fromImage(boxArtReply->data().value<QImage>()));
+            if (gameWidget) {
+                if (boxArtReply->data().value<QImage>().isNull())
+                    gameWidget->setBoxArt(QPixmap(":/images/404.jpg"));
+                else
+                    gameWidget->setBoxArt(QPixmap::fromImage(boxArtReply->data().value<QImage>()));
+            }
         }
         boxArtReply->deleteLater();
     });
@@ -112,10 +123,9 @@ void BrowserWidget::onStreamAdded(BrowserItemWidget*)
     });*/
 }
 
-void BrowserWidget::onGameSelected()
+void BrowserWidget::onGameSelected(const Twitch::Game game)
 {
-    auto widget = qobject_cast<GameItemWidget*>(sender());
-    searchStreamsByGame(widget->game());
+    searchStreamsByGame(game);
 }
 
 void BrowserWidget::onStreamSelected()

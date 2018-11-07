@@ -12,6 +12,9 @@ public:
 
     virtual QString tabName() const = 0;
 
+signals:
+    void settingChanged();
+
 protected:
     friend class SettingsWidget;
     virtual void updateSettings() = 0;

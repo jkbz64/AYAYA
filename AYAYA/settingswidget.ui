@@ -6,28 +6,38 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>696</width>
-    <height>472</height>
+    <width>350</width>
+    <height>456</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Ignored">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>350</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>350</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0">
-    <widget class="QPushButton" name="m_exitButton">
-     <property name="text">
-      <string>&lt;</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QPushButton" name="m_restoreDefaultsButton">
-     <property name="text">
-      <string>Restore default settings</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="3">
     <spacer name="m_spacer">
      <property name="orientation">
@@ -41,16 +51,6 @@
      </property>
     </spacer>
    </item>
-   <item row="1" column="4">
-    <widget class="QPushButton" name="m_saveButton">
-     <property name="text">
-      <string>Save</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="5">
-    <widget class="QTabWidget" name="m_settingsTabs"/>
-   </item>
    <item row="1" column="1">
     <spacer name="horizontalSpacer">
      <property name="orientation">
@@ -63,6 +63,31 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="1" column="2">
+    <widget class="QPushButton" name="m_restoreDefaultsButton">
+     <property name="text">
+      <string>Restore default settings</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="4">
+    <widget class="QScrollArea" name="m_settingsArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="m_settingsWidget">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>330</width>
+        <height>402</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout"/>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>

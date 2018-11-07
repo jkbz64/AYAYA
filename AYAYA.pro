@@ -1,5 +1,5 @@
 QT       += core gui widgets network
-CONFIG   += c++14 communi
+CONFIG   += c++14 communi mpv
 
 COMMUNI  += core model util
 
@@ -48,7 +48,8 @@ SOURCES += \
     AYAYA/player/streamextractor.cpp \
     AYAYA/player/extractors/ytdlextractor.cpp \
     AYAYA/settings/playersettings.cpp \
-    AYAYA/settings/quickstartdialog.cpp
+    AYAYA/settings/quickstartdialog.cpp \
+    AYAYA/settings/extractorsettings.cpp
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
@@ -77,7 +78,8 @@ HEADERS += \
     AYAYA/player/streamextractor.hpp \
     AYAYA/player/extractors/ytdlextractor.hpp \
     AYAYA/settings/playersettings.hpp \
-    AYAYA/settings/quickstartdialog.hpp
+    AYAYA/settings/quickstartdialog.hpp \
+    AYAYA/settings/extractorsettings.hpp
 
 FORMS += \
     AYAYA/mainwindow.ui \
@@ -92,7 +94,8 @@ FORMS += \
     AYAYA/settingswidget.ui \
     AYAYA/settings/globalsettings.ui \
     AYAYA/settings/playersettings.ui \
-    AYAYA/settings/quickstartdialog.ui
+    AYAYA/settings/quickstartdialog.ui \
+    AYAYA/settings/extractorsettings.ui
 
 mpv {
 DEFINES += MPV

@@ -17,8 +17,6 @@ public:
     StreamExtractor(QObject*);
     virtual ~StreamExtractor();
 
-    virtual bool isAvailable() = 0;
-
     virtual StreamFormatsReply* getStreamFormats(const QUrl&) = 0;
     virtual StreamUrlReply* getStreamUrl(const QString&, const StreamFormat& = StreamFormat()) = 0;
 };

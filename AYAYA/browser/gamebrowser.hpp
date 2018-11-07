@@ -3,6 +3,7 @@
 
 #include "browser.hpp"
 
+class QAnimationGroup;
 class GameWidget;
 class GameItemWidget;
 
@@ -35,6 +36,10 @@ private:
     int m_minItemSize;
     int m_currentItemSize;
 
+    QTimer* m_resizeTimer;
+    QAnimationGroup* m_resizeAnimations;
+
+private slots:
     void fixLayout();
 };
 

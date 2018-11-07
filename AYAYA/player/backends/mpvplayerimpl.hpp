@@ -42,6 +42,8 @@ public:
     MpvWidget(MpvPlayerImpl*);
     virtual ~MpvWidget();
 
+    bool initedGL() const;
+
 protected:
     virtual void initializeGL() override;
     virtual void paintGL() override;

@@ -46,7 +46,7 @@ private:
     // Init slots
     void onPlayerStyleChanged(PlayerStyle, PlayerStyle);
     void onStartedBackendInit();
-    void onBackendChanged(PlayerBackend);
+    void onBackendChanged(PlayerWidget::Backend);
     void onStartedInitingCache();
     void onCacheInitProgress(int);
     void onEndedInitingCache();

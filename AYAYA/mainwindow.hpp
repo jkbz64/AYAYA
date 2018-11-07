@@ -19,15 +19,15 @@ namespace Ui {
 class MainWindow;
 }
 
-enum class Theme {
-    Default,
-    Dark
-};
-
 class MainWindow : public QMainWindow {
     Q_OBJECT
-
 public:
+    enum class Theme {
+        Default = 0,
+        Dark
+    };
+    Q_ENUM(Theme)
+
     explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
 

@@ -12,19 +12,6 @@ class ControlsWidget;
 
 using StreamFormat = QString;
 
-enum class PlayerBackend {
-    Null,
-    Mpv,
-    Vlc
-    // TODO ??
-};
-
-enum class ExtractorBackend {
-    Null,
-    Ytdl,
-    //Streamlink
-};
-
 enum class PlayerStyle {
     Normal,
     Theater,
@@ -34,17 +21,34 @@ enum class PlayerStyle {
 class PlayerWidget : public QMainWindow {
     Q_OBJECT
 public:
+    enum class Backend {
+        Null,
+        Mpv,
+        Vlc
+        // TODO ??
+    };
+    Q_ENUM(Backend)
+
+    enum class ExtractorBackend {
+        Null,
+        Ytdl,
+        Streamlink
+    };
+    Q_ENUM(ExtractorBackend)
+
     explicit PlayerWidget(QWidget* parent = nullptr);
     ~PlayerWidget();
 
-    void setBackend(PlayerBackend);
-    const PlayerBackend& backend() const;
+    void setBackend(Backend);
+    const Backend& backend() const;
 
     void setExtractor(ExtractorBackend);
     const ExtractorBackend& extractorBackend() const;
 
+    QString streamPath() const;
     void openStream(const QString&);
-    void resetStream();
+    void stop();
+    void reset();
     void mute(bool);
     void setVolume(int);
     int volume() const;
@@ -59,7 +63,8 @@ public:
 signals:
     // Backend
     void startedBackendInit();
-    void backendChanged(PlayerBackend);
+    void backendChanged(Backend);
+    void extractorChanged(ExtractorBackend);
 
     // Stream
     void startedLoading();
@@ -79,12 +84,12 @@ protected:
 
 private:
     detail::PlayerImpl* m_impl;
-    PlayerBackend m_backend;
+    Backend m_backend;
     StreamExtractor* m_streamExtractor;
     ExtractorBackend m_extractorBackend;
     PlayerStyle m_playerStyle;
 
-    QString m_currentStreamName;
+    QString m_currentStreamPath;
 
     // ControlsWidget
     void setupOverlay();
@@ -93,9 +98,7 @@ private:
 
 private slots:
     // Controls slots
-    void onPressedResetButton();
     void onPressedMuteButton();
-    void onVolumeChanged(int);
     void onPressedTheaterButton();
     void onPressedFullscreenButton();
     void onStreamFormatChanged(const StreamFormat&);

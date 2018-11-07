@@ -7,8 +7,6 @@
 #include <QMutex>
 #include <QPainter>
 
-#include <QDebug>
-
 namespace {
 QMutex m_vlcMutex;
 

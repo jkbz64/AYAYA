@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>659</width>
-    <height>84</height>
+    <width>808</width>
+    <height>150</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -157,6 +157,9 @@
    </item>
    <item row="1" column="4">
     <widget class="QLabel" name="m_formatsLabel">
+     <property name="styleSheet">
+      <string notr="true">background-color: transparent;</string>
+     </property>
      <property name="text">
       <string>Formats</string>
      </property>
