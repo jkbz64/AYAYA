@@ -157,6 +157,9 @@ void ExtractorSettings::applyChanges()
                 const auto ytdlData = ytdlReply->readAll();
                 QFile ytdlFile;
                 ytdlFile.setFileName(qApp->applicationDirPath() + "/extractors/" + "youtube-dl");
+#if defined(Q_OS_WIN)
+                ytdlFile.setFileName(qApp->applicationDirPath() + "/extractors/" + "youtube-dl.exe");
+#endif
                 if (ytdlFile.open(QIODevice::WriteOnly)) {
                     ytdlFile.write(ytdlData);
                     ytdlFile.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner);

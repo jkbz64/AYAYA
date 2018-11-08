@@ -18,6 +18,10 @@ PlayerBackend getBackendType(const QString& backendName)
         return PlayerBackend::Vlc;
     return PlayerBackend::Null;
 }
+QString getBackendName(const PlayerBackend backend)
+{
+    return QString(QMetaEnum::fromType<PlayerBackend>().valueToKey(static_cast<int>(backend)));
+}
 }
 
 PlayerSettings::PlayerSettings(PlayerWidget* playerWidget, QWidget* parent)
@@ -64,6 +68,7 @@ void PlayerSettings::updateSettings()
 
     // Load current backend
     const auto currentBackend = settings.value("backend", QVariant::fromValue(PlayerBackend::Null));
+    m_ui->m_backendLabel->setText(getBackendName(currentBackend.value<PlayerBackend>()));
     m_ui->m_backendComboBox->setCurrentIndex(currentBackend.toInt());
 
     // Default volume
@@ -103,7 +108,7 @@ void PlayerSettings::applyChanges()
     m_playerWidget->setVolume(volume);
 
     const auto backendName = m_ui->m_backendLabel->text();
-    settings.setValue("backend", backendName);
+    settings.setValue("backend", QVariant::fromValue(getBackendType(backendName)).toInt());
 
 #ifdef MPV
     settings.beginGroup("mpv");
