@@ -27,6 +27,8 @@ PlayerWidget::PlayerWidget(QWidget* parent)
     setWindowFlags(Qt::Widget | Qt::CustomizeWindowHint);
     setBaseSize(450, 1);
     setMouseTracking(true);
+
+    connect(this, &PlayerWidget::backendChanged, this, &PlayerWidget::onPlayerBackendChanged);
 }
 
 PlayerWidget::~PlayerWidget()
@@ -208,6 +210,12 @@ void PlayerWidget::setupOverlay()
     overlayLayout->addWidget(m_controlsWidget, 12, 0, 2, 1);
     centralWidget()->setLayout(overlayLayout);
     centralWidget()->setMinimumWidth(controlsWidget()->minimumSizeHint().width());
+}
+
+void PlayerWidget::onPlayerBackendChanged(PlayerWidget::Backend)
+{
+    if (!m_currentStreamPath.isEmpty())
+        openStream(m_currentStreamPath);
 }
 
 // Slots

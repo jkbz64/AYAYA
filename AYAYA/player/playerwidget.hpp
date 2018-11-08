@@ -97,6 +97,8 @@ private:
     int m_beforeMuteVolume;
 
 private slots:
+    void onPlayerBackendChanged(Backend);
+
     // Controls slots
     void onPressedMuteButton();
     void onPressedTheaterButton();
