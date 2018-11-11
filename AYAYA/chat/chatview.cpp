@@ -27,6 +27,11 @@ void ChatView::addMessage(const QString& message)
 void ChatView::onJoinedChannel(const QString& channel)
 {
     reset();
+
+    auto frameFormat = document()->rootFrame()->frameFormat();
+    frameFormat.setBottomMargin(20);
+    document()->rootFrame()->setFrameFormat(frameFormat);
+
     emotesCache()->loadChannelEmotes(channel);
     append("You've joined #" + channel + " channel.");
 }
