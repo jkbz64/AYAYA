@@ -266,7 +266,6 @@ bool PlayerWidget::eventFilter(QObject* watched, QEvent* event)
             if (controlsWidget())
                 controlsWidget()->makeVisible();
         }
-    } else {
-        return QMainWindow::eventFilter(watched, event);
     }
+    return QMainWindow::eventFilter(watched, event);
 }

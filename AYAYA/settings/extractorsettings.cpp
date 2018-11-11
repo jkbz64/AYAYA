@@ -83,6 +83,12 @@ QDialog* getExtractorDialog(const ExtractorBackend extractor, QNetworkReply* rep
 
     return dialog;
 }
+void ensureExtractorDirectory()
+{
+    QDir extractorsDir(qApp->applicationDirPath() + "/extractors/");
+    if (!extractorsDir.exists())
+        extractorsDir.mkdir(".");
+}
 }
 
 ExtractorSettings::ExtractorSettings(PlayerWidget* player, QWidget* parent)
@@ -155,6 +161,8 @@ void ExtractorSettings::applyChanges()
             auto ytdlReply = getYtdl();
             connect(ytdlReply, &QNetworkReply::finished, [ytdlReply]() {
                 const auto ytdlData = ytdlReply->readAll();
+                ensureExtractorDirectory(); /* // Windows for some reason fails to create file in non-existent path
+                                               // so we have to ensure the directory exists beforehand */
                 QFile ytdlFile;
                 ytdlFile.setFileName(qApp->applicationDirPath() + "/extractors/" + "youtube-dl");
 #if defined(Q_OS_WIN)
