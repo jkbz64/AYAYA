@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
-    <height>456</height>
+    <width>375</width>
+    <height>461</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>300</width>
+    <width>350</width>
     <height>0</height>
    </size>
   </property>
@@ -73,6 +73,12 @@
    </item>
    <item row="0" column="0" colspan="4">
     <widget class="QScrollArea" name="m_settingsArea">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -81,8 +87,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>330</width>
-        <height>402</height>
+        <width>355</width>
+        <height>407</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout"/>
