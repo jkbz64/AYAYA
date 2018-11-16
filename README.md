@@ -42,3 +42,4 @@ make
 ## Screenshots
 ![Browse](/extra/browse.png?raw=true "Browse")
 ![Stream](/extra/stream.png?raw=true "Stream")
+![Fullscreen](/extra/fullscreen.png?raw=true, "Fullscreen")
