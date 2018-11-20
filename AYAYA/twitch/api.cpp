@@ -1,6 +1,7 @@
 #include "api.hpp"
 #include <QDebug>
 #include <QTimer>
+#include <TwitchQt/twitchgamereply.hpp>
 
 Twitch::GamesReply* TwitchApi::getTopGames(int first)
 {
