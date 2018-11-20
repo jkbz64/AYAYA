@@ -4,8 +4,9 @@
 #include "initwidget.hpp"
 #include <QDateTime>
 
+class TwitchApi;
+
 namespace Twitch {
-class Api;
 class User;
 class Stream;
 }
@@ -27,7 +28,7 @@ class BrowserWidget : public InitWidget {
     Q_OBJECT
 public:
     explicit BrowserWidget(QWidget* parent = nullptr);
-    ~BrowserWidget();
+    virtual ~BrowserWidget();
 
     virtual void init() override;
 
@@ -50,9 +51,7 @@ protected:
 
 private:
     Ui::BrowserWidget* m_ui;
-    Twitch::Api* m_api;
-
-    QDateTime m_lastTopGamesFetch;
+    TwitchApi* m_api;
 
 private slots:
     void onGameAdded(BrowserItemWidget*);

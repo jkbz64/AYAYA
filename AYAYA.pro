@@ -49,7 +49,8 @@ SOURCES += \
     AYAYA/player/extractors/ytdlextractor.cpp \
     AYAYA/settings/playersettings.cpp \
     AYAYA/settings/quickstartdialog.cpp \
-    AYAYA/settings/extractorsettings.cpp
+    AYAYA/settings/extractorsettings.cpp \
+    AYAYA/twitch/api.cpp
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
@@ -79,7 +80,8 @@ HEADERS += \
     AYAYA/player/extractors/ytdlextractor.hpp \
     AYAYA/settings/playersettings.hpp \
     AYAYA/settings/quickstartdialog.hpp \
-    AYAYA/settings/extractorsettings.hpp
+    AYAYA/settings/extractorsettings.hpp \
+    AYAYA/twitch/api.hpp
 
 FORMS += \
     AYAYA/mainwindow.ui \

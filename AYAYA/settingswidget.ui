@@ -38,6 +38,21 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="horizontalSpacing">
+    <number>0</number>
+   </property>
    <item row="1" column="3">
     <spacer name="m_spacer">
      <property name="orientation">
@@ -87,8 +102,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>355</width>
-        <height>407</height>
+        <width>373</width>
+        <height>425</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout"/>

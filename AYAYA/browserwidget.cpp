@@ -1,19 +1,21 @@
 #include "browserwidget.hpp"
 #include "browser/gameitemwidget.hpp"
 #include "browser/streamitemwidget.hpp"
+#include "twitch/api.hpp"
 #include "ui_browserwidget.h"
 #include <QPointer>
-#include <TwitchQt/Twitch>
 
 BrowserWidget::BrowserWidget(QWidget* parent)
     : InitWidget(parent)
     , m_ui(new Ui::BrowserWidget)
-    , m_api(new Twitch::Api("hqq61vsp32mvxsfhy6a9o7eemxdv5e", this))
+    , m_api(new TwitchApi("hqq61vsp32mvxsfhy6a9o7eemxdv5e", this))
 {
     m_ui->setupUi(this);
     connect(gameBrowser(), &GameBrowser::gameSelected, this, &BrowserWidget::searchStreamsByGame);
     connect(gameBrowser(), &GameBrowser::itemAdded, this, &BrowserWidget::onGameAdded);
     connect(streamBrowser(), &StreamBrowser::itemAdded, this, &BrowserWidget::onStreamAdded);
+
+    m_api->setTopGamesTimeout(5.0); // Update top games every 30 seconds
 }
 
 BrowserWidget::~BrowserWidget()
@@ -46,27 +48,19 @@ void BrowserWidget::showTopGames()
     setCurrentBrowser(gameBrowser());
     gameBrowser()->clear();
 
-    static auto games = Twitch::Games();
-
-    if (!m_lastTopGamesFetch.isValid() || m_lastTopGamesFetch.secsTo(QDateTime::currentDateTime()) > 60) {
-        gameBrowser()->clear();
-        emit initProgress("Fetching Top Twitch Games");
-        auto topGamesReply = m_api->getTopGames(100);
-        connect(topGamesReply, &Twitch::Reply::finished, [this, topGamesReply]() {
-            if (topGamesReply->currentState() == Twitch::ReplyState::Success) {
-                games = topGamesReply->data().value<Twitch::Games>();
-                for (const Twitch::Game& game : games)
-                    gameBrowser()->addGame(game);
-                setRequirementFulfilled("firstTopGamesFetch");
-                tryToEndInit();
-            }
-            topGamesReply->deleteLater();
-        });
-        m_lastTopGamesFetch = QDateTime::currentDateTime();
-    } else {
-        for (const Twitch::Game& game : games)
-            gameBrowser()->addGame(game);
-    }
+    gameBrowser()->clear();
+    emit initProgress("Fetching Top Twitch Games");
+    auto topGamesReply = m_api->getTopGames(100);
+    connect(topGamesReply, &Twitch::Reply::finished, [this, topGamesReply]() {
+        if (topGamesReply->currentState() == Twitch::ReplyState::Success) {
+            auto games = topGamesReply->games();
+            for (const Twitch::Game& game : games)
+                gameBrowser()->addGame(game);
+            setRequirementFulfilled("firstTopGamesFetch");
+            tryToEndInit();
+        }
+        topGamesReply->deleteLater();
+    });
 }
 
 void BrowserWidget::searchStreamsByGame(const Twitch::Game& game)

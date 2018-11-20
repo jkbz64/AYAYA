@@ -28,7 +28,7 @@ public:
     };
     Q_ENUM(Theme)
 
-    explicit MainWindow(QWidget* parent = 0);
+    explicit MainWindow(QWidget* = nullptr);
     ~MainWindow();
 
     void setTheme(Theme);
