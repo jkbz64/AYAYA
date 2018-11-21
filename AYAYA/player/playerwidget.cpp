@@ -3,6 +3,8 @@
 #include <QGridLayout>
 #include <QSpacerItem>
 
+#include <TwitchQt/twitchstream.hpp>
+
 #include "backends/nullplayerimpl.hpp"
 
 #ifdef MPV
@@ -22,7 +24,6 @@ PlayerWidget::PlayerWidget(QWidget* parent)
     , m_impl(nullptr)
     , m_streamExtractor(nullptr)
     , m_playerStyle(PlayerStyle::Normal)
-    , m_currentStreamPath()
     , m_controlsWidget(nullptr)
     , m_beforeMuteVolume(65)
 {
@@ -113,24 +114,24 @@ const PlayerWidget::ExtractorBackend& PlayerWidget::extractorBackend() const
 
 QString PlayerWidget::streamPath() const
 {
-    return m_currentStreamPath;
+    return QString("https://twitch.tv/") + m_currentStream.m_userName;
 }
 
 #include <QFutureWatcher>
 #include <QUrl>
 
-void PlayerWidget::openStream(const QString& streamName)
+void PlayerWidget::openStream(const Twitch::Stream& stream)
 {
     if (m_streamExtractor) {
-        m_currentStreamPath = streamName;
+        m_currentStream = stream;
         // Fetch best quality and play it
-        auto bestUrlReply = m_streamExtractor->getStreamUrl("twitch.tv/" + streamName);
+        auto bestUrlReply = m_streamExtractor->getStreamUrl(streamPath());
         connect(bestUrlReply, &StreamUrlReply::finished, [this, bestUrlReply]() {
             if (m_impl)
                 m_impl->load(bestUrlReply->result().toString());
         });
         // Fetch all qualities and fill the controls combo with them
-        auto availableFormatsReply = m_streamExtractor->getStreamFormats("twitch.tv/" + streamName);
+        auto availableFormatsReply = m_streamExtractor->getStreamFormats(streamPath());
         connect(availableFormatsReply, &StreamFormatsReply::finished, [this, availableFormatsReply]() {
             if (controlsWidget())
                 controlsWidget()->setFormats(availableFormatsReply->result());
@@ -217,8 +218,8 @@ void PlayerWidget::setupOverlay()
 
 void PlayerWidget::onPlayerBackendChanged(PlayerWidget::Backend)
 {
-    if (!m_currentStreamPath.isEmpty())
-        openStream(m_currentStreamPath);
+    if (!m_currentStream.m_id.isEmpty())
+        openStream(m_currentStream);
 }
 
 // Slots
@@ -252,7 +253,7 @@ void PlayerWidget::onPressedFullscreenButton()
 void PlayerWidget::onStreamFormatChanged(const StreamFormat& format)
 {
     if (!format.isEmpty()) { // In case no signal-blocking at the startup
-        auto formatUrlReply = m_streamExtractor->getStreamUrl("twitch.tv/" + m_currentStreamPath, format);
+        auto formatUrlReply = m_streamExtractor->getStreamUrl(streamPath(), format);
         connect(formatUrlReply, &StreamUrlReply::finished, [this, formatUrlReply]() {
             if (m_impl)
                 m_impl->load(formatUrlReply->result().toString());

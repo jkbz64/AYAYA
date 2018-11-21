@@ -14,12 +14,15 @@ QString backendName(const PlayerBackend backend)
     case PlayerBackend::Mpv:
         return QString("MPV");
         break;
+    case PlayerBackend::Vlc:
+        return QString("Vlc");
+        break;
     case PlayerBackend::Null:
         return QString("Null");
         break;
     }
 
-    return QString();
+    return QString("Null");
 }
 }
 
@@ -36,10 +39,6 @@ StreamWidget::StreamWidget(QWidget* parent)
     // Init-Cache
     connect(chat()->chatView()->emotesCache(), &EmotesCache::startedInitingCache, this, &StreamWidget::onStartedInitingCache);
     connect(chat()->chatView()->emotesCache(), &EmotesCache::endedInitingCache, this, &StreamWidget::onEndedInitingCache);
-    // Glboal emotes
-    connect(chat()->chatView()->emotesCache(), &EmotesCache::startedFetchingGlobalEmotes, this, &StreamWidget::onStartedFetchingGlobalEmotes);
-    connect(chat()->chatView()->emotesCache(), &EmotesCache::globalEmotesFetchProgress, this, &StreamWidget::onGlobalEmotesFetchProgress);
-    connect(chat()->chatView()->emotesCache(), &EmotesCache::fetchedGlobalEmotes, this, &StreamWidget::onFetchedGlobalEmotes);
     // Processing
     connect(player(), &PlayerWidget::playerStyleChanged, this, &StreamWidget::onPlayerStyleChanged);
 
@@ -78,10 +77,10 @@ void StreamWidget::init()
     chat()->chatView()->emotesCache()->initCache();
 }
 
-void StreamWidget::initialize(const Twitch::User& user, const Twitch::Stream&)
+void StreamWidget::openStream(const Twitch::Stream& stream)
 {
-    player()->openStream(user.m_login);
-    chat()->openChat(user);
+    player()->openStream(stream);
+    chat()->joinChat(stream);
 }
 
 // Slots
@@ -142,17 +141,4 @@ void StreamWidget::onEndedInitingCache()
     emit initProgress("Initialized emotes cache!");
     setRequirementFulfilled("emoteCache");
     tryToEndInit();
-}
-
-void StreamWidget::onStartedFetchingGlobalEmotes()
-{
-    emit initProgress("Fetching global emotes");
-}
-
-void StreamWidget::onGlobalEmotesFetchProgress(EmotesBackend /*emotesBackend*/, const QString& /*current*/, const QString& /*total*/)
-{
-}
-
-void StreamWidget::onFetchedGlobalEmotes()
-{
 }

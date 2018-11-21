@@ -41,7 +41,7 @@ public:
     StreamBrowser* streamBrowser() const;
 
 signals:
-    void streamEntered(const Twitch::User&, const Twitch::Stream&);
+    void streamEntered(const Twitch::Stream&);
 
 public slots:
     void searchStreamsByGame(const Twitch::Game&);

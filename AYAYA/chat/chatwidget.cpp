@@ -6,7 +6,7 @@
 #include <QMouseEvent>
 #include <QScrollBar>
 #include <QSizeGrip>
-#include <TwitchQt/twitchuser.hpp>
+#include <TwitchQt/twitchstream.hpp>
 
 ChatWidget::ChatWidget(QWidget* parent)
     : QWidget(parent)
@@ -36,9 +36,9 @@ ChatWidget::~ChatWidget()
     delete m_ui;
 }
 
-void ChatWidget::openChat(const Twitch::User& user)
+void ChatWidget::joinChat(const Twitch::Stream& stream)
 {
-    client()->joinChannel(user.m_login);
+    client()->joinChannel(stream.m_userName);
 }
 
 bool ChatWidget::isFollowingChat()

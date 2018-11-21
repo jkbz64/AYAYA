@@ -64,11 +64,11 @@ void ChatClient::joinChannel(const QString& channel)
         if (shouldDelay) {
             QObject* delayer = new QObject(this);
             connect(this, &ChatClient::connected, [this, channel, delayer]() {
-                m_connection->sendCommand(IrcCommand::createJoin(QString("#") + channel));
+                m_connection->sendCommand(IrcCommand::createJoin(QString("#") + channel.toLower()));
                 delayer->deleteLater();
             });
         } else
-            m_connection->sendCommand(IrcCommand::createJoin(QString("#") + channel));
+            m_connection->sendCommand(IrcCommand::createJoin(QString("#") + channel.toLower()));
     }
 }
 

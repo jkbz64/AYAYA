@@ -126,13 +126,5 @@ void BrowserWidget::onStreamSelected()
 {
     auto widget = qobject_cast<StreamItemWidget*>(sender());
     const Twitch::Stream stream = widget->stream();
-    auto userReply = m_api->getUserById(stream.m_userId);
-
-    connect(userReply, &Twitch::Reply::finished, [this, stream, userReply]() {
-        if (userReply->currentState() == Twitch::ReplyState::Success) {
-            auto user = userReply->data().value<Twitch::User>();
-            emit streamEntered(user, stream);
-        }
-        userReply->deleteLater();
-    });
+    emit streamEntered(widget->stream());
 }

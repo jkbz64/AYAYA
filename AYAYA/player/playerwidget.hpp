@@ -2,9 +2,14 @@
 #define PLAYERWIDGET_HPP
 
 #include <QMainWindow>
+#include <TwitchQt/twitchstream.hpp>
 
 namespace detail {
 class PlayerImpl;
+}
+
+namespace Twitch {
+class Stream;
 }
 
 class StreamExtractor;
@@ -46,7 +51,7 @@ public:
     const ExtractorBackend& extractorBackend() const;
 
     QString streamPath() const;
-    void openStream(const QString&);
+    void openStream(const Twitch::Stream&);
     void stop();
     void reset();
     void mute(bool);
@@ -89,7 +94,7 @@ private:
     ExtractorBackend m_extractorBackend;
     PlayerStyle m_playerStyle;
 
-    QString m_currentStreamPath;
+    Twitch::Stream m_currentStream;
 
     // ControlsWidget
     void setupOverlay();

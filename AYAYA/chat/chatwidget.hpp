@@ -5,7 +5,7 @@
 
 namespace Twitch {
 class Emote;
-class User;
+class Stream;
 }
 
 class EmotesCache;
@@ -26,7 +26,7 @@ public:
     explicit ChatWidget(QWidget*);
     ~ChatWidget();
 
-    void openChat(const Twitch::User&);
+    void joinChat(const Twitch::Stream&);
 
     bool isFollowingChat();
     void followChat();

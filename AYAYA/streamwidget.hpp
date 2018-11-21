@@ -22,11 +22,11 @@ class StreamWidget : public InitWidget {
     Q_OBJECT
 
 public:
-    explicit StreamWidget(QWidget* parent = 0);
+    explicit StreamWidget(QWidget* = nullptr);
     ~StreamWidget();
     virtual void init() override;
 
-    void initialize(const Twitch::User&, const Twitch::Stream&);
+    void openStream(const Twitch::Stream&);
 
     PlayerWidget* player() const;
     ChatWidget* chat() const;
@@ -50,10 +50,6 @@ private:
     void onStartedInitingCache();
     void onCacheInitProgress(int);
     void onEndedInitingCache();
-
-    void onStartedFetchingGlobalEmotes();
-    void onGlobalEmotesFetchProgress(EmotesBackend, const QString&, const QString&);
-    void onFetchedGlobalEmotes();
 
     void onStartedProcessing();
     void onProcessProgress(int, int);

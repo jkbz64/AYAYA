@@ -206,10 +206,10 @@ void MainWindow::onSettingsPressed()
     }
 }
 
-void MainWindow::onStreamEntered(const Twitch::User& user, const Twitch::Stream& stream)
+void MainWindow::onStreamEntered(const Twitch::Stream& stream)
 {
     setCurrentMainWidget(streamWidget());
-    streamWidget()->initialize(user, stream);
+    streamWidget()->openStream(stream);
 }
 
 void MainWindow::onEnteredFullscreenMode()

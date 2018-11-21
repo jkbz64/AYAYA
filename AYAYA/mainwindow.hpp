@@ -68,7 +68,7 @@ private slots:
     void onBrowsePressed();
     void onSettingsPressed();
 
-    void onStreamEntered(const Twitch::User&, const Twitch::Stream&);
+    void onStreamEntered(const Twitch::Stream&);
 
     void onEnteredFullscreenMode();
     void onLeftFullscreenMode();
