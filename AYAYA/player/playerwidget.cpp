@@ -15,6 +15,8 @@
 
 #include "extractors/ytdlextractor.hpp"
 
+#include <QMessageBox>
+
 PlayerWidget::PlayerWidget(QWidget* parent)
     : QMainWindow(parent)
     , m_impl(nullptr)
@@ -55,14 +57,16 @@ void PlayerWidget::setBackend(Backend backend)
 #ifdef MPV
         m_impl = new detail::MpvPlayerImpl(this);
 #else
-        throw std::runtime_error("AYAYA was not built with Mpv, compile AYAYA with CONFIG+=\"Mpv\"");
+        QMessageBox::warning(this, "Unsupported Backend", "Selected backend was not compiled into AYAYA, fallbacking to Null Backend", QMessageBox::Ok);
+        m_impl = new detail::NullPlayerImpl(this);
 #endif
         break;
     case Backend::Vlc:
 #ifdef VLC
         m_impl = new detail::VlcPlayerImpl(this);
 #else
-        throw std::runtime_error("AYAYA was not built with Vlc, compile AYAYA with CONFIG+=\"Vlc\"");
+        QMessageBox::warning(this, "Unsupported Backend", "Selected backend was not compiled into AYAYA, fallbacking to Null Backend", QMessageBox::Ok);
+        m_impl = new detail::NullPlayerImpl(this);
 #endif
         break;
     }
@@ -113,7 +117,6 @@ QString PlayerWidget::streamPath() const
 }
 
 #include <QFutureWatcher>
-#include <QMessageBox>
 #include <QUrl>
 
 void PlayerWidget::openStream(const QString& streamName)
