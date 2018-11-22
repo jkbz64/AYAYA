@@ -84,6 +84,12 @@
    </item>
    <item row="0" column="0" rowspan="2">
     <widget class="QLabel" name="m_previewLabel">
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="text">
       <string/>
      </property>

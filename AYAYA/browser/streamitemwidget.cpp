@@ -9,6 +9,7 @@ StreamItemWidget::StreamItemWidget(const Twitch::Stream& stream, QWidget* parent
     m_ui->setupUi(this);
     m_ui->m_nameLabel->setText(stream.m_userName);
     m_ui->m_titleLabel->setText(stream.m_title);
+    m_ui->m_previewLabel->setScaledContents(true);
 }
 
 StreamItemWidget::~StreamItemWidget()
@@ -21,6 +22,7 @@ const Twitch::Stream& StreamItemWidget::stream() const
     return m_stream;
 }
 
-void StreamItemWidget::setPreview(const QPixmap&)
+void StreamItemWidget::setPreview(const QPixmap& pixmap)
 {
+    m_ui->m_previewLabel->setPixmap(pixmap);
 }

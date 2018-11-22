@@ -15,7 +15,7 @@ BrowserWidget::BrowserWidget(QWidget* parent)
     connect(gameBrowser(), &GameBrowser::itemAdded, this, &BrowserWidget::onGameAdded);
     connect(streamBrowser(), &StreamBrowser::itemAdded, this, &BrowserWidget::onStreamAdded);
 
-    m_api->setTopGamesTimeout(5.0); // Update top games every 30 seconds
+    m_api->setTopGamesTimeout(30.0); // Update top games every 30 seconds
 }
 
 BrowserWidget::~BrowserWidget()
@@ -107,14 +107,15 @@ void BrowserWidget::onGameAdded(BrowserItemWidget* widget)
     });
 }
 
-void BrowserWidget::onStreamAdded(BrowserItemWidget*)
+void BrowserWidget::onStreamAdded(BrowserItemWidget* widget)
 {
-    /*QPointer<GameItemWidget> gameWidget = qobject_cast<GameItemWidget*>(widget);
-    auto boxArtReply = m_api->getBoxArtByUrl(gameWidget->game().m_boxArtUrl, gameWidget->width(), gameWidget->height());
-    connect(boxArtReply, &Twitch::Reply::finished, [boxArtReply, gameWidget]() {
-        if (gameWidget)
-            gameWidget->setBoxArt(QPixmap::fromImage(boxArtReply->data().value<QImage>()));
-    });*/
+    QPointer<StreamItemWidget> streamWidget = qobject_cast<StreamItemWidget*>(widget);
+    auto boxArtReply = m_api->getBoxArtByUrl(streamWidget->stream().m_thumbnailUrl, streamWidget->width(), streamWidget->height());
+    connect(boxArtReply, &Twitch::Reply::finished, [boxArtReply, streamWidget]() {
+        if (streamWidget)
+            streamWidget->setPreview(QPixmap::fromImage(boxArtReply->data().value<QImage>()));
+        boxArtReply->deleteLater();
+    });
 }
 
 void BrowserWidget::onGameSelected(const Twitch::Game game)
