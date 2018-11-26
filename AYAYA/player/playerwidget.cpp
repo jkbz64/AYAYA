@@ -114,7 +114,10 @@ const PlayerWidget::ExtractorBackend& PlayerWidget::extractorBackend() const
 
 QString PlayerWidget::streamPath() const
 {
-    return QString("https://twitch.tv/") + m_currentStream.m_userName;
+    if (m_currentStream.m_id.isEmpty())
+        return QString();
+    else
+        return QString("https://twitch.tv/") + m_currentStream.m_userName;
 }
 
 #include <QFutureWatcher>
@@ -122,6 +125,7 @@ QString PlayerWidget::streamPath() const
 
 void PlayerWidget::openStream(const Twitch::Stream& stream)
 {
+    stop();
     if (m_streamExtractor) {
         m_currentStream = stream;
         // Fetch best quality and play it
@@ -148,7 +152,7 @@ void PlayerWidget::stop()
 
 void PlayerWidget::reset()
 {
-    if (m_impl)
+    if (m_impl && !streamPath().isEmpty())
         openStream(m_currentStream);
 }
 
