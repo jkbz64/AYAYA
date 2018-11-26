@@ -16,11 +16,13 @@ public:
     explicit MainNavigationBar(QWidget* parent = 0);
     ~MainNavigationBar();
 
+    QPushButton* watchButton() const;
     QPushButton* browseButton() const;
     QPushButton* settingsButton() const;
     QPushButton* quitButton() const;
 
 signals:
+    void watchButtonPressed();
     void browseButtonPressed();
     void settingsButtonPressed();
     void quitButtonPressed();

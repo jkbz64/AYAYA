@@ -6,6 +6,7 @@ MainNavigationBar::MainNavigationBar(QWidget* parent)
     , m_ui(new Ui::MainNavigationBar)
 {
     m_ui->setupUi(this);
+    connect(m_ui->m_watchButton, &QPushButton::pressed, this, &MainNavigationBar::watchButtonPressed);
     connect(m_ui->m_browseButton, &QPushButton::pressed, this, &MainNavigationBar::browseButtonPressed);
     connect(m_ui->m_settingsButton, &QPushButton::pressed, this, &MainNavigationBar::settingsButtonPressed);
 }
@@ -13,6 +14,11 @@ MainNavigationBar::MainNavigationBar(QWidget* parent)
 MainNavigationBar::~MainNavigationBar()
 {
     delete m_ui;
+}
+
+QPushButton* MainNavigationBar::watchButton() const
+{
+    return m_ui->m_watchButton;
 }
 
 QPushButton* MainNavigationBar::browseButton() const

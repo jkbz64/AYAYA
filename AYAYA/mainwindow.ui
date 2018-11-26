@@ -10,6 +10,12 @@
     <height>712</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>0</height>
+   </size>
+  </property>
   <property name="sizeIncrement">
    <size>
     <width>0</width>
@@ -54,7 +60,7 @@
        <number>0</number>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="m_splashWidget">
        <layout class="QGridLayout" name="gridLayout">

@@ -65,6 +65,7 @@ private slots:
     void onInitProgress(const QString&);
     void onEndedIniting();
 
+    void onWatchPressed();
     void onBrowsePressed();
     void onSettingsPressed();
 

@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget* parent)
     m_ui->m_clapFace->setMovie(new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this));
 
     // Navigation bar
+    connect(navigationBar(), &MainNavigationBar::watchButtonPressed, this, &MainWindow::onWatchPressed);
     connect(navigationBar(), &MainNavigationBar::browseButtonPressed, this, &MainWindow::onBrowsePressed);
     connect(navigationBar(), &MainNavigationBar::settingsButtonPressed, this, &MainWindow::onSettingsPressed);
     connect(navigationBar(), &MainNavigationBar::quitButtonPressed, this, &MainWindow::close);
@@ -45,6 +46,9 @@ MainWindow::MainWindow(QWidget* parent)
     m_ui->m_settingsWidget->hide();
     m_ui->m_settingsSplitter->setStretchFactor(0, 1);
     m_ui->m_settingsSplitter->setStretchFactor(1, 0);
+
+    // In case of Pepega
+    m_ui->m_centralStack->setCurrentWidget(m_ui->m_splashWidget);
 }
 
 MainWindow::~MainWindow()
@@ -180,6 +184,11 @@ void MainWindow::onEndedIniting()
     }
 }
 
+void MainWindow::onWatchPressed()
+{
+    setCurrentMainWidget(streamWidget());
+}
+
 void MainWindow::onBrowsePressed()
 {
     setCurrentMainWidget(browserWidget());
@@ -206,8 +215,11 @@ void MainWindow::onSettingsPressed()
     }
 }
 
+#include <QPushButton>
+
 void MainWindow::onStreamEntered(const Twitch::Stream& stream)
 {
+    navigationBar()->watchButton()->setEnabled(true);
     setCurrentMainWidget(streamWidget());
     streamWidget()->openStream(stream);
 }
