@@ -2,7 +2,6 @@
 #define BROWSERWIDGET_H
 
 #include "initwidget.hpp"
-#include <QDateTime>
 
 class TwitchApi;
 

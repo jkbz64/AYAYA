@@ -28,14 +28,14 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
     connect(player, &PlayerWidget::ended, this, &ControlsWidget::onEnded);
 
     // Controls Widgets
-    connect(stopButton(), &QPushButton::pressed, this, &ControlsWidget::pressedStopButton);
-    connect(restartButton(), &QPushButton::pressed, this, &ControlsWidget::pressedRestartButton);
-    connect(muteButton(), &QPushButton::pressed, this, &ControlsWidget::pressedMuteButton);
-    connect(volumeSlider(), &QSlider::valueChanged, this, &ControlsWidget::changedVolume);
-    connect(theaterButton(), &QPushButton::pressed, this, &ControlsWidget::pressedTheaterButton);
-    connect(fullscreenButton(), &QPushButton::pressed, this, &ControlsWidget::pressedFullscreenButton);
-    connect(formatsComboBox(), static_cast<void (QComboBox::*)(int)>(&QComboBox::highlighted), this, &ControlsWidget::onFormatComboActivated);
-    connect(formatsComboBox(), static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged), this, &ControlsWidget::onFormatComboTextChanged);
+    connect(m_ui->m_stopButton, &QPushButton::pressed, this, &ControlsWidget::pressedStopButton);
+    connect(m_ui->m_restartButton, &QPushButton::pressed, this, &ControlsWidget::pressedRestartButton);
+    connect(m_ui->m_muteButton, &QPushButton::pressed, this, &ControlsWidget::pressedMuteButton);
+    connect(m_ui->m_volumeSlider, &QSlider::valueChanged, this, &ControlsWidget::changedVolume);
+    connect(m_ui->m_theaterModeButton, &QPushButton::pressed, this, &ControlsWidget::pressedTheaterButton);
+    connect(m_ui->m_fullscreenButton, &QPushButton::pressed, this, &ControlsWidget::pressedFullscreenButton);
+    connect(m_ui->m_formatsComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::highlighted), this, &ControlsWidget::onFormatComboActivated);
+    connect(m_ui->m_formatsComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged), this, &ControlsWidget::onFormatComboTextChanged);
 
     // Gif
     connect(m_loadingGif, &QMovie::frameChanged, [this]() {
@@ -47,46 +47,6 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
 ControlsWidget::~ControlsWidget()
 {
     delete m_ui;
-}
-
-QPushButton* ControlsWidget::stopButton() const
-{
-    return m_ui->m_stopButton;
-}
-
-QPushButton* ControlsWidget::restartButton() const
-{
-    return m_ui->m_restartButton;
-}
-
-QPushButton* ControlsWidget::muteButton() const
-{
-    return m_ui->m_muteButton;
-}
-
-QSlider* ControlsWidget::volumeSlider() const
-{
-    return m_ui->m_volumeSlider;
-}
-
-QProgressBar* ControlsWidget::bufferingBar() const
-{
-    return m_ui->m_bufferingBar;
-}
-
-QPushButton* ControlsWidget::theaterButton() const
-{
-    return m_ui->m_theaterModeButton;
-}
-
-QPushButton* ControlsWidget::fullscreenButton() const
-{
-    return m_ui->m_fullscreenButton;
-}
-
-QComboBox* ControlsWidget::formatsComboBox() const
-{
-    return m_ui->m_formatsComboBox;
 }
 
 void ControlsWidget::makeVisible()
@@ -118,52 +78,52 @@ void ControlsWidget::resetFadeTimer()
 
 int ControlsWidget::currentVolume()
 {
-    return volumeSlider()->value();
+    return m_ui->m_volumeSlider->value();
 }
 
 void ControlsWidget::setFormats(const StreamFormats& formats)
 {
-    formatsComboBox()->clear();
-    formatsComboBox()->blockSignals(true);
-    formatsComboBox()->addItems(QStringList::fromVector(formats));
-    formatsComboBox()->setCurrentIndex(formats.size() - 1);
-    formatsComboBox()->blockSignals(false);
+    m_ui->m_formatsComboBox->clear();
+    m_ui->m_formatsComboBox->blockSignals(true);
+    m_ui->m_formatsComboBox->addItems(QStringList::fromVector(formats));
+    m_ui->m_formatsComboBox->setCurrentIndex(formats.size() - 1);
+    m_ui->m_formatsComboBox->blockSignals(false);
 }
 
 void ControlsWidget::onStartedLoading()
 {
-    restartButton()->blockSignals(true);
+    m_ui->m_restartButton->blockSignals(true);
     m_loadingGif->start();
 }
 
 void ControlsWidget::onLoaded()
 {
     m_loadingGif->stop();
-    restartButton()->setText("Restart");
-    restartButton()->blockSignals(false);
+    m_ui->m_restartButton->setText("Restart");
+    m_ui->m_restartButton->blockSignals(false);
 }
 
 void ControlsWidget::onEnded()
 {
-    restartButton()->blockSignals(true);
+    m_ui->m_restartButton->blockSignals(true);
 }
 
 void ControlsWidget::onBuffering(int value)
 {
     makeVisible();
-    bufferingBar()->setValue(value);
+    m_ui->m_bufferingBar->setValue(value);
 }
 
 void ControlsWidget::onPositionChanged(double)
 {
-    bufferingBar()->hide();
+    m_ui->m_bufferingBar->hide();
 }
 
 void ControlsWidget::onVolumeChanged(double value)
 {
-    volumeSlider()->blockSignals(true);
-    volumeSlider()->setValue(static_cast<int>(value));
-    volumeSlider()->blockSignals(false);
+    m_ui->m_volumeSlider->blockSignals(true);
+    m_ui->m_volumeSlider->setValue(static_cast<int>(value));
+    m_ui->m_volumeSlider->blockSignals(false);
 }
 
 void ControlsWidget::onFormatComboActivated(int)

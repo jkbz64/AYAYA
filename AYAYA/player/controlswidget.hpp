@@ -25,23 +25,13 @@ public:
     explicit ControlsWidget(PlayerWidget*);
     ~ControlsWidget();
 
+    void makeVisible();
     void startFadeTimer();
     void resetFadeTimer();
 
     int currentVolume();
 
     void setFormats(const StreamFormats&);
-
-    QPushButton* stopButton() const;
-    QPushButton* restartButton() const;
-    QPushButton* muteButton() const;
-    QProgressBar* bufferingBar() const;
-    QSlider* volumeSlider() const;
-    QPushButton* theaterButton() const;
-    QPushButton* fullscreenButton() const;
-    QComboBox* formatsComboBox() const;
-
-    void makeVisible();
 
 signals:
     void pressedStopButton();
