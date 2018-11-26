@@ -110,7 +110,12 @@ bool MpvPlayerImpl::init()
 
 void MpvPlayerImpl::load(const QString& path)
 {
-    command(m_mpv, (QStringList() << "loadfile" << path));
+    if (path.isEmpty())
+        setOption(m_mpv, "pause", true);
+    else {
+        setOption(m_mpv, "pause", false);
+        command(m_mpv, (QStringList() << "loadfile" << path));
+    }
 }
 
 QString MpvPlayerImpl::currentPath()

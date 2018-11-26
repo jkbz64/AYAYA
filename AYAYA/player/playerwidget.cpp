@@ -143,13 +143,13 @@ void PlayerWidget::openStream(const Twitch::Stream& stream)
 void PlayerWidget::stop()
 {
     if (m_impl)
-        m_impl->load(" ");
+        m_impl->load("");
 }
 
 void PlayerWidget::reset()
 {
     if (m_impl)
-        m_impl->load(m_impl->currentPath());
+        openStream(m_currentStream);
 }
 
 void PlayerWidget::setVolume(int value)
@@ -201,6 +201,7 @@ void PlayerWidget::setupOverlay()
     m_controlsWidget = new ControlsWidget(this);
     m_beforeMuteVolume = m_controlsWidget->currentVolume();
 
+    connect(controlsWidget(), &ControlsWidget::pressedStopButton, this, &PlayerWidget::stop);
     connect(controlsWidget(), &ControlsWidget::pressedRestartButton, this, &PlayerWidget::reset);
     connect(controlsWidget(), &ControlsWidget::pressedMuteButton, this, &PlayerWidget::onPressedMuteButton);
     connect(controlsWidget(), &ControlsWidget::changedVolume, this, &PlayerWidget::setVolume);

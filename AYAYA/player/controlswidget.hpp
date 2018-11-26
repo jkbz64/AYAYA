@@ -32,6 +32,7 @@ public:
 
     void setFormats(const StreamFormats&);
 
+    QPushButton* stopButton() const;
     QPushButton* restartButton() const;
     QPushButton* muteButton() const;
     QProgressBar* bufferingBar() const;
@@ -43,12 +44,13 @@ public:
     void makeVisible();
 
 signals:
-    void pressedTheaterButton();
-    void pressedFullscreenButton();
+    void pressedStopButton();
     void pressedRestartButton();
     void pressedMuteButton();
     void changedVolume(int);
     void streamFormatChanged(const StreamFormat&);
+    void pressedTheaterButton();
+    void pressedFullscreenButton();
 
 private:
     Ui::ControlsWidget* m_ui;

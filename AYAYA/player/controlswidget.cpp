@@ -28,6 +28,7 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
     connect(player, &PlayerWidget::ended, this, &ControlsWidget::onEnded);
 
     // Controls Widgets
+    connect(stopButton(), &QPushButton::pressed, this, &ControlsWidget::pressedStopButton);
     connect(restartButton(), &QPushButton::pressed, this, &ControlsWidget::pressedRestartButton);
     connect(muteButton(), &QPushButton::pressed, this, &ControlsWidget::pressedMuteButton);
     connect(volumeSlider(), &QSlider::valueChanged, this, &ControlsWidget::changedVolume);
@@ -46,6 +47,11 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
 ControlsWidget::~ControlsWidget()
 {
     delete m_ui;
+}
+
+QPushButton* ControlsWidget::stopButton() const
+{
+    return m_ui->m_stopButton;
 }
 
 QPushButton* ControlsWidget::restartButton() const
