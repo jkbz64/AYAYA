@@ -4,6 +4,7 @@
 #include "twitch/api.hpp"
 #include "ui_browserwidget.h"
 #include <QPointer>
+#include <QTimer>
 
 BrowserWidget::BrowserWidget(QWidget* parent)
     : InitWidget(parent)
@@ -16,6 +17,7 @@ BrowserWidget::BrowserWidget(QWidget* parent)
     connect(streamBrowser(), &StreamBrowser::itemAdded, this, &BrowserWidget::onStreamAdded);
 
     m_api->setTopGamesTimeout(30.0); // Update top games every 30 seconds
+    m_api->setTopStreamsTimeout(20.0);
 }
 
 BrowserWidget::~BrowserWidget()
@@ -47,6 +49,7 @@ void BrowserWidget::showTopGames()
 {
     setCurrentBrowser(gameBrowser());
     gameBrowser()->clear();
+    streamBrowser()->setUpdatesEnabled(false);
 
     gameBrowser()->clear();
     emit initProgress("Fetching Top Twitch Games");
@@ -61,12 +64,17 @@ void BrowserWidget::showTopGames()
         }
         topGamesReply->deleteLater();
     });
+
+    QTimer::singleShot(100, [this]() {
+        gameBrowser()->setUpdatesEnabled(true);
+    });
 }
 
 void BrowserWidget::searchStreamsByGame(const Twitch::Game& game)
 {
-    streamBrowser()->clear();
     setCurrentBrowser(streamBrowser());
+    streamBrowser()->clear();
+    streamBrowser()->setUpdatesEnabled(false);
 
     auto channelsReply = m_api->getStreamsByGameId(game.m_id);
     connect(channelsReply, &Twitch::Reply::finished, [this, channelsReply]() {
@@ -76,6 +84,10 @@ void BrowserWidget::searchStreamsByGame(const Twitch::Game& game)
                 connect(streamBrowser()->addStream(stream), &BrowserItemWidget::pressed, this, &BrowserWidget::onStreamSelected);
         }
         channelsReply->deleteLater();
+    });
+
+    QTimer::singleShot(100, [this]() {
+        streamBrowser()->setUpdatesEnabled(true);
     });
 }
 
