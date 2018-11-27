@@ -28,7 +28,7 @@ Twitch::StreamsReply* TwitchApi::getStreamsByGameId(const QString& id, int first
         auto reply = Twitch::Api::getStreamsByGameId(id, first, p);
         connect(reply, &Twitch::Reply::finished, [this, id, reply]() {
             if (reply->currentState() == Twitch::ReplyState::Success)
-                lastTopStreams[id] = qMakePair(QDateTime::currentDateTime(), reply->data().value<Twitch::Streams>());
+                lastTopStreams[id] = qMakePair(QDateTime::currentDateTime(), reply->streams());
         });
         return reply;
     } else {
