@@ -28,7 +28,7 @@ PlayerWidget::PlayerWidget(QWidget* parent)
     , m_beforeMuteVolume(65)
 {
     setWindowFlags(Qt::Widget | Qt::CustomizeWindowHint);
-    setBaseSize(450, 1);
+    setMinimumWidth(365);
     setMouseTracking(true);
 
     connect(this, &PlayerWidget::backendChanged, this, &PlayerWidget::onPlayerBackendChanged);

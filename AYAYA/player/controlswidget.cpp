@@ -99,7 +99,6 @@ void ControlsWidget::onStartedLoading()
 void ControlsWidget::onLoaded()
 {
     m_loadingGif->stop();
-    m_ui->m_restartButton->setText("Restart");
     m_ui->m_restartButton->blockSignals(false);
 }
 

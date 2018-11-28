@@ -82,6 +82,7 @@ void ChatWidget::setMovable(bool boolean)
     } else {
         setWindowFlag(Qt::Widget);
         m_sizeGrip->hide();
+        m_ui->m_chatView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
         m_ui->m_chatView->setAttribute(Qt::WA_TransparentForMouseEvents, false);
         m_ui->m_chatView->setStyleSheet("");
         followChat();
@@ -114,6 +115,10 @@ void ChatWidget::wheelEvent(QWheelEvent* event)
     if (isMovable()) {
         if (qApp->keyboardModifiers().testFlag(Qt::ControlModifier)) {
             m_opacity += event->delta() / 1000.f;
+            if (m_opacity > 1.0f)
+                m_opacity = 1.0f;
+            if (m_opacity < 0.0f)
+                m_opacity = 0.0;
             chatView()->setStyleSheet("background-color: rgba(0, 0, 0, " + QString::number(m_opacity) + ");");
         } else {
             chatView()->verticalScrollBar()->setValue(chatView()->verticalScrollBar()->value() - event->delta());

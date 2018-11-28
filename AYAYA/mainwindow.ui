@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>847</width>
+    <width>877</width>
     <height>712</height>
    </rect>
   </property>
@@ -60,7 +60,7 @@
        <number>0</number>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="m_splashWidget">
        <layout class="QGridLayout" name="gridLayout">
@@ -151,63 +151,41 @@
        </layout>
       </widget>
       <widget class="QWidget" name="m_mainWidget">
-       <layout class="QGridLayout" name="gridLayout_2">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <property name="horizontalSpacing">
-         <number>0</number>
-        </property>
-        <item row="1" column="0">
-         <widget class="QSplitter" name="m_settingsSplitter">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="1" column="1" rowspan="2">
+         <widget class="SettingsWidget" name="m_settingsWidget" native="true">
+          <property name="enabled">
+           <bool>true</bool>
           </property>
-          <property name="opaqueResize">
-           <bool>false</bool>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>1</horstretch>
+            <verstretch>3</verstretch>
+           </sizepolicy>
           </property>
-          <property name="handleWidth">
-           <number>0</number>
-          </property>
-          <property name="childrenCollapsible">
-           <bool>false</bool>
-          </property>
-          <widget class="QStackedWidget" name="m_mainStack">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
-           </property>
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <widget class="BrowserWidget" name="m_browserWidget"/>
-           <widget class="StreamWidget" name="m_streamWidget"/>
-          </widget>
-          <widget class="SettingsWidget" name="m_settingsWidget" native="true"/>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="MainNavigationBar" name="m_navigationBar" native="true"/>
+        <item row="0" column="0" colspan="2">
+         <widget class="MainNavigationBar" name="m_navigationBar" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" rowspan="2">
+         <widget class="QStackedWidget" name="m_mainStack">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>2</horstretch>
+            <verstretch>3</verstretch>
+           </sizepolicy>
+          </property>
+          <widget class="BrowserWidget" name="m_browserWidget" native="true"/>
+          <widget class="StreamWidget" name="m_streamWidget"/>
+         </widget>
         </item>
        </layout>
       </widget>

@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget* parent)
     , m_previousWidget(nullptr)
 {
     m_ui->setupUi(this);
-
+    setStyleSheet("MainWindow { padding: 1px; }");
     // Splash screen clap face
     m_ui->m_clapFace->setMovie(new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this));
 
@@ -44,11 +44,10 @@ MainWindow::MainWindow(QWidget* parent)
     settingsWidget()->addTab<PlayerSettings>(streamWidget()->player());
 
     m_ui->m_settingsWidget->hide();
-    m_ui->m_settingsSplitter->setStretchFactor(0, 1);
-    m_ui->m_settingsSplitter->setStretchFactor(1, 0);
 
     // In case of Pepega
     m_ui->m_centralStack->setCurrentWidget(m_ui->m_splashWidget);
+    setCurrentMainWidget(browserWidget());
 }
 
 MainWindow::~MainWindow()
@@ -130,12 +129,14 @@ void MainWindow::initNextWidget()
 
 void MainWindow::removeMargins()
 {
-    m_ui->m_mainWidget->layout()->setMargin(0);
+    setStyleSheet("padding: 0px");
+    m_ui->m_mainWidget->layout()->setContentsMargins(0, 0, 0, 0);
     m_ui->m_mainWidget->layout()->setSpacing(0);
 }
 
 void MainWindow::restoreDefaultMargins()
 {
+    setStyleSheet("padding: 1px");
     m_ui->m_mainWidget->layout()->setMargin(m_defaultMargin);
     m_ui->m_mainWidget->layout()->setSpacing(m_defaultSpacing);
 }
