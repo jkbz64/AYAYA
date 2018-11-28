@@ -32,6 +32,7 @@ public:
     int currentVolume();
 
     void setFormats(const StreamFormats&);
+    void setFadeOutTimeout(int fadeOutTimeout);
 
 signals:
     void pressedStopButton();
@@ -44,7 +45,10 @@ signals:
 
 private:
     Ui::ControlsWidget* m_ui;
+
+    int m_fadeOutTimeout;
     QTimer* m_fadeOutTimer;
+
     QMovie* m_loadingGif;
     bool m_isFormatsComboActivated;
 

@@ -68,6 +68,9 @@ public:
     int defaultVolume() const;
     void setDefaultVolume(int);
 
+    int hideControlsTimeout() const;
+    void setHideControlsTimeout(int hideControlsTimeout);
+
 signals:
     // Backend
     void startedBackendInit();
@@ -100,6 +103,7 @@ private:
     Twitch::Stream m_currentStream;
 
     int m_defaultVolume;
+    int m_hideControlsTimeout;
 
     // ControlsWidget
     void setupOverlay();

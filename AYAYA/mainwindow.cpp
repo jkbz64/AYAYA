@@ -180,6 +180,7 @@ void MainWindow::onEndedIniting()
         // Let the user see the pretty sun... even if it's for a second :)
         QTimer::singleShot(1000, this, [this]() {
             m_ui->m_clapFace->movie()->stop();
+            m_ui->m_clapFace->movie()->deleteLater();
             m_ui->m_centralStack->setCurrentWidget(m_ui->m_mainWidget);
         });
     }

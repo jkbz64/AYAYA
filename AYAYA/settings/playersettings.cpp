@@ -45,6 +45,7 @@ PlayerSettings::PlayerSettings(PlayerWidget* playerWidget, QWidget* parent)
 
     connect(m_ui->m_setCurrentBackendButton, &QPushButton::pressed, this, &PlayerSettings::onCurrentBackendChanged);
     connect(m_ui->m_defaultVolumeSpinBox, &QSpinBox::editingFinished, this, &PlayerSettings::settingChanged);
+    connect(m_ui->m_hideControlsSpinBox, &QSpinBox::editingFinished, this, &PlayerSettings::settingChanged);
 
     connect(playerWidget, &PlayerWidget::backendChanged, [this](PlayerBackend backend) {
         m_ui->m_backendLabel->setText(QMetaEnum::fromType<PlayerBackend>().valueToKey(static_cast<int>(backend)));
@@ -74,6 +75,9 @@ void PlayerSettings::updateSettings()
     // Default volume
     const auto volume = settings.value("defaultVolume", 50).toInt();
     m_ui->m_defaultVolumeSpinBox->setValue(volume);
+
+    const auto hideControlsTimeout = settings.value("hideControlsTimeout", 1500).toInt();
+    m_ui->m_hideControlsSpinBox->setValue(hideControlsTimeout);
 
 #ifdef MPV
     settings.beginGroup("mpv");
@@ -106,6 +110,10 @@ void PlayerSettings::applyChanges()
     const auto volume = m_ui->m_defaultVolumeSpinBox->value();
     settings.setValue("defaultVolume", volume);
     m_playerWidget->setDefaultVolume(volume);
+
+    const auto hideControlsTimeout = static_cast<int>(m_ui->m_hideControlsSpinBox->value());
+    settings.setValue("hideControlsTimeout", hideControlsTimeout);
+    m_playerWidget->setHideControlsTimeout(hideControlsTimeout);
 
     const auto backendName = m_ui->m_backendLabel->text();
     settings.setValue("backend", QVariant::fromValue(getBackendType(backendName)).toInt());

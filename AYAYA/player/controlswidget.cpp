@@ -68,12 +68,12 @@ void ControlsWidget::onFadeOutTimeout()
 void ControlsWidget::startFadeTimer()
 {
     m_fadeOutTimer->start();
-    m_fadeOutTimer->setInterval(500);
+    m_fadeOutTimer->setInterval(m_fadeOutTimeout);
 }
 
 void ControlsWidget::resetFadeTimer()
 {
-    m_fadeOutTimer->setInterval(500);
+    m_fadeOutTimer->setInterval(m_fadeOutTimeout);
     m_fadeOutTimer->start();
 }
 
@@ -89,6 +89,11 @@ void ControlsWidget::setFormats(const StreamFormats& formats)
     m_ui->m_formatsComboBox->addItems(QStringList::fromVector(formats));
     m_ui->m_formatsComboBox->setCurrentIndex(formats.size() - 1);
     m_ui->m_formatsComboBox->blockSignals(false);
+}
+
+void ControlsWidget::setFadeOutTimeout(int fadeOutTimeout)
+{
+    m_fadeOutTimeout = fadeOutTimeout;
 }
 
 void ControlsWidget::onStartedLoading()

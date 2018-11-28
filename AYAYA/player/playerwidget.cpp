@@ -199,6 +199,18 @@ void PlayerWidget::mouseDoubleClickEvent(QMouseEvent* event)
         setPlayerStyle(PlayerStyle::Theater);
 }
 
+int PlayerWidget::hideControlsTimeout() const
+{
+    return m_hideControlsTimeout;
+}
+
+void PlayerWidget::setHideControlsTimeout(int hideControlsTimeout)
+{
+    m_hideControlsTimeout = hideControlsTimeout;
+    if (controlsWidget())
+        controlsWidget()->setFadeOutTimeout(hideControlsTimeout);
+}
+
 int PlayerWidget::defaultVolume() const
 {
     return m_defaultVolume;
@@ -213,6 +225,8 @@ void PlayerWidget::setupOverlay()
 {
     auto overlayLayout = new QGridLayout(centralWidget());
     m_controlsWidget = new ControlsWidget(this);
+
+    m_controlsWidget->setFadeOutTimeout(m_hideControlsTimeout);
 
     connect(controlsWidget(), &ControlsWidget::pressedStopButton, this, &PlayerWidget::stop);
     connect(controlsWidget(), &ControlsWidget::pressedRestartButton, this, &PlayerWidget::reset);

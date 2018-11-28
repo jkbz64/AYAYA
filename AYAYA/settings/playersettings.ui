@@ -50,19 +50,19 @@
       <item row="1" column="1">
        <widget class="QDoubleSpinBox" name="m_hideControlsSpinBox">
         <property name="suffix">
-         <string>s</string>
+         <string> msec</string>
         </property>
         <property name="decimals">
-         <number>3</number>
+         <number>0</number>
         </property>
         <property name="maximum">
-         <double>100.000000000000000</double>
+         <double>999999.000000000000000</double>
         </property>
         <property name="singleStep">
-         <double>0.100000000000000</double>
+         <double>100.000000000000000</double>
         </property>
         <property name="value">
-         <double>1.500000000000000</double>
+         <double>1500.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -138,7 +138,7 @@
                   <x>0</x>
                   <y>0</y>
                   <width>210</width>
-                  <height>118</height>
+                  <height>198</height>
                  </rect>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_4">
@@ -240,8 +240,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>98</width>
-                  <height>28</height>
+                  <width>66</width>
+                  <height>18</height>
                  </rect>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_3"/>
