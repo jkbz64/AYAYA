@@ -48,6 +48,8 @@ private:
     QMovie* m_loadingGif;
     bool m_isFormatsComboActivated;
 
+    int m_beforeMuteVolume;
+
 private slots:
     void onFadeOutTimeout();
     void onStartedLoading();
@@ -58,6 +60,8 @@ private slots:
     void onVolumeChanged(double);
     void onFormatComboActivated(int);
     void onFormatComboTextChanged(const QString&);
+
+    void onMute();
 };
 
 #endif // CONTROLSWIDGET_HPP

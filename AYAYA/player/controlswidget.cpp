@@ -30,12 +30,13 @@ ControlsWidget::ControlsWidget(PlayerWidget* player)
     // Controls Widgets
     connect(m_ui->m_stopButton, &QPushButton::pressed, this, &ControlsWidget::pressedStopButton);
     connect(m_ui->m_restartButton, &QPushButton::pressed, this, &ControlsWidget::pressedRestartButton);
-    connect(m_ui->m_muteButton, &QPushButton::pressed, this, &ControlsWidget::pressedMuteButton);
     connect(m_ui->m_volumeSlider, &QSlider::valueChanged, this, &ControlsWidget::changedVolume);
     connect(m_ui->m_theaterModeButton, &QPushButton::pressed, this, &ControlsWidget::pressedTheaterButton);
     connect(m_ui->m_fullscreenButton, &QPushButton::pressed, this, &ControlsWidget::pressedFullscreenButton);
     connect(m_ui->m_formatsComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::highlighted), this, &ControlsWidget::onFormatComboActivated);
     connect(m_ui->m_formatsComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentTextChanged), this, &ControlsWidget::onFormatComboTextChanged);
+
+    connect(m_ui->m_muteButton, &QPushButton::pressed, this, &ControlsWidget::onMute);
 
     // Gif
     connect(m_loadingGif, &QMovie::frameChanged, [this]() {
@@ -136,4 +137,15 @@ void ControlsWidget::onFormatComboTextChanged(const QString& format)
     m_isFormatsComboActivated = false;
     startFadeTimer();
     emit streamFormatChanged(format);
+}
+
+void ControlsWidget::onMute()
+{
+    if (m_ui->m_volumeSlider->value() != 0) {
+        m_beforeMuteVolume = m_ui->m_volumeSlider->value();
+        emit changedVolume(0);
+    } else {
+        emit changedVolume(m_beforeMuteVolume);
+        m_beforeMuteVolume = 0;
+    }
 }

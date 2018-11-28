@@ -25,7 +25,6 @@ PlayerWidget::PlayerWidget(QWidget* parent)
     , m_streamExtractor(nullptr)
     , m_playerStyle(PlayerStyle::Normal)
     , m_controlsWidget(nullptr)
-    , m_beforeMuteVolume(65)
 {
     setWindowFlags(Qt::Widget | Qt::CustomizeWindowHint);
     setMinimumWidth(365);
@@ -126,6 +125,7 @@ QString PlayerWidget::streamPath() const
 void PlayerWidget::openStream(const Twitch::Stream& stream)
 {
     stop();
+    setVolume(defaultVolume());
     if (m_streamExtractor) {
         m_currentStream = stream;
         // Fetch best quality and play it
@@ -199,15 +199,23 @@ void PlayerWidget::mouseDoubleClickEvent(QMouseEvent* event)
         setPlayerStyle(PlayerStyle::Theater);
 }
 
+int PlayerWidget::defaultVolume() const
+{
+    return m_defaultVolume;
+}
+
+void PlayerWidget::setDefaultVolume(int defaultVolume)
+{
+    m_defaultVolume = defaultVolume;
+}
+
 void PlayerWidget::setupOverlay()
 {
     auto overlayLayout = new QGridLayout(centralWidget());
     m_controlsWidget = new ControlsWidget(this);
-    m_beforeMuteVolume = m_controlsWidget->currentVolume();
 
     connect(controlsWidget(), &ControlsWidget::pressedStopButton, this, &PlayerWidget::stop);
     connect(controlsWidget(), &ControlsWidget::pressedRestartButton, this, &PlayerWidget::reset);
-    connect(controlsWidget(), &ControlsWidget::pressedMuteButton, this, &PlayerWidget::onPressedMuteButton);
     connect(controlsWidget(), &ControlsWidget::changedVolume, this, &PlayerWidget::setVolume);
     connect(controlsWidget(), &ControlsWidget::pressedTheaterButton, this, &PlayerWidget::onPressedTheaterButton);
     connect(controlsWidget(), &ControlsWidget::pressedFullscreenButton, this, &PlayerWidget::onPressedFullscreenButton);
@@ -228,17 +236,6 @@ void PlayerWidget::onPlayerBackendChanged(PlayerWidget::Backend)
 }
 
 // Slots
-void PlayerWidget::onPressedMuteButton()
-{
-    if (volume() != 0) {
-        m_beforeMuteVolume = volume();
-        setVolume(0);
-    } else {
-        setVolume(m_beforeMuteVolume);
-        m_beforeMuteVolume = 0;
-    }
-}
-
 void PlayerWidget::onPressedTheaterButton()
 {
     if (m_playerStyle != PlayerStyle::Theater)

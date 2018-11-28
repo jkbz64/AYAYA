@@ -105,7 +105,7 @@ void PlayerSettings::applyChanges()
     // Volume
     const auto volume = m_ui->m_defaultVolumeSpinBox->value();
     settings.setValue("defaultVolume", volume);
-    m_playerWidget->setVolume(volume);
+    m_playerWidget->setDefaultVolume(volume);
 
     const auto backendName = m_ui->m_backendLabel->text();
     settings.setValue("backend", QVariant::fromValue(getBackendType(backendName)).toInt());

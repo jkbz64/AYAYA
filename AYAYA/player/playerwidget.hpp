@@ -65,6 +65,9 @@ public:
 
     virtual bool eventFilter(QObject*, QEvent*) override;
 
+    int defaultVolume() const;
+    void setDefaultVolume(int);
+
 signals:
     // Backend
     void startedBackendInit();
@@ -96,16 +99,16 @@ private:
 
     Twitch::Stream m_currentStream;
 
+    int m_defaultVolume;
+
     // ControlsWidget
     void setupOverlay();
     ControlsWidget* m_controlsWidget;
-    int m_beforeMuteVolume;
 
 private slots:
     void onPlayerBackendChanged(Backend);
 
     // Controls slots
-    void onPressedMuteButton();
     void onPressedTheaterButton();
     void onPressedFullscreenButton();
     void onStreamFormatChanged(const StreamFormat&);
