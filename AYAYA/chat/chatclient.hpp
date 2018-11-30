@@ -14,8 +14,7 @@ struct TwitchMessage {
     QString m_author;
     QString m_content;
     QColor m_color;
-    bool m_isMod;
-    bool m_isSubscriber;
+    QStringList m_badges;
     QVector<Twitch::Emote> m_emotes;
 };
 

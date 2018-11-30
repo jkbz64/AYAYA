@@ -6,10 +6,12 @@
 
 namespace Twitch {
 class Emote;
+class Badge;
+class Stream;
 }
 
 class TwitchMessage;
-class EmotesCache;
+class ChatCache;
 
 class ChatView : public QTextBrowser {
     Q_OBJECT
@@ -20,16 +22,17 @@ public:
     void reset();
     void addMessage(const QString&);
 
-    EmotesCache* emotesCache() const;
+    ChatCache* cache() const;
 
 private slots:
     friend class ChatWidget;
     void onJoinedChannel(const QString&);
     void onMessageReceived(const TwitchMessage&);
     void onEmoteLoaded(const QPair<Twitch::Emote, QImage>&);
+    void onBadgeLoaded(const QPair<Twitch::Badge, QPair<QString, QImage>>&);
 
 private:
-    EmotesCache* m_emotesCache;
+    ChatCache* m_cache;
 };
 
 #endif // CHATVIEW_HPP

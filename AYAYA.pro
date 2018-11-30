@@ -35,7 +35,6 @@ SOURCES += \
     AYAYA/browser/streamitemwidget.cpp \
     AYAYA/browser/gameitemwidget.cpp \
     AYAYA/streamwidget.cpp \
-    AYAYA/chat/emotescache.cpp \
     AYAYA/initwidget.cpp \
     AYAYA/mainnavigationbar.cpp \
     AYAYA/browser/browser.cpp \
@@ -50,7 +49,8 @@ SOURCES += \
     AYAYA/settings/playersettings.cpp \
     AYAYA/settings/quickstartdialog.cpp \
     AYAYA/settings/extractorsettings.cpp \
-    AYAYA/twitch/api.cpp
+    AYAYA/twitch/api.cpp \
+    AYAYA/chat/chatcache.cpp
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
@@ -66,7 +66,6 @@ HEADERS += \
     AYAYA/browser/streamitemwidget.hpp \
     AYAYA/browser/gameitemwidget.hpp \
     AYAYA/streamwidget.hpp \
-    AYAYA/chat/emotescache.hpp \
     AYAYA/initwidget.hpp \
     AYAYA/mainnavigationbar.hpp \
     AYAYA/browser/browser.hpp \
@@ -81,7 +80,8 @@ HEADERS += \
     AYAYA/settings/playersettings.hpp \
     AYAYA/settings/quickstartdialog.hpp \
     AYAYA/settings/extractorsettings.hpp \
-    AYAYA/twitch/api.hpp
+    AYAYA/twitch/api.hpp \
+    AYAYA/chat/chatcache.hpp
 
 FORMS += \
     AYAYA/mainwindow.ui \

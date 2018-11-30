@@ -101,8 +101,7 @@ void ChatClient::onMessageReceived(IrcMessage* message)
             message->nick(),
             privateMessage->content(),
             QColor(privateMessage->tag("color").toString()),
-            privateMessage->tag("mod").toInt() == 1,
-            privateMessage->tag("subscriber").toInt() == 1,
+            privateMessage->tag("badges").toString().split(","),
             emotes });
     } else if (messageType == IrcMessage::Type::Join) {
         m_currentChannel = qobject_cast<IrcJoinMessage*>(message)->channel().mid(1);

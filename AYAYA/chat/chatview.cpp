@@ -1,22 +1,23 @@
 #include "chatview.hpp"
+#include "chatcache.hpp"
 #include "chatclient.hpp"
-#include "emotescache.hpp"
 #include <QTextBlock>
 
 ChatView::ChatView(QWidget* parent)
     : QTextBrowser(parent)
-    , m_emotesCache(new EmotesCache(this))
+    , m_cache(new ChatCache(this))
 {
-    connect(emotesCache(), &EmotesCache::loadedEmote, this, &ChatView::onEmoteLoaded);
+    connect(cache(), &ChatCache::loadedBadge, this, &ChatView::onBadgeLoaded);
+    connect(cache(), &ChatCache::loadedEmote, this, &ChatView::onEmoteLoaded);
 }
 
 ChatView::~ChatView()
 {
 }
 
-EmotesCache* ChatView::emotesCache() const
+ChatCache* ChatView::cache() const
 {
-    return m_emotesCache;
+    return m_cache;
 }
 
 void ChatView::addMessage(const QString& message)
@@ -32,14 +33,20 @@ void ChatView::onJoinedChannel(const QString& channel)
     frameFormat.setBottomMargin(20);
     document()->rootFrame()->setFrameFormat(frameFormat);
 
-    emotesCache()->loadChannelEmotes(channel);
     append("You've joined #" + channel + " channel.");
 }
+
+#include <QDebug>
 
 void ChatView::onMessageReceived(const TwitchMessage& message)
 {
     auto editedMessage = message.m_content;
-    emotesCache()->loadEmotes(message.m_emotes);
+
+    QString badges;
+    for (const auto& badge : message.m_badges)
+        badges += "<img src=\"" + badge + "\" align=\"middle\"></img> ";
+
+    cache()->loadEmotes(message.m_emotes);
 
     QSet<QString> preCodes;
     for (const auto& emote : message.m_emotes)
@@ -47,11 +54,11 @@ void ChatView::onMessageReceived(const TwitchMessage& message)
 
     const auto words = QSet<QString>::fromList(message.m_content.split(QRegExp("[\r\n\t ]+")));
     for (const auto& word : words) {
-        if (emotesCache()->isEmoteLoaded(word.simplified()) || preCodes.find(word.simplified()) != preCodes.end()) {
+        if (cache()->isEmoteLoaded(word.simplified()) || preCodes.find(word.simplified()) != preCodes.end()) {
             editedMessage.replace(word, "<img src=\"" + word + "\" align=\"middle\"></img>");
         }
     }
-    addMessage("<p><b><font color=\"" + message.m_color.name() + "\">" + message.m_author + "</font></b>: " + editedMessage + "</p>");
+    addMessage("<p>" + badges + "<b><font color=\"" + message.m_color.name() + "\">" + message.m_author + "</font></b>: " + editedMessage + "</p>");
 
     auto b = document()->lastBlock().blockFormat();
     b.setLineHeight(30, QTextBlockFormat::FixedHeight);
@@ -74,6 +81,11 @@ void ChatView::onMessageReceived(const TwitchMessage& message)
 void ChatView::onEmoteLoaded(const QPair<Twitch::Emote, QImage>& emote)
 {
     document()->addResource(QTextDocument::ImageResource, QUrl(emote.first.code()), QVariant(emote.second));
+}
+
+void ChatView::onBadgeLoaded(const QPair<Twitch::Badge, QPair<QString, QImage>>& badge)
+{
+    document()->addResource(QTextDocument::ImageResource, QUrl(badge.first.m_name + "/" + badge.second.first), QVariant(badge.second.second));
 }
 
 void ChatView::reset()

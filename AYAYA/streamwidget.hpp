@@ -1,7 +1,7 @@
 #ifndef STREAMWIDGET_HPP
 #define STREAMWIDGET_HPP
 
-#include "chat/emotescache.hpp"
+#include "chat/chatcache.hpp"
 #include "initwidget.hpp"
 #include "player/playerwidget.hpp"
 

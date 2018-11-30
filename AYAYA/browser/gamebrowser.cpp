@@ -9,7 +9,7 @@
 
 GameBrowser::GameBrowser(QWidget* parent)
     : Browser(parent)
-    , m_minItemSize(150)
+    , m_minItemSize(200)
     , m_resizeTimer(new QTimer(this))
     , m_resizeAnimations(new QParallelAnimationGroup(this))
 {

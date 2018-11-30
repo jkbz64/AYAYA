@@ -37,8 +37,8 @@ StreamWidget::StreamWidget(QWidget* parent)
     connect(player(), &PlayerWidget::startedBackendInit, this, &StreamWidget::onStartedBackendInit);
     connect(player(), &PlayerWidget::backendChanged, this, &StreamWidget::onBackendChanged);
     // Init-Cache
-    connect(chat()->chatView()->emotesCache(), &EmotesCache::startedInitingCache, this, &StreamWidget::onStartedInitingCache);
-    connect(chat()->chatView()->emotesCache(), &EmotesCache::endedInitingCache, this, &StreamWidget::onEndedInitingCache);
+    connect(chat()->chatView()->cache(), &ChatCache::startedInitingCache, this, &StreamWidget::onStartedInitingCache);
+    connect(chat()->chatView()->cache(), &ChatCache::endedInitingCache, this, &StreamWidget::onEndedInitingCache);
     // Processing
     connect(player(), &PlayerWidget::playerStyleChanged, this, &StreamWidget::onPlayerStyleChanged);
 
@@ -74,7 +74,7 @@ bool StreamWidget::checkInitStatus()
 
 void StreamWidget::init()
 {
-    chat()->chatView()->emotesCache()->initCache();
+    chat()->chatView()->cache()->initCache();
 }
 
 void StreamWidget::openStream(const Twitch::Stream& stream)

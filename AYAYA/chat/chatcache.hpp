@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QPair>
 #include <QSet>
+#include <TwitchQt/twitchbadge.hpp>
 #include <TwitchQt/twitchemote.hpp>
 
 class QTimer;
@@ -20,19 +21,20 @@ enum class EmotesBackend {
     FFZ
 };
 
-class EmotesCache : public QObject {
+class ChatCache : public QObject {
     Q_OBJECT
 public:
-    explicit EmotesCache(QObject* parent = nullptr);
-    ~EmotesCache();
+    explicit ChatCache(QObject* = nullptr);
+    ~ChatCache();
 
     void initCache();
     void clearCache();
     bool isEmoteLoaded(const QString&);
-    void processQueuedEmotes();
 
     void loadGlobalEmotes();
-    void loadChannelEmotes(const QString&);
+    void loadGlobalBadges();
+    void loadChannelBadges(const QString&);
+
     void loadEmotes(const QVector<Twitch::Emote>&);
 
 signals:
@@ -50,10 +52,13 @@ signals:
 
     void queuedEmotes();
     void loadedEmote(const QPair<Twitch::Emote, QImage>&);
+    void loadedBadge(const QPair<Twitch::Badge, QPair<QString, QImage>>&);
 
 private:
     Twitch::Api* m_api;
     QDir ensureCacheDirectory();
+
+    void processQueuedEmotes();
 
     bool m_inited;
 
@@ -65,6 +70,7 @@ private:
 
 private slots:
     void onLoadedEmote(const QPair<Twitch::Emote, QImage>&);
+    void onLoadedBadge(const QPair<Twitch::Badge, QPair<QString, QImage>>&);
 };
 
 #endif // EMOTESCACHE_HPP

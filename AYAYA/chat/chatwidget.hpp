@@ -5,10 +5,11 @@
 
 namespace Twitch {
 class Emote;
+class Badge;
 class Stream;
 }
 
-class EmotesCache;
+class ChatCache;
 class ChatClient;
 class ChatView;
 
@@ -54,9 +55,6 @@ private:
     QPoint m_offset;
 
     QSizeGrip* m_sizeGrip;
-
-    // Emote Cache slots
-    void onEmoteLoaded(const QPair<Twitch::Emote, QImage>&);
 
 private slots:
     void onJoinedChannel(const QString&);

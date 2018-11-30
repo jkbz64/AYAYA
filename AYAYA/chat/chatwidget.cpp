@@ -1,7 +1,7 @@
 #include "chatwidget.hpp"
+#include "chatcache.hpp"
 #include "chatclient.hpp"
 #include "chatview.hpp"
-#include "emotescache.hpp"
 #include "ui_chatwidget.h"
 #include <QMouseEvent>
 #include <QScrollBar>
@@ -39,6 +39,7 @@ ChatWidget::~ChatWidget()
 void ChatWidget::joinChat(const Twitch::Stream& stream)
 {
     client()->joinChannel(stream.m_userName);
+    chatView()->cache()->loadChannelBadges(stream.m_userId);
 }
 
 bool ChatWidget::isFollowingChat()
@@ -144,9 +145,4 @@ void ChatWidget::onDisconnected()
 {
     // It sometimes crashes when closing, fix this
     // chatView()->setEnabled(false);
-}
-
-void ChatWidget::onEmoteLoaded(const QPair<Twitch::Emote, QImage>& emote)
-{
-    m_ui->m_chatView->document()->addResource(QTextDocument::ImageResource, QUrl(emote.first.code()), QVariant(emote.second));
 }

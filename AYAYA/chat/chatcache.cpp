@@ -1,4 +1,4 @@
-#include "emotescache.hpp"
+#include "chatcache.hpp"
 #include <QDirIterator>
 #include <QImage>
 #include <QStandardPaths>
@@ -32,21 +32,21 @@ JSON createEmotesDocument(const Twitch::Emotes& emotes)
 }
 }
 
-EmotesCache::EmotesCache(QObject* parent)
+ChatCache::ChatCache(QObject* parent)
     : QObject(parent)
     , m_api(new Twitch::Api(this))
     , m_inited(false)
 {
-    connect(this, &EmotesCache::queuedEmotes, this, &EmotesCache::processQueuedEmotes, Qt::QueuedConnection);
-    connect(this, &EmotesCache::loadedEmote, this, &EmotesCache::onLoadedEmote);
+    connect(this, &ChatCache::queuedEmotes, this, &ChatCache::processQueuedEmotes, Qt::QueuedConnection);
+    connect(this, &ChatCache::loadedEmote, this, &ChatCache::onLoadedEmote);
     ensureCacheDirectory();
 }
 
-EmotesCache::~EmotesCache()
+ChatCache::~ChatCache()
 {
 }
 
-QDir EmotesCache::ensureCacheDirectory()
+QDir ChatCache::ensureCacheDirectory()
 {
     QDir cacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
     if (!cacheDirectory.exists()) {
@@ -58,16 +58,17 @@ QDir EmotesCache::ensureCacheDirectory()
     return cacheDirectory;
 }
 
-void EmotesCache::initCache()
+void ChatCache::initCache()
 {
     auto cacheDirectory = ensureCacheDirectory();
     if (!m_inited)
         emit startedInitingCache();
-    // Init cache by loading global emotes
+    // Init cache by loading global emotes and global chat badges
     loadGlobalEmotes();
+    loadGlobalBadges();
 }
 
-void EmotesCache::clearCache()
+void ChatCache::clearCache()
 {
     // Remove cache directory
     ensureCacheDirectory().removeRecursively();
@@ -76,7 +77,7 @@ void EmotesCache::clearCache()
     emit clearedCache();
 }
 
-void EmotesCache::processQueuedEmotes()
+void ChatCache::processQueuedEmotes()
 {
     auto cacheDirectory = ensureCacheDirectory();
     if (!m_emotesQueue.empty()) {
@@ -112,13 +113,13 @@ void EmotesCache::processQueuedEmotes()
 }
 
 // Loads
-void EmotesCache::loadEmotes(const QVector<Twitch::Emote>& emotes)
+void ChatCache::loadEmotes(const QVector<Twitch::Emote>& emotes)
 {
     m_emotesQueue << emotes;
     emit queuedEmotes();
 }
 
-void EmotesCache::loadGlobalEmotes()
+void ChatCache::loadGlobalEmotes()
 {
     auto cacheDirectory = ensureCacheDirectory();
     QFile globalTwitchEmotes(cacheDirectory.absoluteFilePath("TwitchEmotes/global.json"));
@@ -148,18 +149,52 @@ void EmotesCache::loadGlobalEmotes()
     }
 }
 
-void EmotesCache::loadChannelEmotes(const QString& channel)
+void ChatCache::loadGlobalBadges()
 {
-    fetchChannelEmotes(channel);
+    auto badgesReply = m_api->getGlobalBadges();
+
+    connect(badgesReply, &Twitch::Reply::finished, [this, badgesReply]() {
+        if (badgesReply->currentState() == Twitch::ReplyState::Success) {
+            for (const auto& badge : badgesReply->badges()) {
+                for (auto version = badge.m_versions.keyValueBegin(); version != badge.m_versions.keyValueEnd(); version++) {
+                    auto imageReply = m_api->getImage((*version).second.m_imageUrl);
+                    connect(imageReply, &Twitch::Reply::finished, [this, imageReply, versionName = (*version).first, badge]() {
+                        if (imageReply->currentState() == Twitch::ReplyState::Success) {
+                            emit loadedBadge(qMakePair(badge, qMakePair(versionName, imageReply->data().value<QImage>())));
+                        }
+                    });
+                }
+            }
+        }
+        badgesReply->deleteLater();
+    });
 }
 
-bool EmotesCache::isEmoteLoaded(const QString& code)
+void ChatCache::loadChannelBadges(const QString& channel)
+{
+    auto channelBadgesReply = m_api->getChannelBadges(channel);
+    connect(channelBadgesReply, &Twitch::Reply::finished, [this, channelBadgesReply]() {
+        if (channelBadgesReply->currentState() == Twitch::ReplyState::Success) {
+            for (const auto& badge : channelBadgesReply->badges()) {
+                for (auto version = badge.m_versions.keyValueBegin(); version != badge.m_versions.keyValueEnd(); version++) {
+                    auto imageReply = m_api->getImage((*version).second.m_imageUrl);
+                    connect(imageReply, &Twitch::Reply::finished, [this, imageReply, versionName = (*version).first, badge]() {
+                        if (imageReply->currentState() == Twitch::ReplyState::Success) {
+                            emit loadedBadge(qMakePair(badge, qMakePair(versionName, imageReply->data().value<QImage>())));
+                        }
+                    });
+                }
+            }
+        }
+    });
+}
+
+bool ChatCache::isEmoteLoaded(const QString& code)
 {
     return m_loadedEmotes.contains(code);
 }
-
 // Fetches
-void EmotesCache::fetchGlobalEmotes()
+void ChatCache::fetchGlobalEmotes()
 {
     emit startedFetchingGlobalEmotes();
     QDir cacheDirectory = ensureCacheDirectory();
@@ -220,7 +255,7 @@ void EmotesCache::fetchGlobalEmotes()
     });
 }
 
-void EmotesCache::fetchChannelEmotes(const QString& channel)
+void ChatCache::fetchChannelEmotes(const QString& channel)
 {
     auto cacheDirectory = ensureCacheDirectory();
 
@@ -246,8 +281,12 @@ void EmotesCache::fetchChannelEmotes(const QString& channel)
     });
 }
 
-// Slotst
-void EmotesCache::onLoadedEmote(const QPair<Twitch::Emote, QImage>& pair)
+// Slots
+void ChatCache::onLoadedEmote(const QPair<Twitch::Emote, QImage>& pair)
 {
     m_loadedEmotes.insert(pair.first.code());
+}
+
+void ChatCache::onLoadedBadge(const QPair<Twitch::Badge, QPair<QString, QImage>>& badge)
+{
 }
