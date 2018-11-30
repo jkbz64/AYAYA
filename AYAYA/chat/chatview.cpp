@@ -42,10 +42,9 @@ void ChatView::onMessageReceived(const TwitchMessage& message)
 {
     auto editedMessage = message.m_content;
 
-    QString badges;
+    QString badges = QString("");
     for (const auto& badge : message.m_badges)
         badges += "<img src=\"" + badge + "\" align=\"middle\"></img> ";
-
     cache()->loadEmotes(message.m_emotes);
 
     QSet<QString> preCodes;
@@ -58,6 +57,7 @@ void ChatView::onMessageReceived(const TwitchMessage& message)
             editedMessage.replace(word, "<img src=\"" + word + "\" align=\"middle\"></img>");
         }
     }
+
     addMessage("<p>" + badges + "<b><font color=\"" + message.m_color.name() + "\">" + message.m_author + "</font></b>: " + editedMessage + "</p>");
 
     auto b = document()->lastBlock().blockFormat();

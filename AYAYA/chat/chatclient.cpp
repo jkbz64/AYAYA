@@ -97,11 +97,13 @@ void ChatClient::onMessageReceived(IrcMessage* message)
             const auto endIndex = match.captured(3).toInt();
             emotes.push_back(Twitch::Emote::createEmote<Twitch::TwitchEmotes::Emote>(id.toInt(), privateMessage->content().mid(startIndex, 1 + endIndex - startIndex), -1, QString()));
         }
+        const QColor color = !privateMessage->tag("color").toString().isEmpty() ? privateMessage->tag("color").toString() : QString("#6441A4");
+        const QStringList badges = !privateMessage->tag("badges").toString().isEmpty() ? privateMessage->tag("badges").toString().split(",") : QStringList();
         emit messageReceived(TwitchMessage{
             message->nick(),
             privateMessage->content(),
-            QColor(privateMessage->tag("color").toString()),
-            privateMessage->tag("badges").toString().split(","),
+            color,
+            badges,
             emotes });
     } else if (messageType == IrcMessage::Type::Join) {
         m_currentChannel = qobject_cast<IrcJoinMessage*>(message)->channel().mid(1);

@@ -175,14 +175,18 @@ void ChatCache::loadChannelBadges(const QString& channel)
     auto channelBadgesReply = m_api->getChannelBadges(channel);
     connect(channelBadgesReply, &Twitch::Reply::finished, [this, channelBadgesReply]() {
         if (channelBadgesReply->currentState() == Twitch::ReplyState::Success) {
-            for (const auto& badge : channelBadgesReply->badges()) {
-                for (auto version = badge.m_versions.keyValueBegin(); version != badge.m_versions.keyValueEnd(); version++) {
-                    auto imageReply = m_api->getImage((*version).second.m_imageUrl);
-                    connect(imageReply, &Twitch::Reply::finished, [this, imageReply, versionName = (*version).first, badge]() {
-                        if (imageReply->currentState() == Twitch::ReplyState::Success) {
-                            emit loadedBadge(qMakePair(badge, qMakePair(versionName, imageReply->data().value<QImage>())));
-                        }
-                    });
+            if (channelBadgesReply->badges().empty())
+                loadGlobalBadges();
+            else {
+                for (const auto& badge : channelBadgesReply->badges()) {
+                    for (auto version = badge.m_versions.keyValueBegin(); version != badge.m_versions.keyValueEnd(); version++) {
+                        auto imageReply = m_api->getImage((*version).second.m_imageUrl);
+                        connect(imageReply, &Twitch::Reply::finished, [this, imageReply, versionName = (*version).first, badge]() {
+                            if (imageReply->currentState() == Twitch::ReplyState::Success) {
+                                emit loadedBadge(qMakePair(badge, qMakePair(versionName, imageReply->data().value<QImage>())));
+                            }
+                        });
+                    }
                 }
             }
         }
