@@ -1,11 +1,13 @@
 #include "mainwindow.hpp"
 #include "browser/gamebrowser.hpp"
+#include "settings/chatsettings.hpp"
 #include "settings/extractorsettings.hpp"
 #include "settings/globalsettings.hpp"
 #include "settings/playersettings.hpp"
 #include "ui_mainwindow.h"
 #include <QMovie>
 #include <QPropertyAnimation>
+#include <QPushButton>
 #include <QTextStream>
 #include <QTimer>
 
@@ -13,10 +15,14 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , m_ui(new Ui::MainWindow)
     , m_theme(Theme::Default)
-    , m_previousWidget(nullptr)
 {
     m_ui->setupUi(this);
     setStyleSheet("MainWindow { padding: 1px; }");
+
+    // Save default margins / spacing for going back from fulllscreen mode
+    m_defaultMargin = m_ui->m_mainWidget->layout()->margin();
+    m_defaultSpacing = m_ui->m_mainWidget->layout()->spacing();
+
     // Splash screen clap face
     m_ui->m_clapFace->setMovie(new QMovie(":/gifs/sunwithfaceclap.gif", QByteArray(), this));
 
@@ -34,16 +40,12 @@ MainWindow::MainWindow(QWidget* parent)
     connect(streamWidget(), &StreamWidget::enteredFullscreenMode, this, &MainWindow::onEnteredFullscreenMode);
     connect(streamWidget(), &StreamWidget::leftFullscreenMode, this, &MainWindow::onLeftFullscreenMode);
 
-    // Save default margins / spacing for going back from fulllscreen mode
-    m_defaultMargin = m_ui->m_mainWidget->layout()->margin();
-    m_defaultSpacing = m_ui->m_mainWidget->layout()->spacing();
-
     // Settings
     settingsWidget()->addTab<GlobalSettings>(this);
     settingsWidget()->addTab<ExtractorSettings>(streamWidget()->player());
     settingsWidget()->addTab<PlayerSettings>(streamWidget()->player());
-
-    m_ui->m_settingsWidget->hide();
+    settingsWidget()->addTab<ChatSettings>(streamWidget()->chat());
+    settingsWidget()->hide();
 
     // In case of Pepega
     m_ui->m_centralStack->setCurrentWidget(m_ui->m_splashWidget);
@@ -53,6 +55,12 @@ MainWindow::MainWindow(QWidget* parent)
 MainWindow::~MainWindow()
 {
     delete m_ui;
+}
+
+void MainWindow::init()
+{
+    m_initQueue << m_ui->m_settingsWidget << m_ui->m_browserWidget << m_ui->m_streamWidget;
+    initNextWidget();
 }
 
 void MainWindow::setTheme(Theme theme)
@@ -104,12 +112,6 @@ SettingsWidget* MainWindow::settingsWidget() const
     return m_ui->m_settingsWidget;
 }
 
-void MainWindow::init()
-{
-    m_initQueue << m_ui->m_settingsWidget << m_ui->m_browserWidget << m_ui->m_streamWidget;
-    initNextWidget();
-}
-
 void MainWindow::setupInitWidget(InitWidget* widget)
 {
     connect(widget, &InitWidget::startedIniting, this, &MainWindow::onInitStarted);
@@ -155,8 +157,8 @@ void MainWindow::setCurrentMainWidget(QWidget* widget) const
 void MainWindow::onInitStarted()
 {
     m_ui->m_centralStack->setCurrentWidget(m_ui->m_splashWidget);
-    m_ui->m_clapFace->movie()->start();
     m_ui->m_statusLabel->setText("Initing...");
+    m_ui->m_clapFace->movie()->start();
 }
 
 void MainWindow::onInitProgress(const QString& progressText)
@@ -216,8 +218,6 @@ void MainWindow::onSettingsPressed()
         m_ui->m_settingsWidget->hide();
     }
 }
-
-#include <QPushButton>
 
 void MainWindow::onStreamEntered(const Twitch::Stream& stream)
 {

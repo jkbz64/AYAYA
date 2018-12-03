@@ -50,7 +50,8 @@ SOURCES += \
     AYAYA/settings/quickstartdialog.cpp \
     AYAYA/settings/extractorsettings.cpp \
     AYAYA/twitch/api.cpp \
-    AYAYA/chat/chatcache.cpp
+    AYAYA/chat/chatcache.cpp \
+    AYAYA/settings/chatsettings.cpp \
 
 HEADERS += \
     AYAYA/mainwindow.hpp \
@@ -81,7 +82,8 @@ HEADERS += \
     AYAYA/settings/quickstartdialog.hpp \
     AYAYA/settings/extractorsettings.hpp \
     AYAYA/twitch/api.hpp \
-    AYAYA/chat/chatcache.hpp
+    AYAYA/chat/chatcache.hpp \
+    AYAYA/settings/chatsettings.hpp \
 
 FORMS += \
     AYAYA/mainwindow.ui \
@@ -97,7 +99,8 @@ FORMS += \
     AYAYA/settings/globalsettings.ui \
     AYAYA/settings/playersettings.ui \
     AYAYA/settings/quickstartdialog.ui \
-    AYAYA/settings/extractorsettings.ui
+    AYAYA/settings/extractorsettings.ui \
+    AYAYA/settings/chatsettings.ui \
 
 mpv {
 DEFINES += MPV

@@ -3,6 +3,7 @@
 #include "browser/streamitemwidget.hpp"
 #include "twitch/api.hpp"
 #include "ui_browserwidget.h"
+#include <QMessageBox>
 #include <QPointer>
 #include <QTimer>
 
@@ -59,10 +60,11 @@ void BrowserWidget::showTopGames()
             auto games = topGamesReply->games();
             for (const Twitch::Game& game : games)
                 gameBrowser()->addGame(game);
-            setRequirementFulfilled("firstTopGamesFetch");
-            tryToEndInit();
-        }
+        } else
+            QMessageBox::warning(this, "No connection / Connection timed out", "Could not reach Twitch servers, check your internet connection or try again");
         topGamesReply->deleteLater();
+        setRequirementFulfilled("firstTopGamesFetch");
+        tryToEndInit();
     });
 
     QTimer::singleShot(100, [this]() {
