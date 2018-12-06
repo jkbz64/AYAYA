@@ -3,6 +3,7 @@
 #include "chatclient.hpp"
 #include "chatview.hpp"
 #include "ui_chatwidget.h"
+#include <QGraphicsOpacityEffect>
 #include <QMouseEvent>
 #include <QScrollBar>
 #include <QSizeGrip>
@@ -76,16 +77,16 @@ void ChatWidget::setMovable(bool boolean)
         setWindowFlag(Qt::SubWindow);
         m_sizeGrip->show();
         m_ui->m_chatView->setAttribute(Qt::WA_TransparentForMouseEvents);
-        m_ui->m_chatView->setStyleSheet("background-color: rgba(0, 0, 0, 0.5);");
+        m_ui->m_chatView->setGraphicsEffect(new QGraphicsOpacityEffect());
         m_ui->m_chatView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         m_ui->m_chatView->setFocusPolicy(Qt::NoFocus);
         followChat();
     } else {
         setWindowFlag(Qt::Widget);
         m_sizeGrip->hide();
-        m_ui->m_chatView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-        m_ui->m_chatView->setAttribute(Qt::WA_TransparentForMouseEvents, false);
-        m_ui->m_chatView->setStyleSheet("");
+        chatView()->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        chatView()->setAttribute(Qt::WA_TransparentForMouseEvents, false);
+        chatView()->setGraphicsEffect(nullptr);
         followChat();
     }
 }
@@ -120,7 +121,7 @@ void ChatWidget::wheelEvent(QWheelEvent* event)
                 m_opacity = 1.0f;
             if (m_opacity < 0.0f)
                 m_opacity = 0.0;
-            chatView()->setStyleSheet("background-color: rgba(0, 0, 0, " + QString::number(m_opacity) + ");");
+            qobject_cast<QGraphicsOpacityEffect*>(chatView()->graphicsEffect())->setOpacity(m_opacity);
         } else {
             chatView()->verticalScrollBar()->setValue(chatView()->verticalScrollBar()->value() - event->delta());
         }

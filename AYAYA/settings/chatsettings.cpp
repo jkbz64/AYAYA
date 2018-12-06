@@ -34,12 +34,14 @@ void ChatSettings::updateSettings()
 
     const QColor backgroundColor = settings.value("backgroundColor", QColor::fromRgb(0, 0, 0, 255)).value<QColor>();
     m_ui->m_backgroundColorButton->setText(backgroundColor.name());
+    m_ui->m_backgroundColorButton->setStyleSheet("background-color: " + backgroundColor.name());
 
     const QFont textFont = settings.value("textFont", QApplication::font()).value<QFont>();
     m_ui->m_fontComboBox->setCurrentFont(textFont);
 
     const QColor textColor = settings.value("textColor", QColor::fromRgb(255, 0, 0, 255)).value<QColor>();
     m_ui->m_textColorButton->setText(textColor.name());
+    m_ui->m_textColorButton->setStyleSheet("background-color: " + textColor.name());
 
     settings.endGroup();
 }
@@ -77,7 +79,7 @@ void ChatSettings::onClearBadgesCachePressed()
 void ChatSettings::onColorButtonPressed()
 {
     auto button = qobject_cast<QPushButton*>(sender());
-    const auto color = QColorDialog::getColor(QColor(button->text()), this);
+    const auto color = QColorDialog::getColor(QColor(button->text()), nullptr);
     if (color.isValid()) {
         button->setStyleSheet("background-color: " + color.name());
         button->setText(color.name());
