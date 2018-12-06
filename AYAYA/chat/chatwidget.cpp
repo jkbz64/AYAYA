@@ -117,8 +117,8 @@ void ChatWidget::wheelEvent(QWheelEvent* event)
     if (isMovable()) {
         if (qApp->keyboardModifiers().testFlag(Qt::ControlModifier)) {
             m_opacity += event->delta() / 1000.f;
-            if (m_opacity > 1.0f)
-                m_opacity = 1.0f;
+            if (m_opacity > 0.99f)
+                m_opacity = 0.99f;
             if (m_opacity < 0.0f)
                 m_opacity = 0.0;
             qobject_cast<QGraphicsOpacityEffect*>(chatView()->graphicsEffect())->setOpacity(m_opacity);
