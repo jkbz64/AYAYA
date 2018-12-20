@@ -138,7 +138,7 @@ void MainWindow::removeMargins()
 
 void MainWindow::restoreDefaultMargins()
 {
-    setStyleSheet("padding: 1px");
+    setStyleSheet("");
     m_ui->m_mainWidget->layout()->setMargin(m_defaultMargin);
     m_ui->m_mainWidget->layout()->setSpacing(m_defaultSpacing);
 }
@@ -228,6 +228,8 @@ void MainWindow::onStreamEntered(const Twitch::Stream& stream)
 
 void MainWindow::onEnteredFullscreenMode()
 {
+    m_ui->m_settingsWidget->hide();
+
     showFullScreen();
     navigationBar()->hide();
     statusBar()->hide();

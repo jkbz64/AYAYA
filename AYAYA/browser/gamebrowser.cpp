@@ -9,7 +9,7 @@
 
 GameBrowser::GameBrowser(QWidget* parent)
     : Browser(parent)
-    , m_minItemSize(200)
+    , m_minItemSize(150)
     , m_resizeTimer(new QTimer(this))
     , m_resizeAnimations(new QParallelAnimationGroup(this))
 {
@@ -17,7 +17,7 @@ GameBrowser::GameBrowser(QWidget* parent)
     m_resizeTimer->setInterval(150);
     connect(m_resizeTimer, &QTimer::timeout, this, &GameBrowser::fixLayout, Qt::UniqueConnection);
 
-    setMinimumWidth(200);
+    setMinimumWidth(300);
 }
 
 GameItemWidget* GameBrowser::addGame(const Twitch::Game& game)

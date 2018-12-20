@@ -79,7 +79,7 @@ void ChatSettings::onClearBadgesCachePressed()
 void ChatSettings::onColorButtonPressed()
 {
     auto button = qobject_cast<QPushButton*>(sender());
-    const auto color = QColorDialog::getColor(QColor(button->text()), nullptr);
+    const auto color = QColorDialog::getColor(QColor(button->text()), this, QString(), QColorDialog::DontUseNativeDialog);
     if (color.isValid()) {
         button->setStyleSheet("background-color: " + color.name());
         button->setText(color.name());

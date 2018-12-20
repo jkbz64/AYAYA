@@ -32,21 +32,7 @@
          <set>Qt::AlignCenter</set>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="2" column="0">
-          <widget class="QLabel" name="m_textColorLabel">
-           <property name="text">
-            <string>Text color</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QPushButton" name="m_textColorButton">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
+         <item row="1" column="1">
           <widget class="QPushButton" name="m_backgroundColorButton">
            <property name="autoFillBackground">
             <bool>false</bool>
@@ -59,14 +45,35 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
+         <item row="1" column="0">
           <widget class="QLabel" name="m_backgroundColorLabel">
            <property name="text">
             <string>Background </string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="3" column="0">
+          <widget class="QLabel" name="m_textColorLabel">
+           <property name="text">
+            <string>Text color</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QPushButton" name="m_textColorButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="m_textFontLabel">
+           <property name="text">
+            <string>Text font</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
           <widget class="QFontComboBox" name="m_fontComboBox">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
@@ -76,13 +83,6 @@
            </property>
            <property name="frame">
             <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="m_textFontLabel">
-           <property name="text">
-            <string>Text font</string>
            </property>
           </widget>
          </item>
