@@ -75,6 +75,8 @@ void ChatCache::clearCache()
     m_loadedEmotes.clear();
     m_inited = false;
     emit clearedCache();
+
+    loadGlobalEmotes();
 }
 
 void ChatCache::processQueuedEmotes()

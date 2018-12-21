@@ -14,6 +14,8 @@ ChatSettings::ChatSettings(ChatWidget* chatWidget, QWidget* parent)
     connect(m_ui->m_backgroundColorButton, &QPushButton::released, this, &ChatSettings::onColorButtonPressed);
     connect(m_ui->m_textColorButton, &QPushButton::released, this, &ChatSettings::onColorButtonPressed);
 
+    connect(m_ui->m_clearEmotesCacheButton, &QPushButton::released, this, &ChatSettings::onClearEmotesCachePressed);
+
     connect(m_ui->m_fontComboBox, &QFontComboBox::currentFontChanged, this, &ChatSettings::settingChanged);
 }
 
@@ -68,8 +70,11 @@ void ChatSettings::applyChanges()
     settings.endGroup();
 }
 
+#include "../chat/chatcache.hpp"
+
 void ChatSettings::onClearEmotesCachePressed()
 {
+    m_chatWidget->chatView()->cache()->clearCache();
 }
 
 void ChatSettings::onClearBadgesCachePressed()

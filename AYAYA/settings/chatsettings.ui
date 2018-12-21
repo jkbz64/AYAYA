@@ -92,7 +92,7 @@
       <item row="2" column="0">
        <widget class="QPushButton" name="m_clearEmotesCacheButton">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>Clear Chat Cache</string>
