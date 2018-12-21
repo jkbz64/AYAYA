@@ -33,6 +33,7 @@ public:
 
     void loadGlobalEmotes();
     void loadGlobalBadges();
+    void loadChannelEmotes(const QString&);
     void loadChannelBadges(const QString&);
 
     void loadEmotes(const QVector<Twitch::Emote>&);

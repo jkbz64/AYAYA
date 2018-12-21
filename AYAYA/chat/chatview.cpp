@@ -29,6 +29,8 @@ void ChatView::onJoinedChannel(const QString& channel)
 {
     reset();
 
+    cache()->loadChannelEmotes(channel);
+
     auto frameFormat = document()->rootFrame()->frameFormat();
     frameFormat.setBottomMargin(20);
     document()->rootFrame()->setFrameFormat(frameFormat);

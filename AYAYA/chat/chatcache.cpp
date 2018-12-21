@@ -170,6 +170,11 @@ void ChatCache::loadGlobalBadges()
     });
 }
 
+void ChatCache::loadChannelEmotes(const QString& channel)
+{
+    fetchChannelEmotes(channel);
+}
+
 void ChatCache::loadChannelBadges(const QString& channel)
 {
     auto channelBadgesReply = m_api->getChannelBadges(channel);
