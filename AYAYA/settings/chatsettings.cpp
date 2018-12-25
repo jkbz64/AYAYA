@@ -41,7 +41,7 @@ void ChatSettings::updateSettings()
     const QFont textFont = settings.value("textFont", QApplication::font()).value<QFont>();
     m_ui->m_fontComboBox->setCurrentFont(textFont);
 
-    const QColor textColor = settings.value("textColor", QColor::fromRgb(255, 0, 0, 255)).value<QColor>();
+    const QColor textColor = settings.value("textColor", QColor::fromRgb(255, 255, 255, 255)).value<QColor>();
     m_ui->m_textColorButton->setText(textColor.name());
     m_ui->m_textColorButton->setStyleSheet("background-color: " + textColor.name());
 

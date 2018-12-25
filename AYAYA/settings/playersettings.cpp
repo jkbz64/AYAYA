@@ -6,6 +6,10 @@
 #include <QMetaEnum>
 #include <QSpinBox>
 
+#ifdef MPV
+#include "../player/backends/mpvplayerimpl.hpp"
+#endif
+
 namespace {
 using PlayerBackend = PlayerWidget::Backend;
 PlayerBackend getBackendType(const QString& backendName)
@@ -38,6 +42,7 @@ PlayerSettings::PlayerSettings(PlayerWidget* playerWidget, QWidget* parent)
 #ifdef MPV
     m_ui->m_backendComboBox->addItem("Mpv");
     connect(m_ui->m_mpvCustomTableWidget, &QTableWidget::customContextMenuRequested, this, &PlayerSettings::onRequestedMpvCustomMenu);
+    connect(m_ui->m_mpvCustomTableWidget, &QTableWidget::itemChanged, this, &PlayerSettings::settingChanged);
 #endif
 #ifdef VLC
     m_ui->m_backendComboBox->addItem("Vlc");
@@ -117,19 +122,25 @@ void PlayerSettings::applyChanges()
 
     const auto backendName = m_ui->m_backendLabel->text();
     settings.setValue("backend", QVariant::fromValue(getBackendType(backendName)).toInt());
+    m_playerWidget->setBackend(getBackendType(backendName));
 
 #ifdef MPV
     settings.beginGroup("mpv");
 
     QVariantMap mpvSettings;
     for (auto i = 0; i < m_ui->m_mpvCustomTableWidget->rowCount(); ++i) {
-        const auto key = m_ui->m_mpvCustomTableWidget->item(i, 0)->text();
-        const auto value = m_ui->m_mpvCustomTableWidget->item(i, 1)->text();
+        const auto key = m_ui->m_mpvCustomTableWidget->item(i, 0) ? m_ui->m_mpvCustomTableWidget->item(i, 0)->text() : QString("");
+        const auto value = m_ui->m_mpvCustomTableWidget->item(i, 1) ? m_ui->m_mpvCustomTableWidget->item(i, 1)->text() : QString("");
         mpvSettings.insert(key, value);
     }
     settings.setValue("custom", mpvSettings);
-
     settings.endGroup();
+
+    if (m_playerWidget->backend() == PlayerWidget::Backend::Mpv) { // Apply settings to the backend
+        for (auto i = mpvSettings.begin(); i != mpvSettings.end(); ++i)
+            if (!i.key().isEmpty() && i.value().isValid())
+                qobject_cast<detail::MpvPlayerImpl*>(m_playerWidget->m_impl)->setOption(i.key(), i.value());
+    }
 #endif
 
 #ifdef VLC
@@ -138,15 +149,13 @@ void PlayerSettings::applyChanges()
     settings.endGroup();
 #endif
 
-    m_playerWidget->setBackend(getBackendType(backendName));
-
     settings.endGroup();
 }
 
 void PlayerSettings::onCurrentBackendChanged()
 {
     m_ui->m_backendLabel->setText(m_ui->m_backendComboBox->currentText());
-    settingChanged();
+    emit settingChanged();
 }
 
 void PlayerSettings::onBackendChanged(const QString& backendName)
@@ -172,9 +181,11 @@ void PlayerSettings::onRequestedMpvCustomMenu(const QPoint& pos)
     auto menu = new QMenu(this);
     menu->addAction("Add", [this]() {
         m_ui->m_mpvCustomTableWidget->insertRow(m_ui->m_mpvCustomTableWidget->rowCount());
+        m_ui->m_mpvCustomTableWidget->editItem(m_ui->m_mpvCustomTableWidget->item(m_ui->m_mpvCustomTableWidget->rowCount() - 1, 0));
     });
     menu->addAction("Delete", [this]() {
         m_ui->m_mpvCustomTableWidget->removeRow(m_ui->m_mpvCustomTableWidget->currentRow());
+        emit settingChanged();
     });
 
     const auto mappedPos = m_ui->m_mpvCustomTableWidget->mapToGlobal(pos);

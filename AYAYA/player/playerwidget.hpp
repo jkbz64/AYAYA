@@ -94,6 +94,7 @@ protected:
     virtual void mouseDoubleClickEvent(QMouseEvent*) override;
 
 private:
+    friend class PlayerSettings;
     detail::PlayerImpl* m_impl;
     Backend m_backend;
     StreamExtractor* m_streamExtractor;

@@ -24,6 +24,8 @@ public:
     virtual void setVolume(int) override;
     virtual int volume() const override;
 
+    void setOption(const QString&, const QVariant&);
+
 signals:
     void mpvEvent();
 

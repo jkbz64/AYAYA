@@ -111,9 +111,9 @@ bool MpvPlayerImpl::init()
 void MpvPlayerImpl::load(const QString& path)
 {
     if (path.isEmpty())
-        setOption(m_mpv, "pause", true);
+        setOption("pause", true);
     else {
-        setOption(m_mpv, "pause", false);
+        setOption("pause", false);
         command(m_mpv, (QStringList() << "loadfile" << path));
     }
 }
@@ -125,12 +125,17 @@ QString MpvPlayerImpl::currentPath()
 
 void MpvPlayerImpl::setVolume(int value)
 {
-    setOption(m_mpv, "volume", value);
+    setOption("volume", value);
 }
 
 int MpvPlayerImpl::volume() const
 {
     return getProperty(m_mpv, "volume").toInt();
+}
+
+void MpvPlayerImpl::setOption(const QString& option, const QVariant& value)
+{
+    detail::setOption(m_mpv, option, value);
 }
 
 void MpvPlayerImpl::processEvents()
