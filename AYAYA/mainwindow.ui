@@ -28,6 +28,10 @@
   <property name="windowTitle">
    <string>AYAYA</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="fx/ayaya.qrc">
+    <normaloff>:/images/ayaya.png</normaloff>:/images/ayaya.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>

@@ -2,6 +2,7 @@
     <qresource prefix="/images">
         <file>twitch.png</file>
         <file>404.jpg</file>
+        <file>ayaya.png</file>
     </qresource>
     <qresource prefix="/gifs">
         <file>sunwithfaceclap.gif</file>
