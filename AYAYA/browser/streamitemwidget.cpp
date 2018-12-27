@@ -9,6 +9,7 @@ StreamItemWidget::StreamItemWidget(const Twitch::Stream& stream, QWidget* parent
     m_ui->setupUi(this);
     m_ui->m_nameLabel->setText(stream.m_userName);
     m_ui->m_titleLabel->setText(stream.m_title);
+    m_ui->m_viewerCountLabel->setText(QString::number(stream.m_viewerCount));
     m_ui->m_previewLabel->setScaledContents(true);
     m_ui->m_previewLabel->setPixmap(QPixmap(":/images/404.jpg"));
 }
