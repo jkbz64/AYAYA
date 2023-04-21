@@ -1,5 +1,6 @@
 # AYAYA
-***AYAYA is under heavy development, so be aware of bugs.*** 
+
+**The project is discontinued and publicly archived**
 
 Qt Desktop Twitch.tv client written in Qt5.
 
